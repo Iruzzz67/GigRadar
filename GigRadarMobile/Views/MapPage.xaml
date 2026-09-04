@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.MapPage"
+             x:DataType="vm:MapViewModel"
+             BackgroundColor="#121212"
+             Title="Map">
+
+    <VerticalStackLayout Spacing="0">
+        <Frame BackgroundColor="#1A1A1A" CornerRadius="0" Padding="16" HasShadow="False">
+            <Label Text="&#x1F5FA;&#xFE0F; NEARBY GIGS" FontSize="22" FontAttributes="Bold" TextColor="#39FF14"/>
+        </Frame>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+
+        <CollectionView ItemsSource="{Binding Events}" SelectionMode="None" Margin="16,8">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:GigEvent">
+                    <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="16" Margin="0,4" BorderColor="#333333" HasShadow="False">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="6">
+                            <Label Grid.Row="0" Text="{Binding Name}" FontSize="18" FontAttributes="Bold" TextColor="White"/>
+                            <HorizontalStackLayout Grid.Row="1" Spacing="16">
+                                <Label Text="{Binding DateFormatted}" FontSize="13" TextColor="#B0B0B0"/>
+                                <Label Text="{Binding PriceFormatted}" FontSize="13" TextColor="#39FF14"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Grid.Row="2" Spacing="8">
+                                <Button Text="&#x1F5FA;&#xFE0F; Map" BackgroundColor="#7B2FFF" TextColor="White" FontSize="12" CornerRadius="8" HeightRequest="34"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MapViewModel}}, Path=OpenExternalMapCommand}" CommandParameter="{Binding .}"/>
+                                <Button Text="Detail" BackgroundColor="#333333" TextColor="#39FF14" FontSize="12" CornerRadius="8" HeightRequest="34"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MapViewModel}}, Path=GoToDetailCommand}" CommandParameter="{Binding .}"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+
+</ContentPage>

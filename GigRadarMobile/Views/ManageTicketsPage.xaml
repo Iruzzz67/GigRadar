@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.ManageTicketsPage"
+             x:DataType="vm:ManageTicketsViewModel"
+             BackgroundColor="#121212"
+             Title="Kelola Tiket">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Label Text="Kelola Tipe Tiket &amp; Stok" FontSize="22" FontAttributes="Bold" TextColor="White"/>
+            <Label Text="Pilih event untuk menambah, mengedit, atau menghapus tipe tiket dan stoknya." FontSize="13" TextColor="#B0B0B0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+            <Label Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" TextColor="#FF6B6B" FontSize="13"/>
+
+            <CollectionView ItemsSource="{Binding Events}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ManagedEventItem">
+                        <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="14" Margin="0,4"
+                               BorderColor="#333333" HasShadow="False">
+                            <VerticalStackLayout Spacing="10">
+
+                                <!-- Header event (tap untuk expand) -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label Text="{Binding Event.Name}" FontSize="17" FontAttributes="Bold" TextColor="White"/>
+                                        <Label Text="{Binding DateLabel}" FontSize="12" TextColor="#B0B0B0"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1" VerticalOptions="Center" Text="▼"
+                                            BackgroundColor="#2A2A2A" TextColor="#39FF14"
+                                            FontSize="12" CornerRadius="8" HeightRequest="36" Padding="12,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ToggleEventCommand}"
+                                            CommandParameter="{Binding .}">
+                                        <Button.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding IsExpanded}" Value="False">
+                                                <Setter Property="Text" Value="▶"/>
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Isi saat di-expand -->
+                                <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="8">
+
+                                    <ActivityIndicator IsRunning="{Binding IsLoadingTypes}" IsVisible="{Binding IsLoadingTypes}" Color="#39FF14" HeightRequest="24"/>
+
+                                    <Label Text="Belum ada tipe tiket untuk event ini."
+                                           IsVisible="{Binding Types.Count, Converter={StaticResource IsZeroConverter}}"
+                                           TextColor="#B0B0B0" FontSize="13"/>
+
+                                    <CollectionView ItemsSource="{Binding Types}" SelectionMode="None">
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="models:EventTicketType">
+                                                <Frame BackgroundColor="#2A2A2A" CornerRadius="10" Padding="12" Margin="0,3"
+                                                       BorderColor="#3A3A3A" HasShadow="False">
+                                                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="3">
+                                                        <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontSize="14" FontAttributes="Bold" TextColor="White"/>
+                                                        <Label Grid.Row="1" Grid.Column="0" Text="{Binding Description}" FontSize="11" TextColor="#B0B0B0" LineBreakMode="TailTruncation"/>
+                                                        <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
+                                                            <Label Text="{Binding PriceFormatted}" FontSize="13" FontAttributes="Bold" TextColor="#39FF14" HorizontalTextAlignment="End"/>
+                                                            <Label Text="{Binding StockLabel}" FontSize="11" TextColor="{Binding BadgeColor}" HorizontalTextAlignment="End"/>
+                                                        </VerticalStackLayout>
+                                                        <VerticalStackLayout Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Spacing="6" VerticalOptions="Center">
+                                                            <Button Text="Edit" FontSize="12" HeightRequest="30" Padding="10,0"
+                                                                    BackgroundColor="#7B2FFF" TextColor="White" CornerRadius="8"
+                                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=EditTypeCommand}"
+                                                                    CommandParameter="{Binding .}"/>
+                                                            <Button Text="Hapus" FontSize="12" HeightRequest="30" Padding="10,0"
+                                                                    BackgroundColor="#3A2A2A" TextColor="#FF6B6B" CornerRadius="8"
+                                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=DeleteTypeCommand}"
+                                                                    CommandParameter="{Binding .}"/>
+                                                        </VerticalStackLayout>
+                                                    </Grid>
+                                                </Frame>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+
+                                    <Button Text="+ Tambah Tipe Tiket" FontSize="13" FontAttributes="Bold"
+                                            BackgroundColor="#7B2FFF" TextColor="White" CornerRadius="10" HeightRequest="42"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ShowAddTypeCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Form tambah / edit tipe tiket -->
+            <Frame IsVisible="{Binding IsFormVisible}" BackgroundColor="#1E1E1E" CornerRadius="12" Padding="16"
+                   Margin="0,8,0,0" BorderColor="#7B2FFF" HasShadow="False">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{Binding FormTitle}" FontSize="17" FontAttributes="Bold" TextColor="#39FF14"/>
+
+                    <Entry Text="{Binding FormName}" Placeholder="Nama tipe (mis. Festival / Tribun / Bundling)"
+                           BackgroundColor="#2A2A2A" TextColor="White" PlaceholderColor="#666666"/>
+                    <Entry Text="{Binding FormDescription}" Placeholder="Deskripsi (opsional)"
+                           BackgroundColor="#2A2A2A" TextColor="White" PlaceholderColor="#666666"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Entry Grid.Column="0" Text="{Binding FormPrice}" Placeholder="Harga (Rp)" Keyboard="Numeric"
+                               BackgroundColor="#2A2A2A" TextColor="White" PlaceholderColor="#666666"/>
+                        <Entry Grid.Column="1" Text="{Binding FormStock}" Placeholder="Stok" Keyboard="Numeric"
+                               BackgroundColor="#2A2A2A" TextColor="White" PlaceholderColor="#666666"/>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0" Text="Batal" BackgroundColor="#333333" TextColor="#B0B0B0"
+                                CornerRadius="10" HeightRequest="46" Command="{Binding CancelFormCommand}"/>
+                        <Button Grid.Column="1" Text="Simpan" BackgroundColor="#39FF14" TextColor="Black"
+                                FontAttributes="Bold" CornerRadius="10" HeightRequest="46" Command="{Binding SaveTypeCommand}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

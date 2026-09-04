@@ -1,0 +1,56 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio generated files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+# MSBuild
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUnit / xUnit / MSTest
+*.trx
+
+# Profiling
+*.snap
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Android / MAUI
+*.apk
+*.aab
+*.keystore
+!**/android/app/debug.keystore
+
+# Env files
+*.env
+.env

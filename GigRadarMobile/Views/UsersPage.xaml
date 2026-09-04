@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.UsersPage"
+             x:DataType="vm:UsersViewModel"
+             BackgroundColor="#121212"
+             Title="Users">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="16" RowSpacing="12">
+
+        <Label Grid.Row="0" Text="Semua Pengguna" FontSize="20" FontAttributes="Bold" TextColor="White"/>
+
+        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+        <Label Grid.Row="2" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+               TextColor="#FF6B6B" FontSize="13" HorizontalTextAlignment="Center"/>
+
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Users}" SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:User">
+                    <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="14" Margin="0,4"
+                           BorderColor="#333333" HasShadow="False">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Frame Grid.Column="0" BackgroundColor="#2A2A2A" CornerRadius="24" WidthRequest="48"
+                                   HeightRequest="48" Padding="0" HasShadow="False">
+                                <Label Text="&#x1F465;" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Frame>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="White"
+                                       LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding Email}" FontSize="12" TextColor="#B0B0B0" LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding City}" FontSize="11" TextColor="#666666"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{Binding RoleDisplay}" FontSize="11" FontAttributes="Bold"
+                                   TextColor="{Binding RoleColor}" VerticalOptions="Center" HorizontalTextAlignment="End"/>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

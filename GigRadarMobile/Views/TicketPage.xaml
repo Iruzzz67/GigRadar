@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.TicketPage"
+             x:DataType="vm:TicketViewModel"
+             BackgroundColor="#121212"
+             Title="My Tickets">
+
+    <VerticalStackLayout Spacing="0">
+        <Frame BackgroundColor="#1A1A1A" CornerRadius="0" Padding="16" HasShadow="False">
+            <Label Text="&#x1F3AB; MY TICKETS" FontSize="22" FontAttributes="Bold" TextColor="#39FF14"/>
+        </Frame>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+
+        <CollectionView ItemsSource="{Binding Tickets}" SelectionMode="None" Margin="16,8">
+            <CollectionView.EmptyView>
+                <Label Text="Belum ada tiket" TextColor="#666666" HorizontalOptions="Center" Margin="0,50"/>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Ticket">
+                    <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="0" Margin="0,6"
+                           BorderColor="#333333" HasShadow="False">
+                        <VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,14">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding EventName}" FontSize="16" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="{Binding EventDate}" FontSize="13" TextColor="#B0B0B0"/>
+                                    <Label Text="{Binding VenueName}" FontSize="12" TextColor="#666666"/>
+                                    <Label Text="{Binding TicketType}" FontSize="12" TextColor="#7B2FFF" FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="{Binding PriceFormatted}" FontSize="14" TextColor="#39FF14" FontAttributes="Bold" HorizontalTextAlignment="End"/>
+                                    <Label Text="{Binding Status}" FontSize="11" TextColor="#B0B0B0" HorizontalTextAlignment="End"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Barcode -->
+                            <VerticalStackLayout Padding="16,10" Spacing="6" BackgroundColor="White">
+                                <GraphicsView HeightRequest="56" HorizontalOptions="Fill"
+                                              Drawable="{Binding QRCode, Converter={StaticResource BarcodeDrawableConverter}}"/>
+                                <Label Text="{Binding QrDisplay}" FontSize="9" TextColor="#666666"
+                                       FontFamily="CourierNew" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+
+</ContentPage>

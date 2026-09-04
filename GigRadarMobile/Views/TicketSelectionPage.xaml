@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.TicketSelectionPage"
+             x:DataType="vm:TicketSelectionViewModel"
+             BackgroundColor="#121212"
+             Title="Pilih Tiket">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="14">
+
+            <Label Text="{Binding GigEvent.Name}" FontSize="24" FontAttributes="Bold" TextColor="White"/>
+            <Label Text="{Binding GigEvent.DateFormatted, StringFormat='&#x1F4C5; {0}'}" FontSize="14" TextColor="#B0B0B0"/>
+            <Label Text="Pilih tipe tiket kamu:" FontSize="16" TextColor="#7B2FFF" FontAttributes="Bold" Margin="0,8,0,0"/>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+
+            <Label Text="{Binding StatusMessage}" IsVisible="{Binding HasTypes, Converter={StaticResource InvertedBoolConverter}}" TextColor="#FF6B6B" FontSize="13"/>
+
+            <CollectionView ItemsSource="{Binding TicketTypes}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:EventTicketType">
+                        <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="16" Margin="0,4"
+                               BorderColor="#333333" HasShadow="False" IsEnabled="{Binding IsSoldOut, Converter={StaticResource InvertedBoolConverter}}">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontSize="17" FontAttributes="Bold" TextColor="White"/>
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Description}" FontSize="13" TextColor="#B0B0B0"/>
+                                <Label Grid.Row="2" Grid.Column="0" Text="{Binding StockLabel}" FontSize="12" TextColor="{Binding BadgeColor}"/>
+                                <VerticalStackLayout Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                    <Label Text="{Binding PriceFormatted}" FontSize="15" FontAttributes="Bold" TextColor="#39FF14" HorizontalTextAlignment="End"/>
+                                    <Button Text="Pilih" BackgroundColor="#39FF14" TextColor="Black" FontAttributes="Bold"
+                                            CornerRadius="8" HeightRequest="40"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TicketSelectionViewModel}}, Path=SelectTypeCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Opsi link pembelian eksternal (bila venue/promotor menyediakan) -->
+            <Frame IsVisible="{Binding GigEvent.HasExternalLink}" BackgroundColor="#1E1E1E" CornerRadius="12"
+                   Padding="16" Margin="0,8,0,0" BorderColor="#7B2FFF" HasShadow="False">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="&#x1F517; PEMBELIAN EKSTERNAL" FontSize="13" FontAttributes="Bold" TextColor="#7B2FFF"/>
+                    <Label Text="Penjualan tiket event ini dilakukan melalui situs mitra resmi." FontSize="13" TextColor="#B0B0B0"/>
+                    <Button Text="Beli di Situs Mitra" BackgroundColor="#7B2FFF" TextColor="White" FontAttributes="Bold"
+                            CornerRadius="10" HeightRequest="48"
+                            Command="{Binding OpenExternalLinkCommand}"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

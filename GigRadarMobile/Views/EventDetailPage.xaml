@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.EventDetailPage"
+             x:DataType="vm:EventDetailViewModel"
+             BackgroundColor="#121212"
+             Title="Event Detail">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="14">
+
+            <Label Text="{Binding GigEvent.Name}" FontSize="28" FontAttributes="Bold" TextColor="White"/>
+
+            <Label Text="{Binding GigEvent.StatusLabel}" FontSize="12" FontAttributes="Bold"
+                   TextColor="{Binding GigEvent.StatusColor}" IsVisible="{Binding GigEvent.ShowsStatusBadge}"
+                   HorizontalTextAlignment="Center"/>
+
+            <Frame BackgroundColor="#1E1E1E" CornerRadius="10" Padding="14" HasShadow="False">
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="&#x1F4C5;" FontSize="16"/><Label Text="{Binding GigEvent.DateFormatted}" FontSize="14" TextColor="White"/>
+                        <Label Text="&#x1F551;" FontSize="16"/><Label Text="{Binding GigEvent.TimeFormatted}" FontSize="14" TextColor="#39FF14"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="&#x1F3EA;" FontSize="16"/><Label Text="{Binding GigEvent.VenueName}" FontSize="14" TextColor="#B0B0B0"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="8">
+                        <Label Text="&#x1F3AB;" FontSize="16"/><Label Text="{Binding GigEvent.PriceFormatted}" FontSize="14" TextColor="#39FF14" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label Text="{Binding GigEvent.Description}" FontSize="14" TextColor="#B0B0B0"/>
+
+            <!-- Artists -->
+            <Label Text="&#x1F3A4; LINEUP" FontSize="18" FontAttributes="Bold" TextColor="#7B2FFF"/>
+            <Frame BackgroundColor="#2A2A2A" CornerRadius="8" Padding="10" HasShadow="False">
+                <Label Text="{Binding PlaybackStatus}" FontSize="13" TextColor="#39FF14"/>
+            </Frame>
+
+            <CollectionView ItemsSource="{Binding GigEvent.EventArtists}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:EventArtist">
+                        <Frame BackgroundColor="#1E1E1E" CornerRadius="10" Padding="14" Margin="0,4" BorderColor="#333333" HasShadow="False">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding Artist.Name}" FontSize="16" FontAttributes="Bold" TextColor="White"/>
+                                    <Label Text="{Binding Artist.Genre}" FontSize="13" TextColor="#B0B0B0"/>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="&#x25B6;&#xFE0F;" BackgroundColor="#39FF14" TextColor="Black" WidthRequest="44" HeightRequest="44" CornerRadius="22"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=PlayPreviewCommand}" CommandParameter="{Binding Artist}"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Actions -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8">
+                <Button Grid.Column="0" Text="&#x2764;&#xFE0F; Save" BackgroundColor="#333333" TextColor="White" CornerRadius="10" HeightRequest="50"
+                        Command="{Binding ToggleFavoriteCommand}"/>
+                <Button Grid.Column="1" Text="{Binding BuyButtonText}" BackgroundColor="#39FF14" TextColor="Black" FontAttributes="Bold" CornerRadius="10" HeightRequest="50"
+                        Command="{Binding BuyTicketCommand}"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

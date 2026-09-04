@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="#121212"
+             Title="GigRadar">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+
+            <Label Text="🎸" FontSize="64" HorizontalOptions="Center"/>
+            <Label Text="GigRadar" FontSize="32" FontAttributes="Bold" TextColor="#39FF14" HorizontalOptions="Center"/>
+            <Label Text="Menghubungkan skena, menemukan suara lokal" FontSize="14" TextColor="#B0B0B0" HorizontalOptions="Center"/>
+
+            <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="20" HasShadow="False" Margin="0,20,0,0">
+                <VerticalStackLayout Spacing="14">
+
+                    <Label FontSize="20" FontAttributes="Bold" TextColor="White">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="True">
+                                <Setter Property="Text" Value="Daftar Akun Baru" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="False">
+                                <Setter Property="Text" Value="Masuk" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Entry Text="{Binding Name}" Placeholder="Nama" BackgroundColor="#2A2A2A" TextColor="White" IsVisible="{Binding IsRegister}"/>
+
+                    <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email" BackgroundColor="#2A2A2A" TextColor="White"/>
+
+                    <Entry Text="{Binding Password}" Placeholder="Password" IsPassword="True" BackgroundColor="#2A2A2A" TextColor="White"/>
+
+                    <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+
+                    <Button BackgroundColor="#39FF14" TextColor="Black" FontAttributes="Bold"
+                            CornerRadius="10" HeightRequest="50"
+                            Command="{Binding LoginCommand}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsRegister}" Value="True">
+                                <Setter Property="Text" Value="Daftar" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsRegister}" Value="False">
+                                <Setter Property="Text" Value="Masuk" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <Label TextColor="#7B2FFF" FontSize="14" HorizontalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleModeCommand}"/>
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="True">
+                                <Setter Property="Text" Value="Sudah punya akun? Masuk" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="False">
+                                <Setter Property="Text" Value="Belum punya akun? Daftar" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
