@@ -4,139 +4,105 @@
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
              x:Class="GigRadarMobile.Views.CreateEventPage"
              x:DataType="vm:CreateEventViewModel"
-             BackgroundColor="#121212"
+             BackgroundColor="{StaticResource BackgroundColor}"
              Title="Buat Event Baru">
-
     <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="12">
+        <VerticalStackLayout Padding="18,16,18,30" Spacing="14">
+            <VerticalStackLayout Spacing="3">
+                <Label Text="EVENT SETUP" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1.5"/>
+                <Label Text="Buat event" Style="{StaticResource PageTitle}"/>
+                <Label Text="Isi informasi utama dulu. Detail lainnya bisa kamu lengkapi setelahnya." Style="{StaticResource PageSubtitle}"/>
+            </VerticalStackLayout>
 
-            <Label Text="Lengkapi detail event yang kamu adakan. Event akan langsung tampil di Discover &amp; halaman &quot;Event Saya&quot;."
-                   FontSize="13" TextColor="#B0B0B0"/>
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
+            <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" BackgroundColor="#24161A" BorderColor="#4A252D" CornerRadius="14" Padding="14" HasShadow="False">
+                <Label Text="{Binding StatusMessage}" TextColor="#FDA4AF" FontSize="13"/>
+            </Frame>
 
-            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
-            <Label Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   TextColor="#FF6B6B" FontSize="13" HorizontalTextAlignment="Center"/>
-
-            <!-- ===== Info event ===== -->
-            <Label Text="&#x1F3A4; INFO EVENT" FontSize="13" FontAttributes="Bold" TextColor="#7B2FFF" Margin="0,6,0,0"/>
-
-            <Label Text="Nama Event" FontSize="13" TextColor="#B0B0B0"/>
-            <Entry Text="{Binding EventName}" Placeholder="cth: Gig Akustik Senja di Taman" BackgroundColor="#1E1E1E"
-                   TextColor="White" PlaceholderColor="#666666"/>
-
-            <Label Text="Genre" FontSize="13" TextColor="#B0B0B0"/>
-            <Picker ItemsSource="{Binding GenreNames}" SelectedItem="{Binding SelectedGenreName}" Title="Pilih genre…"
-                    BackgroundColor="#1E1E1E" TextColor="White" TitleColor="#666666" FontSize="15"/>
-
-            <Label Text="Deskripsi" FontSize="13" TextColor="#B0B0B0"/>
-            <Editor Text="{Binding EventDescription}" Placeholder="Ceritakan tentang event ini (line-up, suasana, dll)"
-                    BackgroundColor="#1E1E1E" TextColor="White" PlaceholderColor="#666666" HeightRequest="90"/>
-
-            <Label Text="URL Poster (opsional)" FontSize="13" TextColor="#B0B0B0"/>
-            <Entry Text="{Binding PosterUrl}" Placeholder="https://… (gambar poster event)" BackgroundColor="#1E1E1E"
-                   TextColor="White" PlaceholderColor="#666666" Keyboard="Url"/>
-
-            <!-- ===== Venue ===== -->
-            <Label Text="&#x1F3EA; VENUE / TEMPAT" FontSize="13" FontAttributes="Bold" TextColor="#7B2FFF" Margin="0,6,0,0"/>
-
-            <Label Text="Pilih venue" FontSize="13" TextColor="#B0B0B0"/>
-            <Picker ItemsSource="{Binding VenueNames}" SelectedItem="{Binding SelectedVenueName}" Title="Pilih venue…"
-                    BackgroundColor="#1E1E1E" TextColor="White" TitleColor="#666666" FontSize="15"/>
-
-            <Button Text="🏟️ Venue belum ada? Tambahkan venue baru" BackgroundColor="#333333" TextColor="#FFFFFF"
-                    CornerRadius="10" HeightRequest="44" Command="{Binding ToggleAddVenueCommand}"/>
-
-            <Frame BackgroundColor="#1A1A2E" CornerRadius="12" Padding="14" BorderColor="#7B2FFF" HasShadow="False"
-                   IsVisible="{Binding IsAddingVenue}">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Tambah Venue Baru" FontSize="15" FontAttributes="Bold" TextColor="#39FF14"/>
-                    <Label Text="Venue otomatis tersimpan &amp; dipilih untuk event ini." FontSize="12" TextColor="#B0B0B0"/>
-                    <Entry Text="{Binding NewVenueName}" Placeholder="Nama venue *" BackgroundColor="#2A2A2A"
-                           TextColor="White" PlaceholderColor="#666666"/>
-                    <Entry Text="{Binding NewVenueCity}" Placeholder="Kota" BackgroundColor="#2A2A2A"
-                           TextColor="White" PlaceholderColor="#666666"/>
-                    <Entry Text="{Binding NewVenueAddress}" Placeholder="Alamat" BackgroundColor="#2A2A2A"
-                           TextColor="White" PlaceholderColor="#666666"/>
-                    <Entry Text="{Binding NewVenueCapacity}" Placeholder="Kapasitas venue (opsional)" Keyboard="Numeric"
-                           BackgroundColor="#2A2A2A" TextColor="White" PlaceholderColor="#666666"/>
-                    <Button Text="Simpan Venue" BackgroundColor="#7B2FFF" TextColor="White" FontAttributes="Bold"
-                            CornerRadius="10" HeightRequest="46" Command="{Binding SaveVenueCommand}"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="01  INFO EVENT" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" CharacterSpacing="1"/>
+                    <Entry Text="{Binding EventName}" Placeholder="Nama event" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}" HeightRequest="48"/>
+                    <Picker ItemsSource="{Binding GenreNames}" SelectedItem="{Binding SelectedGenreName}" Title="Pilih genre" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" TitleColor="{StaticResource TextMuted}" FontSize="15" HeightRequest="48"/>
+                    <Editor Text="{Binding EventDescription}" Placeholder="Deskripsi singkat: line-up, suasana, dan highlight event" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}" HeightRequest="100"/>
+                    <Entry Text="{Binding PosterUrl}" Placeholder="URL poster (opsional)" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}" Keyboard="Url" HeightRequest="48"/>
                 </VerticalStackLayout>
             </Frame>
 
-            <!-- ===== Jadwal ===== -->
-            <Label Text="&#x1F4C5; JADWAL" FontSize="13" FontAttributes="Bold" TextColor="#7B2FFF" Margin="0,6,0,0"/>
-
-            <Label Text="Mulai" FontSize="13" TextColor="#B0B0B0"/>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                <DatePicker Grid.Column="0" Date="{Binding StartDate}" Format="dd MMM yyyy"
-                            BackgroundColor="#1E1E1E" TextColor="White" FontSize="14"/>
-                <TimePicker Grid.Column="1" Time="{Binding StartTime}" BackgroundColor="#1E1E1E"
-                            TextColor="White" FontSize="14"/>
-            </Grid>
-
-            <Label Text="Selesai" FontSize="13" TextColor="#B0B0B0"/>
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                <DatePicker Grid.Column="0" Date="{Binding EndDate}" Format="dd MMM yyyy"
-                            BackgroundColor="#1E1E1E" TextColor="White" FontSize="14"/>
-                <TimePicker Grid.Column="1" Time="{Binding EndTime}" BackgroundColor="#1E1E1E"
-                            TextColor="White" FontSize="14"/>
-            </Grid>
-
-            <!-- ===== Harga & kapasitas ===== -->
-            <Label Text="&#x1F39F; TIKET &amp; KAPASITAS" FontSize="13" FontAttributes="Bold" TextColor="#7B2FFF" Margin="0,6,0,0"/>
-
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Label Text="Harga terendah (Rp)" FontSize="12" TextColor="#B0B0B0"/>
-                    <Entry Text="{Binding MinPriceText}" Placeholder="0" Keyboard="Numeric" BackgroundColor="#1E1E1E"
-                           TextColor="White" PlaceholderColor="#666666"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="02  VENUE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" CharacterSpacing="1"/>
+                    <Picker ItemsSource="{Binding VenueNames}" SelectedItem="{Binding SelectedVenueName}" Title="Pilih venue" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" TitleColor="{StaticResource TextMuted}" FontSize="15" HeightRequest="48"/>
+                    <Button Text="＋  Tambahkan venue baru" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleAddVenueCommand}"/>
+                    <Frame BackgroundColor="#19152A" CornerRadius="14" Padding="14" BorderColor="#3B2A6F" HasShadow="False" IsVisible="{Binding IsAddingVenue}">
+                        <VerticalStackLayout Spacing="9">
+                            <Label Text="Venue baru" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                            <Label Text="Venue akan otomatis dipilih untuk event ini." FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <Entry Text="{Binding NewVenueName}" Placeholder="Nama venue *" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            <Entry Text="{Binding NewVenueCity}" Placeholder="Kota" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            <Entry Text="{Binding NewVenueAddress}" Placeholder="Alamat" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            <Entry Text="{Binding NewVenueCapacity}" Placeholder="Kapasitas (opsional)" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            <Button Text="Simpan venue" BackgroundColor="{StaticResource AccentColor}" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding SaveVenueCommand}"/>
+                        </VerticalStackLayout>
+                    </Frame>
                 </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Label Text="Harga tertinggi (Rp)" FontSize="12" TextColor="#B0B0B0"/>
-                    <Entry Text="{Binding MaxPriceText}" Placeholder="0" Keyboard="Numeric" BackgroundColor="#1E1E1E"
-                           TextColor="White" PlaceholderColor="#666666"/>
+            </Frame>
+
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="03  JADWAL" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" CharacterSpacing="1"/>
+                    <Label Text="Mulai" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <DatePicker Grid.Column="0" Date="{Binding StartDate}" Format="dd MMM yyyy" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" FontSize="14"/>
+                        <TimePicker Grid.Column="1" Time="{Binding StartTime}" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" FontSize="14"/>
+                    </Grid>
+                    <Label Text="Selesai" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <DatePicker Grid.Column="0" Date="{Binding EndDate}" Format="dd MMM yyyy" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" FontSize="14"/>
+                        <TimePicker Grid.Column="1" Time="{Binding EndTime}" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" FontSize="14"/>
+                    </Grid>
                 </VerticalStackLayout>
-            </Grid>
+            </Frame>
 
-            <Label Text="Kapasitas penonton" FontSize="13" TextColor="#B0B0B0"/>
-            <Entry Text="{Binding CapacityText}" Placeholder="cth: 500" Keyboard="Numeric" BackgroundColor="#1E1E1E"
-                   TextColor="White" PlaceholderColor="#666666"/>
-
-            <Label Text="Link pembelian eksternal (opsional)" FontSize="13" TextColor="#B0B0B0"/>
-            <Entry Text="{Binding TicketLink}" Placeholder="https://loket.com/… (bila jual tiket di luar app)"
-                   BackgroundColor="#1E1E1E" TextColor="White" PlaceholderColor="#666666" Keyboard="Url"/>
-            <Label Text="Bila diisi, tombol Beli di detail event akan membuka link ini (tidak pakai tipe tiket di app)."
-                   FontSize="11" TextColor="#888888"/>
-
-            <!-- ===== Status & lokasi ===== -->
-            <Label Text="&#x1F3ED; STATUS &amp; LOKASI" FontSize="13" FontAttributes="Bold" TextColor="#7B2FFF" Margin="0,6,0,0"/>
-
-            <Label Text="Status" FontSize="13" TextColor="#B0B0B0"/>
-            <Picker ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding SelectedStatus}"
-                    BackgroundColor="#1E1E1E" TextColor="White" FontSize="15"/>
-
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Label Text="Latitude" FontSize="12" TextColor="#B0B0B0"/>
-                    <Entry Text="{Binding LatText}" Keyboard="Numeric" BackgroundColor="#1E1E1E"
-                           TextColor="White" PlaceholderColor="#666666"/>
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="04  TIKET &amp; KAPASITAS" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" CharacterSpacing="1"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Harga mulai" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <Entry Text="{Binding MinPriceText}" Placeholder="Rp 0" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Harga tertinggi" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <Entry Text="{Binding MaxPriceText}" Placeholder="Rp 0" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Entry Text="{Binding CapacityText}" Placeholder="Kapasitas penonton" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                    <Entry Text="{Binding TicketLink}" Placeholder="Link pembelian eksternal (opsional)" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}" Keyboard="Url"/>
+                    <Label Text="Jika diisi, tombol beli di detail event akan membuka link tersebut." FontSize="11" TextColor="{StaticResource TextMuted}"/>
                 </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Label Text="Longitude" FontSize="12" TextColor="#B0B0B0"/>
-                    <Entry Text="{Binding LngText}" Keyboard="Numeric" BackgroundColor="#1E1E1E"
-                           TextColor="White" PlaceholderColor="#666666"/>
+            </Frame>
+
+            <Frame Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="05  STATUS &amp; LOKASI" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" CharacterSpacing="1"/>
+                    <Picker ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding SelectedStatus}" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" FontSize="15" HeightRequest="48"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                            <Label Text="Latitude" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <Entry Text="{Binding LatText}" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Longitude" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <Entry Text="{Binding LngText}" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Label Text="Koordinat mengikuti venue terpilih dan digunakan untuk posisi event di peta." FontSize="11" TextColor="{StaticResource TextMuted}"/>
                 </VerticalStackLayout>
-            </Grid>
-            <Label Text="Koordinat otomatis mengikuti venue terpilih (default: Jakarta). Dipakai untuk posisi di peta Map."
-                   FontSize="11" TextColor="#888888"/>
+            </Frame>
 
-            <!-- ===== Simpan ===== -->
-            <Button Text="🚀 Terbitkan Event" BackgroundColor="#39FF14" TextColor="Black" FontAttributes="Bold"
-                    CornerRadius="10" HeightRequest="52" Margin="0,12,0,0" Command="{Binding SaveEventCommand}"/>
-            <ActivityIndicator IsRunning="{Binding IsSaving}" IsVisible="{Binding IsSaving}" Color="#39FF14"/>
-
+            <Button Text="Terbitkan event  →" BackgroundColor="{StaticResource PrimaryColor}" TextColor="Black" FontAttributes="Bold" CornerRadius="14" HeightRequest="54" Margin="0,4,0,0" Command="{Binding SaveEventCommand}"/>
+            <ActivityIndicator IsRunning="{Binding IsSaving}" IsVisible="{Binding IsSaving}" Color="{StaticResource PrimaryColor}"/>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
