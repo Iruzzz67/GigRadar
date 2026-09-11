@@ -18,8 +18,7 @@ Project terdiri dari **3 komponen utama** dalam satu direktori:
 | `GigRadarLauncher` | Launcher console | .NET Console (.NET 8) | Windows — menjalankan API + membuka Swagger |
 
 File pendukung di root:
-- `GigRadarLauncher.exe` — hasil publish launcher
-- `StartGigRadar.bat` — shortcut menjalankan launcher (API + Swagger)
+- `StartGigRadar.bat` — shortcut menjalankan launcher (API + Swagger) via `dotnet run`
 - `StartMobileApp.bat` — shortcut menjalankan build Windows app
 - `GIGRADAR_MOBILE_APP_NET_MAUI.md` — dokumen desain/visi produk lengkap
 - `GIGRADAR_MULTIPLATFORM_FIX.md` — panduan perbaikan arsitektur multi-platform
@@ -327,7 +326,7 @@ Semua aksi kelola wajib role **EO/Admin** dan **hanya event milik sendiri** (Adm
 4. Menekan tombol apa pun → server dimatikan.
 
 Script di root:
-- `StartGigRadar.bat` → menjalankan `GigRadarLauncher.exe`
+- `StartGigRadar.bat` → menjalankan launcher via `dotnet run --project GigRadarLauncher\GigRadarLauncher`
 - `StartMobileApp.bat` → `cd` ke `GigRadarMobile\bin\Debug\net10.0-windows10.0.19041.0\win-x64` lalu menjalankan `GigRadarMobile.exe`
 
 ---
@@ -339,7 +338,7 @@ Script di root:
 dotnet run --project GigRadarApi --urls http://localhost:5000
 
 # 2) Atau via Launcher (Windows)
-./GigRadarLauncher.exe        # atau double-click StartGigRadar.bat
+StartGigRadar.bat            # atau: dotnet run --project GigRadarLauncher\GigRadarLauncher
 
 # 3) Mobile app (Windows)
 dotnet build GigRadarMobile -f net10.0-windows10.0.19041.0

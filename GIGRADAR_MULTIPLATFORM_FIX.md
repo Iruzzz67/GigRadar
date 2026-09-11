@@ -792,7 +792,7 @@ Jangan memasukkan SDK peta khusus Windows/Android ke halaman utama jika belum di
 ```text
 StartGigRadar.bat
        ↓
-GigRadarLauncher.exe
+dotnet run --project GigRadarLauncher
        ↓
 GigRadarApi
        ↓
