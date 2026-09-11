@@ -58,10 +58,10 @@ namespace GigRadarMobile.Services
             return (true, result.Message, result.Token, result.User);
         }
 
-        /// <summary>Registrasi publik — role selalu ditentukan server ("User"), client tidak mengirim role.</summary>
-        public async Task<(bool Success, string Message, string? Token, User? User)> RegisterAsync(string name, string email, string password)
+        /// <summary>Registrasi publik — role tetap "User"; Artist/EO masuk status Pending menunggu verifikasi admin (§25).</summary>
+        public async Task<(bool Success, string Message, string? Token, User? User)> RegisterAsync(string name, string email, string password, string? requestedRole = null)
         {
-            var result = await PostAsync<RegisterResponse>("/api/auth/register", new { name, email, password });
+            var result = await PostAsync<RegisterResponse>("/api/auth/register", new { name, email, password, requestedRole });
             if (result?.Token == null) return (false, result?.Message ?? "Register failed", null, null);
             SetAuthToken(result.Token);
             return (true, result.Message, result.Token, result.User);
@@ -418,6 +418,39 @@ namespace GigRadarMobile.Services
             return response.IsSuccessStatusCode;
         }
 
+        // ── Role requests (Admin) ───────────────────────
+
+        /// <summary>Daftar permohonan role — khusus Admin (GET /api/users/role-requests).</summary>
+        public async Task<List<RoleRequestItem>> GetRoleRequestsAsync(string status = "Pending")
+        {
+            return await GetAsync<List<RoleRequestItem>>($"/api/users/role-requests?status={status}") ?? new();
+        }
+
+        /// <summary>Admin menyetujui permohonan role (POST /api/users/role-requests/{id}/approve).</summary>
+        public async Task<(bool Success, string Message)> ApproveRoleRequestAsync(int requestId)
+        {
+            return await PostRoleRequestActionAsync($"/api/users/role-requests/{requestId}/approve");
+        }
+
+        /// <summary>Admin menolak permohonan role (POST /api/users/role-requests/{id}/reject).</summary>
+        public async Task<(bool Success, string Message)> RejectRoleRequestAsync(int requestId)
+        {
+            return await PostRoleRequestActionAsync($"/api/users/role-requests/{requestId}/reject");
+        }
+
+        private async Task<(bool Success, string Message)> PostRoleRequestActionAsync(string url)
+        {
+            var response = await _http.PostAsync(url, content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                var err = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+                return (false, err?.Message ?? "Gagal memproses permohonan");
+            }
+            var ok = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return (true, ok?.Message ?? "Berhasil");
+        }
+
         // ── Genres ────────────────────────────────────────
 
         public async Task<List<Genre>> GetGenresAsync()
@@ -515,5 +548,29 @@ namespace GigRadarMobile.Services
             public string Token { get; set; } = "";
             public User? User { get; set; }
         }
+
+        private class ApiErrorMessage
+        {
+            public string Message { get; set; } = "";
+        }
+    }
+
+    /// <summary>Baris permohonan role untuk konsol Admin (GET /api/users/role-requests).</summary>
+    public class RoleRequestItem
+    {
+        public int RequestId { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; } = "";
+        public string UserEmail { get; set; } = "";
+        public string RequestedRole { get; set; } = "";
+        public string Status { get; set; } = "Pending";
+        public DateTime CreatedAt { get; set; }
+
+        public string RequestedRoleDisplay => RequestedRole switch
+        {
+            "EO" => "Event Organizer",
+            "Artist" => "Artist",
+            _ => RequestedRole
+        };
     }
 }

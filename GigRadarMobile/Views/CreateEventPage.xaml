@@ -33,7 +33,7 @@
                 <VerticalStackLayout Spacing="12">
                     <Label Text="02  VENUE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" CharacterSpacing="1"/>
                     <Picker ItemsSource="{Binding VenueNames}" SelectedItem="{Binding SelectedVenueName}" Title="Pilih venue" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" TitleColor="{StaticResource TextMuted}" FontSize="15" HeightRequest="48"/>
-                    <Button Text="＋  Tambahkan venue baru" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleAddVenueCommand}"/>
+                    <Button Text="Tambah venue baru" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleAddVenueCommand}"/>
                     <Frame BackgroundColor="#19152A" CornerRadius="14" Padding="14" BorderColor="#3B2A6F" HasShadow="False" IsVisible="{Binding IsAddingVenue}">
                         <VerticalStackLayout Spacing="9">
                             <Label Text="Venue baru" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
@@ -42,7 +42,7 @@
                             <Entry Text="{Binding NewVenueCity}" Placeholder="Kota" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                             <Entry Text="{Binding NewVenueAddress}" Placeholder="Alamat" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                             <Entry Text="{Binding NewVenueCapacity}" Placeholder="Kapasitas (opsional)" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
-                            <Button Text="Simpan venue" BackgroundColor="{StaticResource AccentColor}" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding SaveVenueCommand}"/>
+                            <Button Text="Simpan venue" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding SaveVenueCommand}"/>
                         </VerticalStackLayout>
                     </Frame>
                 </VerticalStackLayout>
@@ -97,11 +97,12 @@
                             <Entry Text="{Binding LngText}" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                         </VerticalStackLayout>
                     </Grid>
+                    <Button Text="📍 Gunakan lokasi saya" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="40" Command="{Binding UseCurrentLocationCommand}"/>
                     <Label Text="Koordinat mengikuti venue terpilih dan digunakan untuk posisi event di peta." FontSize="11" TextColor="{StaticResource TextMuted}"/>
                 </VerticalStackLayout>
             </Frame>
 
-            <Button Text="Terbitkan event  →" BackgroundColor="{StaticResource PrimaryColor}" TextColor="Black" FontAttributes="Bold" CornerRadius="14" HeightRequest="54" Margin="0,4,0,0" Command="{Binding SaveEventCommand}"/>
+            <Button Text="Terbitkan event →" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="14" HeightRequest="54" Margin="0,4,0,0" Command="{Binding SaveEventCommand}"/>
             <ActivityIndicator IsRunning="{Binding IsSaving}" IsVisible="{Binding IsSaving}" Color="{StaticResource PrimaryColor}"/>
         </VerticalStackLayout>
     </ScrollView>

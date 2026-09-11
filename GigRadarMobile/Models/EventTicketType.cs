@@ -13,6 +13,6 @@ namespace GigRadarMobile.Models
         public string PriceFormatted => $"Rp {Price:N0}";
         public bool IsSoldOut => Stock <= 0;
         public string StockLabel => IsSoldOut ? "SOLD OUT" : $"Sisa {Stock} tiket";
-        public string BadgeColor => IsSoldOut ? "#555555" : "#39FF14";
+        public Color StockColor => IsSoldOut ? Color.FromArgb("#F43F5E") : Color.FromArgb("#22C55E");
     }
 }

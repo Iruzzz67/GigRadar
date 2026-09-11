@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GigRadarMobile.Helpers;
@@ -13,21 +14,67 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
+        private const double DefaultLat = -6.2088;
+        private const double DefaultLng = 106.8456;
+
         [ObservableProperty] private GigEvent? _gigEvent;
         [ObservableProperty] private Artist? _selectedArtist;
-        [ObservableProperty] private string _playbackStatus = "Tap to play preview";
+        [ObservableProperty] private string _playbackStatus = "Tap untuk preview lagu";
         [ObservableProperty] private bool _isFavorited;
+        [ObservableProperty] private string _favoriteLabel = "Simpan";
+        [ObservableProperty] private string _distanceLabel = "";
+        [ObservableProperty] private bool _isBuyable;
+        [ObservableProperty] private ObservableCollection<EventTicketType> _ticketTypes = new();
+        [ObservableProperty] private bool _hasTicketTypes;
 
-        /// <summary>Teks tombol beli — menyesuaikan status event (habis/selesai/belum tersedia).</summary>
-        public string BuyButtonText => GigEvent?.Status switch
+        public string BuyButtonText
         {
-            "SoldOut" => "Tiket Habis",
-            "Completed" => "Event Selesai",
-            "Draft" => "Belum Tersedia",
-            _ => "🎫 Buy Ticket"
-        };
+            get
+            {
+                if (GigEvent == null) return "Beli Tiket";
+                return GigEvent.Status switch
+                {
+                    "SoldOut" => "Tiket Habis",
+                    "Completed" => "Event Selesai",
+                    "Draft" => "Belum Tersedia",
+                    _ => GigEvent.HasExternalLink ? "Beli di Loket" : "Beli Tiket"
+                };
+            }
+        }
 
-        partial void OnGigEventChanged(GigEvent? value) => OnPropertyChanged(nameof(BuyButtonText));
+        public string PriceFromLabel
+        {
+            get
+            {
+                if (GigEvent == null) return "";
+                return GigEvent.MinPrice == GigEvent.MaxPrice
+                    ? GigEvent.PriceFormatted
+                    : $"Mulai {GigEvent.MinPrice:N0}";
+            }
+        }
+
+        public string PriceCaption => GigEvent?.MinPrice == GigEvent?.MaxPrice ? "Tiket" : "Tiket mulai dari";
+
+        public bool ShowPriceFallback => GigEvent != null && !GigEvent.HasExternalLink && !HasTicketTypes;
+
+        partial void OnGigEventChanged(GigEvent? value)
+        {
+            OnPropertyChanged(nameof(BuyButtonText));
+            OnPropertyChanged(nameof(PriceFromLabel));
+            OnPropertyChanged(nameof(PriceCaption));
+            OnPropertyChanged(nameof(ShowPriceFallback));
+
+            if (value == null) return;
+
+            IsBuyable = value.Status == "Published";
+            DistanceLabel = $"{GeoHelper.FormatKm(GeoHelper.HaversineKm(DefaultLat, DefaultLng, value.Latitude, value.Longitude))} dari kamu";
+
+            // Muat tipe tiket (hanya bila tidak dijual via link eksternal).
+            if (!value.HasExternalLink)
+            {
+                _ = LoadTicketTypesAsync(value.EventId);
+            }
+        }
 
         public EventDetailViewModel(ApiService api, AuthService auth)
         {
@@ -35,12 +82,28 @@ namespace GigRadarMobile.ViewModels
             _auth = auth;
         }
 
+        private async Task LoadTicketTypesAsync(int eventId)
+        {
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var types = await _api.GetEventTicketTypesAsync(eventId);
+                TicketTypes = new ObservableCollection<EventTicketType>(types);
+                HasTicketTypes = TicketTypes.Count > 0;
+            }
+            catch
+            {
+                HasTicketTypes = false;
+            }
+            OnPropertyChanged(nameof(ShowPriceFallback));
+        }
+
         [RelayCommand]
         private async Task PlayPreviewAsync(Artist? artist)
         {
             if (artist == null || artist.Tracks.Count == 0)
             {
-                PlaybackStatus = "No preview available";
+                PlaybackStatus = "Preview belum tersedia";
                 return;
             }
 
@@ -49,11 +112,11 @@ namespace GigRadarMobile.ViewModels
 
             if (string.IsNullOrWhiteSpace(track.AudioUrl))
             {
-                PlaybackStatus = "No preview available";
+                PlaybackStatus = "Preview belum tersedia";
                 return;
             }
 
-            PlaybackStatus = $"Playing: {track.Title}";
+            PlaybackStatus = $"Memutar: {track.Title}";
             await Launcher.OpenAsync(track.AudioUrl);
         }
 
@@ -66,11 +129,33 @@ namespace GigRadarMobile.ViewModels
                 _api.SetAuthToken(_auth.GetToken());
                 await _api.ToggleFavoriteAsync(GigEvent.EventId);
                 IsFavorited = !IsFavorited;
+                FavoriteLabel = IsFavorited ? "Tersimpan" : "Simpan";
             }
             catch (Exception ex)
             {
                 await Alerts.ShowAsync("Error", ex.Message);
             }
+        }
+
+        [RelayCommand]
+        private async Task ShareAsync()
+        {
+            if (GigEvent == null) return;
+            var text = $"{GigEvent.Name} — {GigEvent.DateFormatted} di {GigEvent.VenueName}. " +
+                       $"{GigEvent.PriceFormatted}. Temukan di GIGRADAR.";
+            await Share.Default.RequestAsync(new ShareTextRequest
+            {
+                Title = GigEvent.Name,
+                Text = text
+            });
+        }
+
+        [RelayCommand]
+        private async Task OpenMapsAsync()
+        {
+            if (GigEvent == null) return;
+            var url = $"https://www.google.com/maps?q={GigEvent.Latitude},{GigEvent.Longitude}";
+            await Launcher.OpenAsync(url);
         }
 
         [RelayCommand]
@@ -115,5 +200,11 @@ namespace GigRadarMobile.ViewModels
             await Shell.Current.GoToAsync(nameof(ArtistDetailPage),
                 new Dictionary<string, object> { { "Artist", artist } });
         }
+
+        [RelayCommand]
+        private async Task GoBackAsync()
+        {
+            await Shell.Current.GoToAsync("..");
+        }
     }
-}
+}

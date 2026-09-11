@@ -17,8 +17,8 @@
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
             <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   BackgroundColor="#24161A" BorderColor="#4A252D" CornerRadius="14" Padding="14" HasShadow="False">
-                <Label Text="{Binding StatusMessage}" TextColor="#FDA4AF" FontSize="13"/>
+                   BackgroundColor="#2A1219" BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                <Label Text="{Binding StatusMessage}" TextColor="{StaticResource DangerColor}" FontSize="13"/>
             </Frame>
 
             <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">

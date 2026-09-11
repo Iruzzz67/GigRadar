@@ -24,6 +24,7 @@ File pendukung di root:
 - `GIGRADAR_MOBILE_APP_NET_MAUI.md` — dokumen desain/visi produk lengkap
 - `GIGRADAR_MULTIPLATFORM_FIX.md` — panduan perbaikan arsitektur multi-platform
 - `REKAPAN_PROJECT.md` — rekapan versi sebelumnya (beberapa bagian sudah usang)
+- `GIGRADAR_DESIGN_SYSTEM.md` — **design architecture pass + design system** (token warna, tipografi Space Grotesk/Inter, komponen, spesifikasi Radar native) |
 
 **Catatan deviasi penting:** dokumen desain menyebut PostgreSQL, namun implementasi backend menggunakan **SQLite** (file `GigRadarApi/GigRadar.db`).
 
@@ -254,7 +255,8 @@ Buka App
 | **HomePage** ("Discover") | Pull-to-refresh; seksi: 🎯 Recommended, 🌙 Tonight, 📅 This Weekend, 📍 Nearby; **hanya menampilkan event Published/SoldOut** (Draft & Completed disembunyikan), badge "Tiket Habis" untuk SoldOut; card tap → detail event |
 | **EventDetailPage** | Info event, seksi LINEUP (artis + tombol ▶ preview), tombol ❤️ Save, tombol **🎫 Buy Ticket** (atau "Tiket Habis"/"Event Selesai" + badge status bila SoldOut/Completed) |
 | **ArtistDetailPage** | Nama, genre, bio, daftar TRACKS + tombol ▶ preview + status playback |
-| **MapPage** | Daftar "NEARBY GIGS"; tombol 🗺 Map membuka **Google Maps eksternal** via Launcher |
+| **ExplorePage** (baru) | **Search & filter** (tab ke-2): cari event/artis/venue (as-you-type), filter genre · tanggal · radius, **switch tampilan List / Grid / Radar** (Radar memakai visualisasi node yang sama dengan halaman Radar) |
+| **RadarPage** (ex-MapPage) | Halaman **Radar** (tab ke-3): visualisasi node event di sekitar user (GraphicsView), filter genre/radius/"malam ini", preview event terpilih, list "Gig terdekat" + buka Google Maps eksternal |
 | **TicketPage** ("My Tickets") | Daftar tiket user: event, tanggal, tipe, harga, **barcode visual per tiket** |
 | **TicketSelectionPage** | Tahap 1 pembelian: pilih tipe tiket (Festival/Tribun/Bundling) dengan harga & sisa stok; **SOLD OUT** untuk stok 0 |
 | **CheckoutPage** | Tahap 2 pembelian: ringkasan pesanan + form **Nama Lengkap, No. Telepon, Email, Tanggal Lahir** (prefill dari akun, bisa diedit) + tombol **Bayar Sekarang** (pembayaran simulasi) |
@@ -297,7 +299,7 @@ Catatan: pembayaran masih **simulasi** (belum ada gateway seperti Midtrans/Xendi
 - **Map** belum memakai kontrol peta native — daftar + tautan eksternal Google Maps (default koordinat Jakarta).
 - **Base URL API** (`Services/ApiConfiguration.cs`): `http://10.0.2.2:5000` di Android emulator, `http://localhost:5000` di Windows/iOS/Mac. IP perlu diganti manual untuk device fisik.
 - **Audio preview** hanya tombol + status playback — belum streaming lagu sungguhan.
-- **Tema**: dark `#121212`, aksen neon hijau `#39FF14`, ungu `#7B2FFF`, kartu `#1E1E1E`.
+- **Tema**: dark zinc `#0A0A0B`, aksen "signal lime" `#A3FF12`, kartu `#18181B`, tipografi Space Grotesk (display) + Inter (body). Lihat `GIGRADAR_DESIGN_SYSTEM.md`.
 
 ---
 

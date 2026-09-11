@@ -5,49 +5,59 @@
              xmlns:models="clr-namespace:GigRadarMobile.Models"
              x:Class="GigRadarMobile.Views.TicketPage"
              x:DataType="vm:TicketViewModel"
-             BackgroundColor="#121212"
+             BackgroundColor="{StaticResource BackgroundColor}"
              Title="My Tickets">
 
     <VerticalStackLayout Spacing="0">
-        <Frame BackgroundColor="#1A1A1A" CornerRadius="0" Padding="16" HasShadow="False">
-            <Label Text="&#x1F3AB; MY TICKETS" FontSize="22" FontAttributes="Bold" TextColor="#39FF14"/>
-        </Frame>
+        <VerticalStackLayout Padding="20,16,20,4" Spacing="4">
+            <Label Text="TIKETS" Style="{StaticResource Eyebrow}"/>
+            <Label Text="Tiketku" Style="{StaticResource PageTitle}"/>
+        </VerticalStackLayout>
 
-        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20"/>
 
-        <CollectionView ItemsSource="{Binding Tickets}" SelectionMode="None" Margin="16,8">
+        <CollectionView ItemsSource="{Binding Tickets}" SelectionMode="None" Margin="20,8,20,20">
             <CollectionView.EmptyView>
-                <Label Text="Belum ada tiket" TextColor="#666666" HorizontalOptions="Center" Margin="0,50"/>
+                <VerticalStackLayout Spacing="8" Padding="0,60">
+                    <Label Text="Belum ada tiket" Style="{StaticResource Subheading}" HorizontalTextAlignment="Center"/>
+                    <Label Text="Temukan gig di Discover atau Radar, lalu beli tiket pertamamu."
+                           Style="{StaticResource Body}" FontSize="12" HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
             </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:Ticket">
-                    <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="0" Margin="0,6"
-                           BorderColor="#333333" HasShadow="False">
+                    <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
+                            StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="0" Margin="0,7">
                         <VerticalStackLayout>
 
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,14">
                                 <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                    <Label Text="{Binding EventName}" FontSize="16" FontAttributes="Bold" TextColor="White"/>
-                                    <Label Text="{Binding EventDate}" FontSize="13" TextColor="#B0B0B0"/>
-                                    <Label Text="{Binding VenueName}" FontSize="12" TextColor="#666666"/>
-                                    <Label Text="{Binding TicketType}" FontSize="12" TextColor="#7B2FFF" FontAttributes="Bold"/>
+                                    <Label Text="{Binding EventName}" Style="{StaticResource Subheading}"
+                                           MaxLines="2" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding EventDate}" Style="{StaticResource Caption}"/>
+                                    <Label Text="{Binding VenueName}" Style="{StaticResource Meta}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding TicketType}" Style="{StaticResource Meta}"
+                                               FontFamily="InterSemiBold" TextColor="{StaticResource PrimaryColor}"/>
+                                        <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                                        <Label Text="{Binding Status}" Style="{StaticResource Meta}"/>
+                                    </HorizontalStackLayout>
                                 </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center" HorizontalOptions="End">
-                                    <Label Text="{Binding PriceFormatted}" FontSize="14" TextColor="#39FF14" FontAttributes="Bold" HorizontalTextAlignment="End"/>
-                                    <Label Text="{Binding Status}" FontSize="11" TextColor="#B0B0B0" HorizontalTextAlignment="End"/>
-                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
+                                       FontSize="14" TextColor="{StaticResource PrimaryColor}"
+                                       VerticalOptions="Center" HorizontalTextAlignment="End"/>
                             </Grid>
 
                             <!-- Barcode -->
                             <VerticalStackLayout Padding="16,10" Spacing="6" BackgroundColor="White">
                                 <GraphicsView HeightRequest="56" HorizontalOptions="Fill"
                                               Drawable="{Binding QRCode, Converter={StaticResource BarcodeDrawableConverter}}"/>
-                                <Label Text="{Binding QrDisplay}" FontSize="9" TextColor="#666666"
-                                       FontFamily="CourierNew" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding QrDisplay}" FontFamily="SpaceGroteskMedium" FontSize="9" TextColor="#666666"
+                                       HorizontalTextAlignment="Center"/>
                             </VerticalStackLayout>
 
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

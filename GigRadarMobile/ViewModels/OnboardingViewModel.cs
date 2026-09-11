@@ -46,10 +46,11 @@ namespace GigRadarMobile.ViewModels
         [RelayCommand]
         private void ToggleGenre(Genre genre)
         {
-            if (SelectedGenreIds.Contains(genre.GenreId))
-                SelectedGenreIds.Remove(genre.GenreId);
-            else
+            genre.IsSelected = !genre.IsSelected;
+            if (genre.IsSelected)
                 SelectedGenreIds.Add(genre.GenreId);
+            else
+                SelectedGenreIds.Remove(genre.GenreId);
         }
 
         [RelayCommand]

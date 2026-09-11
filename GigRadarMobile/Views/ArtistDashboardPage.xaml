@@ -20,7 +20,7 @@
                     <Label Text="ARTIST PROFILE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
                     <Label Text="Bangun karier. Temukan gig.&#10;Terhubung dengan lebih banyak audience." FontSize="24" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" LineHeight="1.05"/>
                     <Label Text="{Binding UserRole}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-                    <Button Text="Lengkapi profil →" HeightRequest="44" CornerRadius="12" BackgroundColor="{StaticResource PrimaryColor}" TextColor="#09090B" FontAttributes="Bold"/>
+                    <Button Text="Lengkapi profil →" HeightRequest="44" CornerRadius="12" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold"/>
                 </VerticalStackLayout>
             </Frame>
 

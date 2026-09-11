@@ -3,39 +3,70 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
              xmlns:models="clr-namespace:GigRadarMobile.Models"
+             xmlns:services="clr-namespace:GigRadarMobile.Services"
              x:Class="GigRadarMobile.Views.UsersPage"
              x:DataType="vm:UsersViewModel"
-             BackgroundColor="#121212"
+             BackgroundColor="{StaticResource BackgroundColor}"
              Title="Users">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="16" RowSpacing="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="20,20,20,0" RowSpacing="12">
 
-        <Label Grid.Row="0" Text="Semua Pengguna" FontSize="20" FontAttributes="Bold" TextColor="White"/>
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="ADMIN" Style="{StaticResource Eyebrow}"/>
+            <Label Text="Semua pengguna" Style="{StaticResource PageTitle}"/>
+        </VerticalStackLayout>
 
-        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
-        <Label Grid.Row="2" Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-               TextColor="#FF6B6B" FontSize="13" HorizontalTextAlignment="Center"/>
+        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+        <Label Grid.Row="2" Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
+               IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+               HorizontalTextAlignment="Center"/>
 
-        <CollectionView Grid.Row="3" ItemsSource="{Binding Users}" SelectionMode="None">
+        <!-- Permohonan role menunggu verifikasi (§25) -->
+        <VerticalStackLayout Grid.Row="3" Spacing="8" IsVisible="{Binding HasRoleRequests}">
+            <Label Text="PERMINTAAN PERAN MENUNGGU VERIFIKASI" Style="{StaticResource Eyebrow}" TextColor="{StaticResource WarningColor}"/>
+            <CollectionView ItemsSource="{Binding RoleRequests}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="services:RoleRequestItem">
+                        <Border Style="{StaticResource CardBorder}" Padding="14" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding UserName}" Style="{StaticResource Subheading}" FontSize="15"/>
+                                    <Label Text="{Binding UserEmail}" Style="{StaticResource Caption}" FontSize="12"/>
+                                    <Label Text="{Binding RequestedRoleDisplay}" Style="{StaticResource Meta}" TextColor="{StaticResource WarningColor}"/>
+                                </VerticalStackLayout>                                <Button Grid.Column="1" Text="Tolak" Style="{StaticResource Chip}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=RejectCommand}" CommandParameter="{Binding .}"/>
+                                <Button Grid.Column="2" Text="Setujui" Style="{StaticResource Chip}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=ApproveCommand}" CommandParameter="{Binding .}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+
+        <!-- Daftar seluruh user -->
+        <CollectionView Grid.Row="4" ItemsSource="{Binding Users}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:User">
-                    <Frame BackgroundColor="#1E1E1E" CornerRadius="12" Padding="14" Margin="0,4"
-                           BorderColor="#333333" HasShadow="False">
+                    <Border Style="{StaticResource CardBorder}" Padding="14" Margin="0,0,0,8">
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                            <Frame Grid.Column="0" BackgroundColor="#2A2A2A" CornerRadius="24" WidthRequest="48"
-                                   HeightRequest="48" Padding="0" HasShadow="False">
-                                <Label Text="&#x1F465;" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
-                            </Frame>
+                            <Border Grid.Column="0" WidthRequest="44" HeightRequest="44" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                                <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="14"
+                                       TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
                             <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
-                                <Label Text="{Binding Name}" FontSize="15" FontAttributes="Bold" TextColor="White"
-                                       LineBreakMode="TailTruncation"/>
-                                <Label Text="{Binding Email}" FontSize="12" TextColor="#B0B0B0" LineBreakMode="TailTruncation"/>
-                                <Label Text="{Binding City}" FontSize="11" TextColor="#666666"/>
+                                <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="15"
+                                       MaxLines="1" LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding Email}" Style="{StaticResource Caption}" FontSize="12"
+                                       MaxLines="1" LineBreakMode="TailTruncation"/>
+                                <Label Text="{Binding City}" Style="{StaticResource Meta}"/>
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="{Binding RoleDisplay}" FontSize="11" FontAttributes="Bold"
-                                   TextColor="{Binding RoleColor}" VerticalOptions="Center" HorizontalTextAlignment="End"/>
+                            <Label Grid.Column="2" Text="{Binding RoleDisplay}" Style="{StaticResource Meta}" FontSize="11"
+                                   FontFamily="InterSemiBold" TextColor="{Binding RoleColor}"
+                                   VerticalOptions="Center" HorizontalTextAlignment="End"/>
                         </Grid>
-                    </Frame>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

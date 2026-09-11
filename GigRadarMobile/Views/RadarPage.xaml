@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
+             x:Class="GigRadarMobile.Views.RadarPage"
+             x:DataType="vm:RadarViewModel"
+             Shell.NavBarIsVisible="False"
+             Title="Radar">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- ===== Header + filters ===== -->
+        <VerticalStackLayout Grid.Row="0" Padding="20,16,20,4" Spacing="14">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="RADAR" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="{Binding CityLabel}" Style="{StaticResource PageTitle}"/>
+                </VerticalStackLayout>
+                <Label Grid.Column="1" Text="{Binding CountLabel}" Style="{StaticResource Caption}" VerticalOptions="End"/>
+            </Grid>
+
+            <!-- Genre chips -->
+            <CollectionView ItemsSource="{Binding GenreFilters}" HeightRequest="40"
+                            ItemsLayout="HorizontalList" HorizontalScrollBarVisibility="Never">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:GenreFilterItem">
+                        <Button Text="{Binding Name}" Margin="0,0,8,0" Padding="16,8" HeightRequest="38"
+                                CornerRadius="999" FontSize="13" FontFamily="InterMedium"
+                                BackgroundColor="{StaticResource CardElevatedColor}"
+                                TextColor="{StaticResource TextSecondary}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=SelectGenreCommand}"
+                                CommandParameter="{Binding Name}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                    <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Radius + malam ini -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <HorizontalStackLayout Grid.Column="0" Spacing="8">
+                    <Button Text="10 km" Style="{StaticResource Chip}" Command="{Binding SelectRadiusCommand}" CommandParameter="10 km">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding RadiusKm}" Value="10">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="25 km" Style="{StaticResource Chip}" Command="{Binding SelectRadiusCommand}" CommandParameter="25 km">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding RadiusKm}" Value="25">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="50 km" Style="{StaticResource Chip}" Command="{Binding SelectRadiusCommand}" CommandParameter="50 km">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding RadiusKm}" Value="50">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </HorizontalStackLayout>
+
+                <Button Grid.Column="1" Text="Malam ini" Style="{StaticResource Chip}" Command="{Binding ToggleTonightCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding TonightOnly}" Value="True">
+                            <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                            <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- ===== Body ===== -->
+        <RefreshView Grid.Row="1" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsRefreshing}">
+            <ScrollView>
+                <VerticalStackLayout Padding="20,8,20,28" Spacing="20">
+
+                    <!-- Radar -->
+                    <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{StaticResource BorderColor}"
+                            StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="12">
+                        <Grid>
+                            <maps:Map x:Name="RadarMap" HeightRequest="330" Margin="0" 
+                                      ItemsSource="{Binding Events}"
+                                      IsScrollEnabled="True" IsZoomEnabled="True">
+                                <maps:Map.ItemTemplate>
+                                    <DataTemplate x:DataType="models:GigEvent">
+                                        <maps:Pin Location="{Binding Location}"
+                                                  Address="{Binding VenueName}"
+                                                  Label="{Binding Name}"
+                                                  Type="Place" />
+                                    </DataTemplate>
+                                </maps:Map.ItemTemplate>
+                            </maps:Map>
+                            <VerticalStackLayout Padding="14,12" Spacing="2" HorizontalOptions="Start" VerticalOptions="Start" InputTransparent="True">
+                                <Label Text="{Binding CityLabel, StringFormat='RADAR • {0}'}" FontSize="10" FontAttributes="Bold"
+                                       CharacterSpacing="1.4" TextColor="{StaticResource TextMuted}"/>
+                                <Label Text="{Binding RadiusKm, StringFormat='Radius {0:0} km'}" FontSize="10" TextColor="{StaticResource TextMuted}"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                    <Label Text="Tap titik untuk lihat detail event. Ukuran titik = popularitas, warna = genre."
+                           Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+
+                    <!-- Preview event terpilih -->
+                    <Border IsVisible="{Binding HasSelection}" BackgroundColor="{StaticResource CardColor}"
+                            Stroke="{StaticResource BorderStrong}" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
+                                    <Label Text="{Binding SelectedDay}" Style="{StaticResource Numeric}" FontSize="24" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding SelectedMonth}" FontSize="10" FontAttributes="Bold" CharacterSpacing="1"
+                                           TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Label Text="{Binding SelectedName}" Style="{StaticResource Subheading}" LineBreakMode="TailTruncation" MaxLines="2"/>
+                                    <Label Text="{Binding SelectedMeta}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding SelectedDistance}" Style="{StaticResource Meta}" TextColor="{StaticResource PrimaryColor}"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="{Binding SelectedPrice}" Style="{StaticResource Numeric}" FontSize="14"
+                                       TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Button Grid.Column="0" Text="Buka peta" Style="{StaticResource BtnSmall}"
+                                        BackgroundColor="Transparent" TextColor="{StaticResource TextSecondary}"
+                                        BorderColor="{StaticResource BorderStrong}" BorderWidth="1"
+                                        Command="{Binding OpenExternalMapCommand}" CommandParameter="{Binding SelectedEvent}"/>
+                                <Button Grid.Column="1" Text="Lihat detail" Style="{StaticResource BtnSmall}"
+                                        BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}"
+                                        Command="{Binding GoToSelectedCommand}"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Daftar terdekat -->
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="GIG TERDEKAT" Style="{StaticResource Eyebrow}" VerticalOptions="Center"/>
+                            <Button Grid.Column="1" Text="Bersihkan filter" Style="{StaticResource TextLink}" IsVisible="{Binding IsFilterActive}"
+                                    Command="{Binding ClearFilterCommand}"/>
+                        </Grid>
+
+                        <Label Text="{Binding EmptyMessage}" Style="{StaticResource Body}" Margin="0,12,0,0"
+                               IsVisible="{Binding HasEvents, Converter={StaticResource InvertedBoolConverter}}"/>
+
+                        <CollectionView ItemsSource="{Binding Events}" SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:GigEvent">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,10">
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=GoToDetailCommand}" CommandParameter="{Binding .}"/>
+                                        </Grid.GestureRecognizers>
+                                        <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
+                                            <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="22" HorizontalTextAlignment="Center"/>
+                                            <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold" CharacterSpacing="1"
+                                                   TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" Style="{StaticResource Subheading}" LineBreakMode="TailTruncation" MaxLines="1"/>
+                                            <Label Text="{Binding VenueName}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding TimeFormatted}" Style="{StaticResource Meta}"/>
+                                        </VerticalStackLayout>
+                                        <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center" HorizontalOptions="End">
+                                            <Label Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="13" TextColor="{StaticResource PrimaryColor}"
+                                                   LineBreakMode="TailTruncation" HorizontalTextAlignment="End"/>
+                                            <Button Text="Peta" Style="{StaticResource BtnSmall}" Padding="12,4" HeightRequest="30" FontSize="11"
+                                                    BackgroundColor="Transparent" TextColor="{StaticResource TextMuted}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=OpenExternalMapCommand}" CommandParameter="{Binding .}"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>

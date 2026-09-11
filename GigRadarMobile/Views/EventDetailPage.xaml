@@ -5,67 +5,230 @@
              xmlns:models="clr-namespace:GigRadarMobile.Models"
              x:Class="GigRadarMobile.Views.EventDetailPage"
              x:DataType="vm:EventDetailViewModel"
-             BackgroundColor="#121212"
+             Shell.NavBarIsVisible="False"
              Title="Event Detail">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="14">
+    <Grid RowDefinitions="*,Auto">
 
-            <Label Text="{Binding GigEvent.Name}" FontSize="28" FontAttributes="Bold" TextColor="White"/>
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="0">
 
-            <Label Text="{Binding GigEvent.StatusLabel}" FontSize="12" FontAttributes="Bold"
-                   TextColor="{Binding GigEvent.StatusColor}" IsVisible="{Binding GigEvent.ShowsStatusBadge}"
-                   HorizontalTextAlignment="Center"/>
+                <!-- ===== Hero poster ===== -->
+                <Grid HeightRequest="400">
+                    <Image Source="{Binding GigEvent.PosterUrl, Converter={StaticResource PosterImageConverter}}"
+                           Aspect="AspectFill"/>
+                    <BoxView>
+                        <BoxView.Background>
+                            <LinearGradientBrush EndPoint="0,1">
+                                <GradientStop Color="#330A0A0B" Offset="0.0"/>
+                                <GradientStop Color="#990A0A0B" Offset="0.45"/>
+                                <GradientStop Color="#FF0A0A0B" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </BoxView.Background>
+                    </BoxView>
 
-            <Frame BackgroundColor="#1E1E1E" CornerRadius="10" Padding="14" HasShadow="False">
-                <VerticalStackLayout Spacing="8">
-                    <HorizontalStackLayout Spacing="8">
-                        <Label Text="&#x1F4C5;" FontSize="16"/><Label Text="{Binding GigEvent.DateFormatted}" FontSize="14" TextColor="White"/>
-                        <Label Text="&#x1F551;" FontSize="16"/><Label Text="{Binding GigEvent.TimeFormatted}" FontSize="14" TextColor="#39FF14"/>
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="8">
-                        <Label Text="&#x1F3EA;" FontSize="16"/><Label Text="{Binding GigEvent.VenueName}" FontSize="14" TextColor="#B0B0B0"/>
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="8">
-                        <Label Text="&#x1F3AB;" FontSize="16"/><Label Text="{Binding GigEvent.PriceFormatted}" FontSize="14" TextColor="#39FF14" FontAttributes="Bold"/>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Frame>
+                    <!-- Bar aksi atas -->
+                    <Grid Padding="16,12" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" VerticalOptions="Start">
+                        <Button Grid.Column="0" Text="‹" FontSize="24" Padding="0" WidthRequest="44" HeightRequest="44"
+                                CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
+                                Command="{Binding GoBackCommand}"/>
+                        <Button Grid.Column="2" Text="↗" FontSize="17" Padding="0" WidthRequest="44" HeightRequest="44"
+                                CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
+                                Command="{Binding ShareCommand}"/>
+                        <Button Grid.Column="3" Text="♡" FontSize="18" Padding="0" WidthRequest="44" HeightRequest="44"
+                                CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
+                                Command="{Binding ToggleFavoriteCommand}">
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsFavorited}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                    <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </Grid>
 
-            <Label Text="{Binding GigEvent.Description}" FontSize="14" TextColor="#B0B0B0"/>
+                    <!-- Info event di atas scrim -->
+                    <VerticalStackLayout Padding="20,0,20,18" Spacing="10" VerticalOptions="End">
+                        <HorizontalStackLayout Spacing="8">
+                            <Border IsVisible="{Binding GigEvent.GenreName, Converter={StaticResource StringNotEmptyConverter}}"
+                                    Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
+                                <Label Text="{Binding GigEvent.GenreName}" FontFamily="InterSemiBold" FontSize="11"
+                                       TextColor="{StaticResource TextPrimary}"/>
+                            </Border>
+                            <Border IsVisible="{Binding GigEvent.ShowsStatusBadge}"
+                                    StrokeThickness="0" StrokeShape="RoundRectangle 999"
+                                    BackgroundColor="{Binding GigEvent.StatusColor}" Padding="10,4">
+                                <Label Text="{Binding GigEvent.StatusLabel}" FontFamily="InterSemiBold" FontSize="11"
+                                       TextColor="{StaticResource OnAccent}"/>
+                            </Border>
+                        </HorizontalStackLayout>
 
-            <!-- Artists -->
-            <Label Text="&#x1F3A4; LINEUP" FontSize="18" FontAttributes="Bold" TextColor="#7B2FFF"/>
-            <Frame BackgroundColor="#2A2A2A" CornerRadius="8" Padding="10" HasShadow="False">
-                <Label Text="{Binding PlaybackStatus}" FontSize="13" TextColor="#39FF14"/>
-            </Frame>
+                        <Label Text="{Binding GigEvent.Name}" Style="{StaticResource Display}" FontSize="30"
+                               MaxLines="3" LineBreakMode="TailTruncation"/>
 
-            <CollectionView ItemsSource="{Binding GigEvent.EventArtists}" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:EventArtist">
-                        <Frame BackgroundColor="#1E1E1E" CornerRadius="10" Padding="14" Margin="0,4" BorderColor="#333333" HasShadow="False">
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Caption}"/>
+                            <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                            <Label Text="{Binding GigEvent.TimeFormatted}" Style="{StaticResource Caption}"/>
+                            <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                            <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- ===== Konten ===== -->
+                <VerticalStackLayout Padding="20,24,20,28" Spacing="28">
+
+                    <!-- Blok info -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="16" ColumnSpacing="16">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                            <Label Text="TANGGAL" Style="{StaticResource Meta}"/>
+                            <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Subheading}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                            <Label Text="JAM" Style="{StaticResource Meta}"/>
+                            <Label Text="{Binding GigEvent.TimeFormatted}" Style="{StaticResource Subheading}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                            <Label Text="VENUE" Style="{StaticResource Meta}"/>
+                            <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                            <Label Text="JARAK" Style="{StaticResource Meta}"/>
+                            <Label Text="{Binding DistanceLabel}" Style="{StaticResource Subheading}" TextColor="{StaticResource PrimaryColor}"
+                                   MaxLines="1" LineBreakMode="TailTruncation"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Tentang -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Tentang event" Style="{StaticResource SectionTitle}"/>
+                        <Label Text="{Binding GigEvent.Description}" Style="{StaticResource Body}" LineHeight="1.35"/>
+                    </VerticalStackLayout>
+
+                    <!-- Lineup -->
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="Lineup" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding PlaybackStatus}" Style="{StaticResource Meta}"
+                                   TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"
+                                   IsVisible="{Binding PlaybackStatus, Converter={StaticResource StringNotEmptyConverter}}"/>
+                        </Grid>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding GigEvent.EventArtists}" Spacing="2">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:EventArtist">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12" Padding="0,7">
+                                        <Border Grid.Column="0" WidthRequest="40" HeightRequest="40" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                                            <Label Text="{Binding Artist.Initials}" FontFamily="SpaceGroteskBold" FontSize="13"
+                                                   TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                            <Label Text="{Binding Artist.Name}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding Artist.Genre}" Style="{StaticResource Meta}"/>
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="2" Text="▶" FontSize="12" Padding="0" WidthRequest="40" HeightRequest="40"
+                                                CornerRadius="999" BackgroundColor="{StaticResource AccentSoft}" TextColor="{StaticResource PrimaryColor}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=PlayPreviewCommand}"
+                                                CommandParameter="{Binding Artist}"/>
+                                        <Button Grid.Column="3" Text="›" FontSize="20" Padding="0" WidthRequest="40" HeightRequest="40"
+                                                BackgroundColor="Transparent" TextColor="{StaticResource TextMuted}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=GoToArtistCommand}"
+                                                CommandParameter="{Binding Artist}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Tiket -->
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Tiket" Style="{StaticResource SectionTitle}"/>
+
+                        <!-- Link eksternal -->
+                        <Border IsVisible="{Binding GigEvent.HasExternalLink}" Style="{StaticResource CardFlatBorder}" Padding="16">
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="Tiket dijual di platform partner" Style="{StaticResource Subheading}"/>
+                                <Label Text="Kamu akan diarahkan ke link pembelian resmi event ini."
+                                       Style="{StaticResource Body}"/>
+                                <Label Text="{Binding GigEvent.TicketLink}" Style="{StaticResource Meta}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Tier tiket dari API -->
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding TicketTypes}"
+                                             Spacing="8" IsVisible="{Binding HasTicketTypes}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:EventTicketType">
+                                    <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
+                                            StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="14">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding Name}" Style="{StaticResource Subheading}"/>
+                                                <Label Text="{Binding Description}" Style="{StaticResource Body}" FontSize="12"
+                                                       MaxLines="2" LineBreakMode="TailTruncation" IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                                <Label Text="{Binding StockLabel}" Style="{StaticResource Meta}" TextColor="{Binding StockColor}"/>
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
+                                                   FontSize="15" TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"
+                                                   LineBreakMode="TailTruncation"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <!-- Fallback harga -->
+                        <Border IsVisible="{Binding ShowPriceFallback}" Style="{StaticResource CardFlatBorder}" Padding="16">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                    <Label Text="{Binding Artist.Name}" FontSize="16" FontAttributes="Bold" TextColor="White"/>
-                                    <Label Text="{Binding Artist.Genre}" FontSize="13" TextColor="#B0B0B0"/>
-                                </VerticalStackLayout>
-                                <Button Grid.Column="1" Text="&#x25B6;&#xFE0F;" BackgroundColor="#39FF14" TextColor="Black" WidthRequest="44" HeightRequest="44" CornerRadius="22"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=PlayPreviewCommand}" CommandParameter="{Binding Artist}"/>
+                                <Label Text="Harga tiket" Style="{StaticResource Subheading}" VerticalOptions="Center"/>
+                                <Label Grid.Column="1" Text="{Binding GigEvent.PriceFormatted}" Style="{StaticResource Numeric}"
+                                       FontSize="15" TextColor="{StaticResource PrimaryColor}"/>
                             </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                        </Border>
+                    </VerticalStackLayout>
 
-            <!-- Actions -->
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,8">
-                <Button Grid.Column="0" Text="&#x2764;&#xFE0F; Save" BackgroundColor="#333333" TextColor="White" CornerRadius="10" HeightRequest="50"
-                        Command="{Binding ToggleFavoriteCommand}"/>
-                <Button Grid.Column="1" Text="{Binding BuyButtonText}" BackgroundColor="#39FF14" TextColor="Black" FontAttributes="Bold" CornerRadius="10" HeightRequest="50"
+                    <!-- Venue -->
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Venue" Style="{StaticResource SectionTitle}"/>
+                        <Border Style="{StaticResource CardFlatBorder}" Padding="16">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Subheading}"/>
+                                <Label Text="{Binding GigEvent.Venue.Address}" Style="{StaticResource Body}" FontSize="13"
+                                       MaxLines="2" LineBreakMode="TailTruncation"/>
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding GigEvent.Venue.City}" Style="{StaticResource Meta}"/>
+                                    <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                                    <Label Text="{Binding GigEvent.Venue.Capacity, StringFormat='Kapasitas {0}'}" Style="{StaticResource Meta}"/>
+                                </HorizontalStackLayout>
+                                <Button Text="Buka peta" Style="{StaticResource BtnSmall}" BackgroundColor="Transparent"
+                                        TextColor="{StaticResource TextSecondary}" BorderColor="{StaticResource BorderStrong}" BorderWidth="1"
+                                        HorizontalOptions="Start" Command="{Binding OpenMapsCommand}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ===== Sticky buy bar ===== -->
+        <Border Grid.Row="1" StrokeThickness="0,1,0,0" Stroke="{StaticResource BorderColor}"
+                BackgroundColor="{StaticResource BackgroundColor}" Padding="20,12">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                    <Label Text="{Binding PriceCaption}" Style="{StaticResource Meta}"/>
+                    <Label Text="{Binding PriceFromLabel}" Style="{StaticResource Numeric}" FontSize="17"
+                           TextColor="{StaticResource TextPrimary}" LineBreakMode="TailTruncation"/>
+                </VerticalStackLayout>
+                <Button Grid.Column="1" Text="{Binding BuyButtonText}" Style="{StaticResource BtnBuy}"
+                        WidthRequest="190" IsEnabled="{Binding IsBuyable}"
                         Command="{Binding BuyTicketCommand}"/>
             </Grid>
+        </Border>
 
-        </VerticalStackLayout>
-    </ScrollView>
+    </Grid>
 
-</ContentPage>
+</ContentPage>

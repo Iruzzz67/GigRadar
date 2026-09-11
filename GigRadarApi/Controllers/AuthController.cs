@@ -16,13 +16,14 @@ namespace GigRadarApi.Controllers
         }
 
         /// <summary>
-        /// Registrasi publik — role selalu "User" (client tidak bisa memilih role, lihat §25).
+        /// Registrasi publik — role tetap "User"; bila client memilih Artist/EO,
+        /// permohonan disimpan sebagai Pending dan diverifikasi admin (§25).
         /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             var (success, message, user, token) = await _authService.RegisterAsync(
-                request.Name, request.Email, request.Password);
+                request.Name, request.Email, request.Password, request.RequestedRole);
 
             if (!success)
                 return BadRequest(new { message });
@@ -31,7 +32,7 @@ namespace GigRadarApi.Controllers
             {
                 message,
                 token,
-                user = new { user!.UserId, user.Name, user.Email, user.Role }
+                user = new { user!.UserId, user.Name, user.Email, user.Role, user.RoleStatus }
             });
         }
 
@@ -47,7 +48,7 @@ namespace GigRadarApi.Controllers
             {
                 message,
                 token,
-                user = new { user!.UserId, user.Name, user.Email, user.Role, user.City }
+                user = new { user!.UserId, user.Name, user.Email, user.Role, user.RoleStatus, user.City }
             });
         }
     }
@@ -57,7 +58,8 @@ namespace GigRadarApi.Controllers
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        // Catatan: tidak ada field Role — role ditentukan server (selalu "User").
+        /// <summary>Permohonan role opsional: "User" (default), "Artist", atau "EO". "Admin" diabaikan server.</summary>
+        public string? RequestedRole { get; set; }
     }
 
     public class LoginRequest

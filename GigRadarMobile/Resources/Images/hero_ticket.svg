@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1200 700" width="1200" height="700" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="bgticket" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#0a0812"/>
+<stop offset="0.55" stop-color="#150b26"/>
+<stop offset="1" stop-color="#05070a"/>
+</linearGradient>
+<radialGradient id="glowGreen" cx="0.5" cy="0.5" r="0.5">
+<stop offset="0" stop-color="#39FF14" stop-opacity="0.55"/>
+<stop offset="1" stop-color="#39FF14" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="glowPurple" cx="0.5" cy="0.5" r="0.5">
+<stop offset="0" stop-color="#7B2FFF" stop-opacity="0.55"/>
+<stop offset="1" stop-color="#7B2FFF" stop-opacity="0"/>
+</radialGradient>
+</defs>
+<rect width="1200" height="700" fill="url(#bgticket)"/>
+<circle cx="600.0" cy="35.0" r="300" fill="url(#glowGreen)" opacity="0.6"/>
+<rect x="120.0" y="238.00000000000003" width="960.0" height="210.0" rx="14" fill="#0d0a16" opacity="0.95"/>
+<rect x="192.0" y="280.0" width="816.0000000000001" height="112.0" rx="8" fill="#1a1030" opacity="0.9"/>
+<rect x="120.0" y="420.0" width="960.0" height="70.0" fill="#0a0812"/>
+<g transform="translate(240.0,140.0) rotate(-8)"><rect x="-70" y="-42" width="140" height="84" rx="10" fill="#141020" stroke="#39FF14" stroke-opacity="0.35" stroke-width="2"/><line x1="-25" y1="-42" x2="-25" y2="42" stroke="#7B2FFF" stroke-opacity="0.4" stroke-dasharray="4,5"/></g>
+<g transform="translate(504.0,180.0) rotate(6)"><rect x="-70" y="-42" width="140" height="84" rx="10" fill="#141020" stroke="#39FF14" stroke-opacity="0.35" stroke-width="2"/><line x1="-25" y1="-42" x2="-25" y2="42" stroke="#7B2FFF" stroke-opacity="0.4" stroke-dasharray="4,5"/></g>
+<g transform="translate(756.0,140.0) rotate(-4)"><rect x="-70" y="-42" width="140" height="84" rx="10" fill="#141020" stroke="#39FF14" stroke-opacity="0.35" stroke-width="2"/><line x1="-25" y1="-42" x2="-25" y2="42" stroke="#7B2FFF" stroke-opacity="0.4" stroke-dasharray="4,5"/></g>
+<g transform="translate(983.9999999999999,180.0) rotate(9)"><rect x="-70" y="-42" width="140" height="84" rx="10" fill="#141020" stroke="#39FF14" stroke-opacity="0.35" stroke-width="2"/><line x1="-25" y1="-42" x2="-25" y2="42" stroke="#7B2FFF" stroke-opacity="0.4" stroke-dasharray="4,5"/></g>
+<path d="M 0,650.0 L 0.0,609.4 L 50.0,604.4 L 100.0,590.4 L 150.0,575.8 L 200.0,603.1 L 250.0,604.4 L 300.0,598.4 L 350.0,572.1 L 400.0,602.6 L 450.0,573.0 L 500.0,576.9 L 550.0,603.2 L 600.0,583.2 L 650.0,587.6 L 700.0,589.4 L 750.0,560.2 L 800.0,605.3 L 850.0,609.0 L 900.0,563.0 L 950.0,589.9 L 1000.0,600.1 L 1050.0,593.5 L 1100.0,591.8 L 1150.0,562.2 L 1200.0,599.5 L 1200,650.0 Z" fill="#050308" opacity="0.9"/>
+</svg>

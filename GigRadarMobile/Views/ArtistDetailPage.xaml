@@ -5,36 +5,184 @@
              xmlns:models="clr-namespace:GigRadarMobile.Models"
              x:Class="GigRadarMobile.Views.ArtistDetailPage"
              x:DataType="vm:ArtistDetailViewModel"
-             BackgroundColor="#121212"
+             Shell.NavBarIsVisible="False"
              Title="Artist">
 
     <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="14">
+        <VerticalStackLayout Spacing="0">
 
-            <Label Text="{Binding Artist.Name}" FontSize="28" FontAttributes="Bold" TextColor="White"/>
-            <Label Text="{Binding Artist.Genre}" FontSize="14" TextColor="#7B2FFF"/>
-            <Label Text="{Binding Artist.Bio}" FontSize="14" TextColor="#B0B0B0"/>
+            <!-- ===== Cover hero ===== -->
+            <Grid HeightRequest="380">
+                <Image Source="{Binding HeroImageUrl, Converter={StaticResource PosterImageConverter}}"
+                       Aspect="AspectFill"/>
+                <BoxView>
+                    <BoxView.Background>
+                        <LinearGradientBrush EndPoint="0,1">
+                            <GradientStop Color="#330A0A0B" Offset="0.0"/>
+                            <GradientStop Color="#990A0A0B" Offset="0.45"/>
+                            <GradientStop Color="#FF0A0A0B" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </BoxView.Background>
+                </BoxView>
 
-            <Label Text="&#x1F3B5; TRACKS" FontSize="18" FontAttributes="Bold" TextColor="#39FF14"/>
-            <Label Text="{Binding PlaybackStatus}" FontSize="13" TextColor="#B0B0B0"/>
+                <Button Text="‹" FontSize="24" Padding="0" WidthRequest="44" HeightRequest="44"
+                        Margin="16,12" HorizontalOptions="Start" VerticalOptions="Start"
+                        CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
+                        Command="{Binding GoBackCommand}"/>
 
-            <CollectionView ItemsSource="{Binding Artist.Tracks}" SelectionMode="None">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:AudioTrack">
-                        <Frame BackgroundColor="#1E1E1E" CornerRadius="10" Padding="14" Margin="0,4" BorderColor="#333333" HasShadow="False">
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                                <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                    <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="White"/>
-                                    <Label Text="{Binding DurationSeconds, StringFormat='{0}s preview'}" FontSize="12" TextColor="#B0B0B0"/>
-                                </VerticalStackLayout>
-                                <Button Grid.Column="1" Text="&#x25B6;&#xFE0F;" BackgroundColor="#39FF14" TextColor="Black" WidthRequest="44" HeightRequest="44" CornerRadius="22"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=PlayTrackCommand}" CommandParameter="{Binding .}"/>
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                <VerticalStackLayout Padding="20,0,20,18" Spacing="10" VerticalOptions="End">
+                    <HorizontalStackLayout Spacing="8">
+                        <Border IsVisible="{Binding Artist.Genre, Converter={StaticResource StringNotEmptyConverter}}"
+                                Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
+                                StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
+                            <Label Text="{Binding Artist.Genre}" FontFamily="InterSemiBold" FontSize="11"
+                                   TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border IsVisible="{Binding Artist.City, Converter={StaticResource StringNotEmptyConverter}}"
+                                Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
+                                StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
+                            <Label Text="{Binding Artist.City}" FontFamily="InterMedium" FontSize="11"
+                                   TextColor="{StaticResource TextSecondary}"/>
+                        </Border>
+                    </HorizontalStackLayout>
 
+                    <Label Text="{Binding Artist.Name}" Style="{StaticResource Display}" FontSize="32"
+                           MaxLines="2" LineBreakMode="TailTruncation"/>
+
+                    <Label Text="{Binding FollowersLabel}" Style="{StaticResource Caption}"
+                           TextColor="{StaticResource PrimaryColor}"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- ===== Konten ===== -->
+            <VerticalStackLayout Padding="20,24,20,28" Spacing="28">
+
+                <!-- Statistik -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Border Grid.Column="0" Style="{StaticResource CardFlatBorder}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding Artist.FollowersCount}" Style="{StaticResource Numeric}" FontSize="20"
+                                   HorizontalTextAlignment="Center"/>
+                            <Label Text="pengikut" Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource CardFlatBorder}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding Artist.Tracks.Count}" Style="{StaticResource Numeric}" FontSize="20"
+                                   HorizontalTextAlignment="Center"/>
+                            <Label Text="track" Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource CardFlatBorder}" Padding="12">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="{Binding Artist.Albums.Count}" Style="{StaticResource Numeric}" FontSize="20"
+                                   HorizontalTextAlignment="Center"/>
+                            <Label Text="album" Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Bio -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding Artist.Bio, Converter={StaticResource StringNotEmptyConverter}}">
+                    <Label Text="Tentang" Style="{StaticResource SectionTitle}"/>
+                    <Label Text="{Binding Artist.Bio}" Style="{StaticResource Body}" LineHeight="1.35"/>
+                </VerticalStackLayout>
+
+                <!-- Upcoming gigs -->
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding HasUpcomingGigs}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Label Text="Gig mendatang" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding UpcomingGigs.Count, StringFormat='{0} gig'}"
+                               Style="{StaticResource Meta}" VerticalOptions="Center"/>
+                    </Grid>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding UpcomingGigs}" Spacing="2">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:ArtistGig">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,9">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=GoToGigCommand}" CommandParameter="{Binding .}"/>
+                                    </Grid.GestureRecognizers>
+                                    <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
+                                        <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="22" HorizontalTextAlignment="Center"/>
+                                        <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold" CharacterSpacing="1"
+                                               TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" Style="{StaticResource Subheading}" MaxLines="2" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding LocationLabel}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding StartDate, StringFormat='{0:HH:mm}'}" Style="{StaticResource Meta}"/>
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                        <Label Text="{Binding PriceLabel}" Style="{StaticResource Numeric}" FontSize="13"
+                                               TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
+                                        <Label Text="›" FontSize="20" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Tracks -->
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <Label Text="Musik" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding PlaybackStatus}" Style="{StaticResource Meta}"
+                               TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center" MaxLines="1" LineBreakMode="TailTruncation"/>
+                    </Grid>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Artist.Tracks}" Spacing="2">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:AudioTrack">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,7">
+                                    <Border Grid.Column="0" WidthRequest="40" HeightRequest="40" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource CardElevatedColor}">
+                                        <Label Text="♪" FontFamily="SpaceGroteskMedium" FontSize="16"
+                                               TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding DurationLabel}" Style="{StaticResource Meta}"/>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="2" Text="▶" FontSize="12" Padding="0" WidthRequest="40" HeightRequest="40"
+                                            CornerRadius="999" BackgroundColor="{StaticResource AccentSoft}" TextColor="{StaticResource PrimaryColor}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=PlayTrackCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Members -->
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding HasMembers}">
+                    <Label Text="Personel" Style="{StaticResource SectionTitle}"/>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Artist.Members}" Spacing="2">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:ArtistMember">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Padding="0,6">
+                                    <Border Grid.Column="0" WidthRequest="36" HeightRequest="36" StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                                        <Label Text="•" FontSize="18" TextColor="{StaticResource TextMuted}"
+                                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Role}" Style="{StaticResource Meta}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Social links -->
+                <Label Text="{Binding Artist.SocialLinks}" Style="{StaticResource Meta}"
+                       MaxLines="1" LineBreakMode="TailTruncation"
+                       IsVisible="{Binding Artist.SocialLinks, Converter={StaticResource StringNotEmptyConverter}}"/>
+
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

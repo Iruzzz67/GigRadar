@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 600 800" width="600" height="800" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="bgposter" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#0a0812"/>
+<stop offset="0.55" stop-color="#150b26"/>
+<stop offset="1" stop-color="#05070a"/>
+</linearGradient>
+<radialGradient id="glowGreen" cx="0.5" cy="0.5" r="0.5">
+<stop offset="0" stop-color="#39FF14" stop-opacity="0.55"/>
+<stop offset="1" stop-color="#39FF14" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="glowPurple" cx="0.5" cy="0.5" r="0.5">
+<stop offset="0" stop-color="#7B2FFF" stop-opacity="0.55"/>
+<stop offset="1" stop-color="#7B2FFF" stop-opacity="0"/>
+</radialGradient>
+</defs>
+<rect width="600" height="800" fill="url(#bgposter)"/>
+<circle cx="300.0" cy="256.0" r="260" fill="url(#glowPurple)"/>
+<circle cx="300.0" cy="256.0" r="150" fill="url(#glowGreen)" opacity="0.7"/>
+<polygon points="242.72622685289753,0 252.5719803433813,0 211.249147010125,680.0 74.64547457871151,680.0" fill="#ffffff" opacity="0.13224500912954418"/>
+<polygon points="327.532640496549,0 341.0537017550712,0 490.5324871622295,680.0 315.22653959263107,680.0" fill="#ffffff" opacity="0.08451896575597456"/>
+<polygon points="395.60893907989686,0 408.2203627516985,0 704.8044311251341,680.0 506.6834743696519,680.0" fill="#ffffff" opacity="0.10954228751216796"/>
+<polygon points="443.5335496386261,0 455.04870572583417,0 815.6258540863823,680.0 680.1209120069984,680.0" fill="#ffffff" opacity="0.0634851551666661"/>
+<polygon points="393.52461251079274,0 402.86469874783666,0 687.3167269340698,680.0 501.85120684181834,680.0" fill="#ffffff" opacity="0.10586960950896786"/>
+<polygon points="99.04236679054212,0 113.31688120269224,0 -219.81081679619413,680.0 -343.11143922410275,680.0" fill="#ffffff" opacity="0.12802025292340846"/>
+<polygon points="445.19668915148367,0 454.9236759216795,0 846.4924468695078,680.0 653.8686483499816,680.0" fill="#ffffff" opacity="0.11591061042820434"/>
+<path d="M 0,786.0 L 0.0,716.5 L 33.3,695.8 L 66.7,723.0 L 100.0,670.3 L 133.3,717.5 L 166.7,691.8 L 200.0,661.9 L 233.3,704.2 L 266.7,658.6 L 300.0,677.5 L 333.3,692.2 L 366.7,685.7 L 400.0,689.1 L 433.3,707.2 L 466.7,656.3 L 500.0,703.7 L 533.3,657.3 L 566.7,667.8 L 600.0,733.7 L 600,786.0 Z" fill="#050308" opacity="0.97"/>
+<g transform="translate(300.0,272.0)"><ellipse cx="0" cy="-70" rx="26" ry="34" fill="#0a0812" stroke="#39FF14" stroke-opacity="0.5" stroke-width="3"/><rect x="-6" y="-38" width="12" height="90" rx="6" fill="#0a0812" stroke="#7B2FFF" stroke-opacity="0.4" stroke-width="2"/></g>
+</svg>

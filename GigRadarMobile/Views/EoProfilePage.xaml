@@ -11,7 +11,7 @@
         <VerticalStackLayout Padding="18,16,18,30" Spacing="16">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                 <Frame Grid.Column="0" BackgroundColor="{StaticResource CardElevatedColor}" CornerRadius="26" WidthRequest="52" HeightRequest="52" Padding="0" HasShadow="False" BorderColor="{StaticResource BorderColor}">
-                    <Label Text="🎤" FontSize="25" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="17" TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
                 </Frame>
                 <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
                     <Label Text="EO DASHBOARD" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1.2"/>
@@ -21,14 +21,13 @@
                 <Label Grid.Column="2" Text="●" FontSize="12" TextColor="{StaticResource SuccessColor}" VerticalOptions="Center"/>
             </Grid>
 
-            <Frame BackgroundColor="#171A12" BorderColor="#33451F" CornerRadius="18" Padding="18" HasShadow="False">
+            <Frame BackgroundColor="{StaticResource AccentSoft}" BorderColor="{StaticResource BorderStrong}" CornerRadius="18" Padding="18" HasShadow="False">
                 <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="12">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="SIAP NAIKKAN EVENT BERIKUTNYA?" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1"/>
                         <Label Text="Kelola event, tiket, dan pendapatan dari satu tempat." FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
                     </VerticalStackLayout>
-                    <Button Grid.Row="1" Text="＋ Buat event" BackgroundColor="{StaticResource PrimaryColor}" TextColor="Black" FontAttributes="Bold" CornerRadius="11" HeightRequest="44" Padding="16,0" Command="{Binding GoToCreateEventCommand}"/>
-                    <Label Grid.Row="1" Grid.Column="1" Text="5 tools" FontSize="11" TextColor="{StaticResource TextMuted}" VerticalOptions="Center" HorizontalOptions="End"/>
+                    <Button Grid.Row="1" Text="Buat event" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="11" HeightRequest="44" Padding="16,0" Command="{Binding GoToCreateEventCommand}"/>
                 </Grid>
             </Frame>
 
@@ -51,8 +50,8 @@
                 <VerticalStackLayout Spacing="2"><Label Text="Aksi cepat" Style="{StaticResource SectionTitle}"/><Label Text="Pintasan untuk operasional event" FontSize="12" TextColor="{StaticResource TextMuted}"/></VerticalStackLayout>
             </Grid>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <Button Grid.Column="0" Text="🎟  Kelola tiket" BackgroundColor="{StaticResource AccentColor}" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding GoToManageTicketsCommand}"/>
-                <Button Grid.Column="1" Text="✏  Edit profil" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleEditCommand}"/>
+                <Button Grid.Column="0" Text="Kelola tiket" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding GoToManageTicketsCommand}"/>
+                <Button Grid.Column="1" Text="Edit profil" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleEditCommand}"/>
             </Grid>
 
             <Frame BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}" CornerRadius="16" Padding="15" HasShadow="False" IsVisible="{Binding IsEditing}">
@@ -61,7 +60,7 @@
                     <Entry Text="{Binding UserName}" Placeholder="Nama lengkap" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                     <Entry Text="{Binding UserCity}" Placeholder="Kota" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                     <Entry Text="{Binding UserPhotoUrl}" Placeholder="URL foto profil (opsional)" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10"><Button Grid.Column="0" Text="Batal" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextSecondary}" CornerRadius="10" HeightRequest="44" Command="{Binding ToggleEditCommand}"/><Button Grid.Column="1" Text="Simpan" BackgroundColor="{StaticResource PrimaryColor}" TextColor="Black" FontAttributes="Bold" CornerRadius="10" HeightRequest="44" Command="{Binding SaveProfileCommand}"/></Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10"><Button Grid.Column="0" Text="Batal" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextSecondary}" CornerRadius="10" HeightRequest="44" Command="{Binding ToggleEditCommand}"/><Button Grid.Column="1" Text="Simpan" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="10" HeightRequest="44" Command="{Binding SaveProfileCommand}"/></Grid>
                 </VerticalStackLayout>
             </Frame>
 
@@ -83,9 +82,9 @@
                                 </Grid>
                                 <BoxView HeightRequest="1" Color="{StaticResource BorderColor}"/>
                                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="7">
-                                    <Button Grid.Column="0" Text="{Binding PrimaryActionLabel}" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=TogglePrimaryActionCommand}" CommandParameter="{Binding .}"><Button.Style><Style TargetType="Button"><Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/><Setter Property="TextColor" Value="Black"/><Style.Triggers><DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Published"><Setter Property="BackgroundColor" Value="#B34700"/><Setter Property="TextColor" Value="White"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
+                                    <Button Grid.Column="0" Text="{Binding PrimaryActionLabel}" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=TogglePrimaryActionCommand}" CommandParameter="{Binding .}"><Button.Style><Style TargetType="Button"><Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/><Setter Property="TextColor" Value="{StaticResource OnAccent}"/><Style.Triggers><DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Published"><Setter Property="BackgroundColor" Value="#8A4B08"/><Setter Property="TextColor" Value="White"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
                                     <Button Grid.Column="1" Text="✓ Selesai" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Padding="10,0" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextSecondary}" IsVisible="{Binding CanMarkCompleted}" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=MarkCompletedCommand}" CommandParameter="{Binding .}"/>
-                                    <Button Grid.Column="2" Text="🗑" FontSize="11" HeightRequest="38" WidthRequest="42" CornerRadius="9" BackgroundColor="#2A171B" TextColor="#FDA4AF" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=DeleteEventCommand}" CommandParameter="{Binding .}"/>
+                                    <Button Grid.Column="2" Text="Hapus" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Padding="10,0" BackgroundColor="#2A1219" TextColor="{StaticResource DangerColor}" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=DeleteEventCommand}" CommandParameter="{Binding .}"/>
                                 </Grid>
                             </VerticalStackLayout>
                         </Frame>

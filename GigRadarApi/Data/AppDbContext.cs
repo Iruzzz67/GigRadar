@@ -23,6 +23,7 @@ namespace GigRadarApi.Data
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<AudioTrack> AudioTracks { get; set; }
+        public DbSet<RoleRequest> RoleRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

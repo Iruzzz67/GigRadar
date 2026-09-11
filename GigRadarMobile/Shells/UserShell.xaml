@@ -9,7 +9,8 @@
     <!-- GIGRADAR_ROLE_SYSTEM.md §26 — UserShell -->
     <TabBar>
         <ShellContent Title="Discover" ContentTemplate="{DataTemplate views:HomePage}" Route="home"/>
-        <ShellContent Title="Map" ContentTemplate="{DataTemplate views:MapPage}" Route="map"/>
+        <ShellContent Title="Explore" ContentTemplate="{DataTemplate views:ExplorePage}" Route="explore"/>
+        <ShellContent Title="Radar" ContentTemplate="{DataTemplate views:RadarPage}" Route="radar"/>
         <ShellContent Title="Tickets" ContentTemplate="{DataTemplate views:TicketPage}" Route="tickets"/>
         <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
     </TabBar>

@@ -20,14 +20,23 @@ namespace GigRadarApi.Services
         }
 
         /// <summary>
-        /// Registrasi aman sesuai GIGRADAR_ROLE_SYSTEM.md §25/§51.2:
-        /// role SELALU "User" — client tidak boleh menentukan role privileged (EO/Admin/Artist).
-        /// Role privileged hanya diberikan lewat proses internal (seed) atau verifikasi admin.
+        /// Registrasi sesuai GIGRADAR_ROLE_SYSTEM.md §25/§51.2.
+        /// Client BOLEH memohon role Artist/EO saat daftar, tetapi permohonan hanya
+        /// disimpan sebagai RoleStatus "Pending" — role tetap "User" sampai diverifikasi
+        /// admin. Role "Admin" tidak pernah bisa diminta dari client.
         /// </summary>
-        public async Task<(bool Success, string Message, User? User, string? Token)> RegisterAsync(string name, string email, string password)
+        public async Task<(bool Success, string Message, User? User, string? Token)> RegisterAsync(string name, string email, string password, string? requestedRole = null)
         {
             if (await _context.Users.AnyAsync(u => u.Email == email))
                 return (false, "Email sudah terdaftar", null, null);
+
+            // Normalisasi permohonan role: hanya Artist/EO yang bisa dimohonkan via register.
+            var normalizedRequest = requestedRole?.Trim().ToUpperInvariant() switch
+            {
+                "ARTIST" => "Artist",
+                "EO" => "EO",
+                _ => null
+            };
 
             var user = new User
             {
@@ -35,14 +44,88 @@ namespace GigRadarApi.Services
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
                 Role = "User",
+                RoleStatus = normalizedRequest == null ? "None" : "Pending",
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            if (normalizedRequest != null)
+            {
+                _context.RoleRequests.Add(new RoleRequest
+                {
+                    UserId = user.UserId,
+                    RequestedRole = normalizedRequest,
+                    Status = "Pending",
+                    CreatedAt = DateTime.UtcNow
+                });
+                await _context.SaveChangesAsync();
+            }
+
             var token = GenerateJwtToken(user);
-            return (true, "Register berhasil", user, token);
+            var message = normalizedRequest == null
+                ? "Register berhasil"
+                : $"Register berhasil. Permohonan akun {normalizedRequest} menunggu verifikasi admin.";
+            return (true, message, user, token);
+        }
+
+        /// <summary>
+        /// Admin menyetujui permohonan role: role user dinaikkan ke role yang dimohonkan
+        /// dan untuk Artist dibuatkan profil Artist dasar (UserId terhubung, §6/§8).
+        /// </summary>
+        public async Task<(bool Success, string Message)> ApproveRoleRequestAsync(int requestId, int adminId)
+        {
+            var request = await _context.RoleRequests.FirstOrDefaultAsync(r => r.RequestId == requestId);
+            if (request == null)
+                return (false, "Permohonan tidak ditemukan");
+            if (request.Status != "Pending")
+                return (false, $"Permohonan sudah diproses ({request.Status})");
+
+            var user = await _context.Users.FindAsync(request.UserId);
+            if (user == null)
+                return (false, "User tidak ditemukan");
+
+            user.Role = request.RequestedRole;
+            user.RoleStatus = "Approved";
+            request.Status = "Approved";
+            request.ReviewedByAdminId = adminId;
+            request.ReviewedAt = DateTime.UtcNow;
+
+            // Auto-buat profil Artist dasar agar ArtistShell langsung punya profil.
+            if (user.Role == "Artist" && !await _context.Artists.AnyAsync(a => a.UserId == user.UserId))
+            {
+                _context.Artists.Add(new Artist
+                {
+                    UserId = user.UserId,
+                    Name = user.Name,
+                    Genre = "",
+                    City = user.City
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            return (true, $"Permohonan disetujui — {user.Name} sekarang {user.Role}");
+        }
+
+        /// <summary>Admin menolak permohonan role: user tetap "User".</summary>
+        public async Task<(bool Success, string Message)> RejectRoleRequestAsync(int requestId, int adminId)
+        {
+            var request = await _context.RoleRequests.FirstOrDefaultAsync(r => r.RequestId == requestId);
+            if (request == null)
+                return (false, "Permohonan tidak ditemukan");
+            if (request.Status != "Pending")
+                return (false, $"Permohonan sudah diproses ({request.Status})");
+
+            var user = await _context.Users.FindAsync(request.UserId);
+            if (user != null)
+                user.RoleStatus = "None";
+            request.Status = "Rejected";
+            request.ReviewedByAdminId = adminId;
+            request.ReviewedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return (true, "Permohonan ditolak — user tetap berrole User");
         }
 
         public async Task<(bool Success, string Message, User? User, string? Token)> LoginAsync(string email, string password)

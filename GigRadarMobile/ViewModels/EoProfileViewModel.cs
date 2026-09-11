@@ -32,6 +32,16 @@ namespace GigRadarMobile.ViewModels
             ? Color.FromArgb("#39FF14")
             : Color.FromArgb("#7B2FFF");
 
+        public string Initials => BuildInitials(UserName);
+
+        private static string BuildInitials(string name)
+        {
+            var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return "?";
+            if (parts.Length == 1) return parts[0][..1].ToUpperInvariant();
+            return (parts[0][..1] + parts[^1][..1]).ToUpperInvariant();
+        }
+
         public EoProfileViewModel(ApiService api, AuthService auth)
         {
             _api = api;
@@ -52,6 +62,7 @@ namespace GigRadarMobile.ViewModels
                 UserRole = _auth.GetUserRole();
                 OnPropertyChanged(nameof(RoleBadge));
                 OnPropertyChanged(nameof(RoleBadgeColor));
+                OnPropertyChanged(nameof(Initials));
 
                 // Data diri terbaru dari server
                 var profile = await _api.GetProfileAsync();
@@ -64,6 +75,7 @@ namespace GigRadarMobile.ViewModels
                     UserPhotoUrl = profile.PhotoUrl;
                     OnPropertyChanged(nameof(RoleBadge));
                     OnPropertyChanged(nameof(RoleBadgeColor));
+                    OnPropertyChanged(nameof(Initials));
                 }
 
                 var summary = await _api.GetEoDashboardAsync();

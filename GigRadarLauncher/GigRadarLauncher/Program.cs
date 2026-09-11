@@ -51,6 +51,10 @@ class Program
             }
         };
 
+        // Jalankan API dalam mode Development agar Swagger UI aktif
+        // (tanpa ini API default ke Production dan /swagger mengembalikan 404)
+        backendProcess.StartInfo.EnvironmentVariables["ASPNETCORE_ENVIRONMENT"] = "Development";
+
         backendProcess.Start();
 
         // Wait for backend to start

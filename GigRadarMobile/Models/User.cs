@@ -6,7 +6,18 @@ namespace GigRadarMobile.Models
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = "User";
+        /// <summary>Status permohonan role: None / Pending / Approved.</summary>
+        public string RoleStatus { get; set; } = "None";
         public string City { get; set; } = string.Empty;
+        public string Initials => BuildInitials(Name);
+
+        private static string BuildInitials(string name)
+        {
+            var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return "?";
+            if (parts.Length == 1) return parts[0][..1].ToUpperInvariant();
+            return (parts[0][..1] + parts[^1][..1]).ToUpperInvariant();
+        }
         public string PhotoUrl { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public List<UserPreference> Preferences { get; set; } = new();
@@ -18,6 +29,14 @@ namespace GigRadarMobile.Models
             "EO" => "Event Organizer",
             "Artist" => "Artist",
             _ => "User"
+        };
+
+        /// <summary>Label status permohonan role untuk tampilan.</summary>
+        public string RoleStatusDisplay => RoleStatus switch
+        {
+            "Pending" => "⏳ Menunggu verifikasi",
+            "Approved" => "✓ Terverifikasi",
+            _ => string.Empty
         };
 
         /// <summary>Warna badge role.</summary>

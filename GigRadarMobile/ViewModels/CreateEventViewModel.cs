@@ -20,6 +20,7 @@ namespace GigRadarMobile.ViewModels
 
         private readonly ApiService _api;
         private readonly AuthService _auth;
+        private readonly LocationService _locationService;
 
         private List<Venue> _venues = new();
         private List<Genre> _genres = new();
@@ -67,10 +68,11 @@ namespace GigRadarMobile.ViewModels
         public List<string> StatusOptions { get; } = new() { "Published", "Draft" };
         [ObservableProperty] private string _selectedStatus = "Published";
 
-        public CreateEventViewModel(ApiService api, AuthService auth)
+        public CreateEventViewModel(ApiService api, AuthService auth, LocationService locationService)
         {
             _api = api;
             _auth = auth;
+            _locationService = locationService;
         }
 
         [RelayCommand]
@@ -128,6 +130,29 @@ namespace GigRadarMobile.ViewModels
                 // Venue tanpa koordinat → default pusat Jakarta agar muncul di Map.
                 LatText = DefaultLatitude.ToString(CultureInfo.InvariantCulture);
                 LngText = DefaultLongitude.ToString(CultureInfo.InvariantCulture);
+            }
+        }
+
+        [RelayCommand]
+        private async Task UseCurrentLocationAsync()
+        {
+            try
+            {
+                var location = await _locationService.GetCurrentLocationAsync();
+                if (location != null)
+                {
+                    LatText = location.Latitude.ToString(CultureInfo.InvariantCulture);
+                    LngText = location.Longitude.ToString(CultureInfo.InvariantCulture);
+                    await Alerts.ShowAsync("Info", "Berhasil mengambil lokasi perangkat.");
+                }
+                else
+                {
+                    await Alerts.ShowAsync("Peringatan", "Lokasi tidak tersedia atau tidak diizinkan.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
             }
         }
 

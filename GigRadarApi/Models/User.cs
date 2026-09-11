@@ -12,6 +12,12 @@ namespace GigRadarApi.Models
         public string Email { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public string Role { get; set; } = "User";
+        /// <summary>
+        /// Status permohonan role (§25): "None" = tidak ada permohonan (default User),
+        /// "Pending" = menunggu verifikasi admin, "Approved" = sudah diverifikasi.
+        /// Role privileged (Artist/EO) hanya aktif setelah Approved oleh admin.
+        /// </summary>
+        public string RoleStatus { get; set; } = "None";
         public string City { get; set; } = string.Empty;
         public double Latitude { get; set; }
         public double Longitude { get; set; }
@@ -64,5 +70,26 @@ namespace GigRadarApi.Models
 
         [ForeignKey("VenueId")]
         public Venue? Venue { get; set; }
+    }
+
+    /// <summary>
+    /// Permohonan kenaikan role (§25) — dibuat saat register dengan pilihan role
+    /// Artist/EO, diproses oleh Admin via endpoint /api/users/role-requests.
+    /// </summary>
+    public class RoleRequest
+    {
+        [Key]
+        public int RequestId { get; set; }
+        public int UserId { get; set; }
+        public string RequestedRole { get; set; } = string.Empty;
+        public string Status { get; set; } = "Pending";
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int? ReviewedByAdminId { get; set; }
+        public DateTime? ReviewedAt { get; set; }
+
+        [ForeignKey("UserId")]
+        public User? User { get; set; }
+        [ForeignKey("ReviewedByAdminId")]
+        public User? ReviewedByAdmin { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GigRadarApi.Data;
 using GigRadarApi.Models;
+using GigRadarApi.Services;
 
 namespace GigRadarApi.Controllers
 {
@@ -12,10 +13,12 @@ namespace GigRadarApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly AuthService _authService;
 
-        public UsersController(AppDbContext context)
+        public UsersController(AppDbContext context, AuthService authService)
         {
             _context = context;
+            _authService = authService;
         }
 
         /// <summary>
@@ -28,7 +31,7 @@ namespace GigRadarApi.Controllers
         {
             var users = await _context.Users
                 .OrderBy(u => u.UserId)
-                .Select(u => new { u.UserId, u.Name, u.Email, u.Role, u.City, u.PhotoUrl, u.CreatedAt })
+                .Select(u => new { u.UserId, u.Name, u.Email, u.Role, u.RoleStatus, u.City, u.PhotoUrl, u.CreatedAt })
                 .ToListAsync();
             return Ok(users);
         }
@@ -58,6 +61,55 @@ namespace GigRadarApi.Controllers
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Profile updated", user });
+        }
+
+        // ── Kelola permohonan role (§25) — khusus Admin ──
+
+        /// <summary>Daftar permohonan role (default: yang masih Pending).</summary>
+        [HttpGet("role-requests")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetRoleRequests([FromQuery] string? status = "Pending")
+        {
+            var query = _context.RoleRequests.Include(r => r.User).AsQueryable();
+            if (!string.IsNullOrEmpty(status))
+                query = query.Where(r => r.Status == status);
+
+            var requests = await query
+                .OrderBy(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    r.RequestId,
+                    r.UserId,
+                    userName = r.User!.Name,
+                    userEmail = r.User!.Email,
+                    r.RequestedRole,
+                    r.Status,
+                    r.CreatedAt
+                })
+                .ToListAsync();
+            return Ok(requests);
+        }
+
+        /// <summary>Admin menyetujui permohonan — role user dinaikkan ke role yang dimohonkan.</summary>
+        [HttpPost("role-requests/{requestId}/approve")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveRoleRequest(int requestId)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _authService.ApproveRoleRequestAsync(requestId, adminId);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        /// <summary>Admin menolak permohonan — user tetap berrole User.</summary>
+        [HttpPost("role-requests/{requestId}/reject")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RejectRoleRequest(int requestId)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _authService.RejectRoleRequestAsync(requestId, adminId);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
         }
 
         [HttpPost("preferences")]

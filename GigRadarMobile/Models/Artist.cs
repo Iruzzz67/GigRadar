@@ -4,6 +4,15 @@ namespace GigRadarMobile.Models
     public class Artist
     {
         public int ArtistId { get; set; }
+        public string Initials => BuildInitials(Name);
+
+        private static string BuildInitials(string name)
+        {
+            var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return "?";
+            if (parts.Length == 1) return parts[0][..1].ToUpperInvariant();
+            return (parts[0][..1] + parts[^1][..1]).ToUpperInvariant();
+        }
         public string Name { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;
         public string PhotoUrl { get; set; } = string.Empty;
@@ -138,6 +147,9 @@ namespace GigRadarMobile.Models
         public string DateLabel => StartDate.ToString("dd MMM yyyy • HH:mm");
         public string LocationLabel => string.IsNullOrWhiteSpace(VenueName) ? VenueCity : $"{VenueName} • {VenueCity}";
         public bool IsUpcoming => StartDate >= DateTime.Now;
+        public string PriceLabel => MinPrice == MaxPrice
+            ? $"Rp {MinPrice:N0}"
+            : $"Rp {MinPrice:N0} - Rp {MaxPrice:N0}";
         public string StatusLabel => Status switch
         {
             "SoldOut" => "Tiket Habis",

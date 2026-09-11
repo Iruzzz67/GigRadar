@@ -21,6 +21,11 @@ public static class TicketSchemaBootstrap
             if (!eventsCols.Contains("TicketLink"))
                 Execute(conn, "ALTER TABLE Events ADD COLUMN TicketLink TEXT NOT NULL DEFAULT '';");
 
+            // Role request system (§25): status permohonan role untuk database yang sudah ada.
+            var usersCols = GetColumns(conn, "Users");
+            if (!usersCols.Contains("RoleStatus"))
+                Execute(conn, "ALTER TABLE Users ADD COLUMN RoleStatus TEXT NOT NULL DEFAULT 'None';");
+
             var ticketsCols = GetColumns(conn, "Tickets");
             if (!ticketsCols.Contains("BuyerName"))
                 Execute(conn, "ALTER TABLE Tickets ADD COLUMN BuyerName TEXT NOT NULL DEFAULT '';");

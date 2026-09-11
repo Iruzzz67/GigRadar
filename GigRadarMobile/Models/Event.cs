@@ -13,6 +13,7 @@ namespace GigRadarMobile.Models
         public DateTime EndDate { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        public Microsoft.Maui.Devices.Sensors.Location Location => new Microsoft.Maui.Devices.Sensors.Location(Latitude, Longitude);
         public int? GenreId { get; set; }
         public Genre? Genre { get; set; }
         public decimal MinPrice { get; set; }
@@ -49,6 +50,7 @@ namespace GigRadarMobile.Models
             : $"Rp {MinPrice:N0} - Rp {MaxPrice:N0}";
         public string LineupNames => string.Join(", ", EventArtists.Select(ea => ea.Artist?.Name ?? ""));
         public string VenueName => Venue?.Name ?? "TBA";
+        public string GenreName => Genre?.Name ?? "";
         public bool HasExternalLink => !string.IsNullOrWhiteSpace(TicketLink);
     }
 

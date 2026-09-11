@@ -54,3 +54,7 @@ Thumbs.db
 # Env files
 *.env
 .env
+
+# Build output (custom)
+out/
+*.pdb

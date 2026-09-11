@@ -17,6 +17,18 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private bool _isRegister;
         [ObservableProperty] private bool _isLoading;
 
+        /// <summary>Pilihan role saat daftar (§25): User langsung aktif, Artist/EO menunggu verifikasi admin.</summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SelectedRoleDescription))]
+        private string _selectedRole = "User";
+
+        public string SelectedRoleDescription => SelectedRole switch
+        {
+            "Artist" => "Kelola profil, musik, dan jadwal gigs kamu.",
+            "EO" => "Buat dan kelola event serta tiket.",
+            _ => "Temukan gigs, ikuti artis, dan beli tiket."
+        };
+
         public LoginViewModel(ApiService api, AuthService auth)
         {
             _api = api;
@@ -50,7 +62,8 @@ namespace GigRadarMobile.ViewModels
                         return;
                     }
 
-                    var (success, message, token, user) = await _api.RegisterAsync(Name, Email, Password);
+                    var requestedRole = SelectedRole == "User" ? null : SelectedRole;
+                    var (success, message, token, user) = await _api.RegisterAsync(Name, Email, Password, requestedRole);
                     if (!success || token == null)
                     {
                         await Alerts.ShowAsync("Error", message);
@@ -59,6 +72,12 @@ namespace GigRadarMobile.ViewModels
 
                     _auth.SaveSession(token, user!.UserId, user.Name, user.Email, user.Role);
                     _api.SetAuthToken(token);
+
+                    if (requestedRole != null)
+                    {
+                        await Alerts.ShowAsync("Permohonan terkirim",
+                            $"Akun kamu dibuat sebagai User. Permohonan role {requestedRole} menunggu verifikasi admin.");
+                    }
                     GoToOnboarding();
                 }
                 else

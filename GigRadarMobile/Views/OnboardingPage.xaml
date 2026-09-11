@@ -5,35 +5,58 @@
              xmlns:models="clr-namespace:GigRadarMobile.Models"
              x:Class="GigRadarMobile.Views.OnboardingPage"
              x:DataType="vm:OnboardingViewModel"
-             BackgroundColor="#121212"
+             BackgroundColor="{StaticResource BackgroundColor}"
              Title="Onboarding">
 
-    <VerticalStackLayout Padding="20" Spacing="16">
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20,24,20,24" RowSpacing="20">
 
-        <Label Text="🎵 Pilih Genre Favorit" FontSize="24" FontAttributes="Bold" TextColor="White"/>
-        <Label Text="Pilih genre musik yang kamu sukai" FontSize="14" TextColor="#B0B0B0"/>
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="ONBOARDING" Style="{StaticResource Eyebrow}"/>
+            <Label Text="Genre yang kamu dengerin" Style="{StaticResource PageTitle}"/>
+            <Label Text="Pilih minimal satu. Ini dipakai buat rekomendasi dan radar kamu."
+                   Style="{StaticResource Body}" FontSize="12"/>
+        </VerticalStackLayout>
 
-        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="#39FF14"/>
+        <Grid Grid.Row="1">
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="Center" VerticalOptions="Center"/>
 
-        <CollectionView ItemsSource="{Binding Genres}" SelectionMode="None" HeightRequest="400">
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Genre">
-                    <Frame BackgroundColor="#1E1E1E" CornerRadius="10" Padding="14" Margin="0,4" BorderColor="#333333" HasShadow="False">
-                        <Frame.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OnboardingViewModel}}, Path=ToggleGenreCommand}" CommandParameter="{Binding .}"/>
-                        </Frame.GestureRecognizers>
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                            <Label Grid.Column="0" Text="{Binding Icon}" FontSize="24" VerticalOptions="Center"/>
-                            <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" TextColor="White" VerticalOptions="Center"/>
-                            <BoxView Grid.Column="2" WidthRequest="24" HeightRequest="24" CornerRadius="12" Color="#333333" VerticalOptions="Center"/>
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <ScrollView IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                <FlexLayout Wrap="Wrap" Direction="Row" JustifyContent="Start" AlignItems="Center"
+                            BindableLayout.ItemsSource="{Binding Genres}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Genre">
+                            <Border Margin="0,0,10,10" Padding="16,10" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OnboardingViewModel}}, Path=ToggleGenreCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="6">
+                                    <Label Grid.Column="0" Text="{Binding Icon}" FontSize="14" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding Name}" FontFamily="InterMedium" FontSize="14"
+                                           TextColor="{StaticResource TextSecondary}" VerticalOptions="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Grid>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
+        </Grid>
 
-        <Button Text="Continue →" BackgroundColor="#39FF14" TextColor="Black" FontAttributes="Bold" CornerRadius="10" HeightRequest="50" Command="{Binding FinishOnboardingCommand}"/>
+        <Button Grid.Row="2" Text="Lanjut" Style="{StaticResource BtnBuy}" HeightRequest="54"
+                Command="{Binding FinishOnboardingCommand}"/>
 
-    </VerticalStackLayout>
+    </Grid>
 
-</ContentPage>
+</ContentPage>
