@@ -13,9 +13,11 @@ namespace GigRadarMobile.ViewModels
     {
         private readonly ApiService _api;
         private readonly AuthService _auth;
+        private readonly LocationService _locationService;
 
-        private const double DefaultLat = -6.2088;
-        private const double DefaultLng = 106.8456;
+        // Fallback pusat Jakarta bila lokasi perangkat tidak tersedia.
+        private double _userLat = -6.2088;
+        private double _userLng = 106.8456;
 
         [ObservableProperty] private GigEvent? _gigEvent;
         [ObservableProperty] private Artist? _selectedArtist;
@@ -66,8 +68,13 @@ namespace GigRadarMobile.ViewModels
 
             if (value == null) return;
 
+            _ = LoadFavoriteStateAsync(value.EventId);
+
             IsBuyable = value.Status == "Published";
-            DistanceLabel = $"{GeoHelper.FormatKm(GeoHelper.HaversineKm(DefaultLat, DefaultLng, value.Latitude, value.Longitude))} dari kamu";
+            // Event tanpa koordinat (0,0) tidak punya info jarak yang bermakna — jangan tampilkan "0 m dari kamu".
+            DistanceLabel = (value.Latitude == 0 && value.Longitude == 0)
+                ? ""
+                : $"{GeoHelper.FormatKm(GeoHelper.HaversineKm(_userLat, _userLng, value.Latitude, value.Longitude))} dari kamu";
 
             // Muat tipe tiket (hanya bila tidak dijual via link eksternal).
             if (!value.HasExternalLink)
@@ -76,10 +83,43 @@ namespace GigRadarMobile.ViewModels
             }
         }
 
-        public EventDetailViewModel(ApiService api, AuthService auth)
+        public EventDetailViewModel(ApiService api, AuthService auth, LocationService locationService)
         {
             _api = api;
             _auth = auth;
+            _locationService = locationService;
+            _ = InitLocationAsync();
+        }
+
+        /// <summary>Ambil lokasi perangkat sekali agar jarak akurat (fallback: pusat Jakarta).</summary>
+        private async Task InitLocationAsync()
+        {
+            try
+            {
+                var location = await _locationService.GetLastKnownLocationAsync();
+                if (location != null)
+                {
+                    _userLat = location.Latitude;
+                    _userLng = location.Longitude;
+
+                    // Hitung ulang jarak bila event sudah terlanjur tampil dengan fallback.
+                    if (GigEvent != null)
+                        OnGigEventChanged(GigEvent);
+                }
+            }
+            catch { /* lokasi opsional — fallback Jakarta */ }
+        }
+
+        /// <summary>Muat status favorit event ini (agar ♡ tidak mulai kosong padahal tersimpan).</summary>
+        private async Task LoadFavoriteStateAsync(int eventId)
+        {
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var favorites = await _api.GetFavoritesAsync();
+                IsFavorited = favorites.Any(f => f.EventId == eventId);
+            }
+            catch { /* favorit opsional — biarkan default false */ }
         }
 
         private async Task LoadTicketTypesAsync(int eventId)
@@ -127,8 +167,8 @@ namespace GigRadarMobile.ViewModels
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
-                await _api.ToggleFavoriteAsync(GigEvent.EventId);
-                IsFavorited = !IsFavorited;
+                // State akhir dari server — bukan flip optimistis, agar ♡ selalu sinkron.
+                IsFavorited = await _api.ToggleFavoriteAsync(GigEvent.EventId);
                 FavoriteLabel = IsFavorited ? "Tersimpan" : "Simpan";
             }
             catch (Exception ex)

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GigRadarMobile.Helpers;
@@ -16,6 +17,9 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private string _userCity = "";
         [ObservableProperty] private bool _isEditing;
         [ObservableProperty] private bool _isStaff;
+        [ObservableProperty] private ObservableCollection<FavoriteItem> _favorites = new();
+        [ObservableProperty] private bool _hasFavorites;
+        [ObservableProperty] private string _favoritesSummary = "";
 
         public string Initials => BuildInitials(UserName);
 
@@ -42,6 +46,42 @@ namespace GigRadarMobile.ViewModels
             var role = _auth.GetUserRole();
             IsStaff = role is "EO" or "Admin";
             OnPropertyChanged(nameof(Initials));
+
+            // Favorit (gagal = biarkan kosong, bukan error keras — bukan data utama profil).
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var favorites = await _api.GetFavoritesAsync();
+                Favorites = new ObservableCollection<FavoriteItem>(favorites.Where(f => f.Event != null));
+                HasFavorites = Favorites.Count > 0;
+                FavoritesSummary = Favorites.Count == 0 ? "" : $"{Favorites.Count} event tersimpan";
+            }
+            catch
+            {
+                HasFavorites = false;
+            }
+        }
+
+        /// <summary>Tap event tersimpan → buka detail event (data sudah include venue dari server).</summary>
+        [RelayCommand]
+        private async Task OpenFavoriteAsync(FavoriteItem? item)
+        {
+            if (item?.Event == null) return;
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(EventDetailPage),
+                    new Dictionary<string, object> { { "Event", item.Event } });
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ToggleEditAsync()
+        {
+            IsEditing = !IsEditing;
         }
 
         [RelayCommand]
@@ -76,7 +116,12 @@ namespace GigRadarMobile.ViewModels
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
-                await _api.UpdateProfileAsync(UserName, UserCity);
+                var updated = await _api.UpdateProfileAsync(UserName, UserCity);
+                if (updated == null)
+                {
+                    await Alerts.ShowAsync("Gagal", "Profil tidak bisa disimpan. Periksa koneksi lalu coba lagi.");
+                    return; // Form tetap terbuka, isian dipertahankan.
+                }
 
                 // Sinkronkan kota + nama ke storage lokal supaya Home/Radar ikut berubah.
                 Preferences.Default.Set("user_city", UserCity);
@@ -84,7 +129,7 @@ namespace GigRadarMobile.ViewModels
 
                 IsEditing = false;
                 OnPropertyChanged(nameof(Initials));
-                await Alerts.ShowAsync("Success", "Profil tersimpan!");
+                await Alerts.ShowAsync("Berhasil", "Profil tersimpan!");
             }
             catch (Exception ex)
             {
@@ -93,8 +138,12 @@ namespace GigRadarMobile.ViewModels
         }
 
         [RelayCommand]
-        private void Logout()
+        private async Task LogoutAsync()
         {
+            // Aksi destruktif (sesi hilang) → wajib konfirmasi.
+            var ok = await Alerts.ConfirmAsync("Keluar", "Keluar dari akun GigRadar?", accept: "Keluar", cancel: "Batal");
+            if (!ok) return;
+
             _auth.Logout();
             NavigationHelper.SetRoot(new NavigationPage(
                 new LoginPage(App.ServiceProvider.GetRequiredService<ViewModels.LoginViewModel>())));

@@ -17,13 +17,18 @@
                     <VerticalStackLayout Grid.Column="0" Spacing="6">
                         <Label Text="GIGRADAR" FontFamily="SpaceGroteskBold" FontSize="22" CharacterSpacing="2.5"
                                TextColor="{StaticResource TextPrimary}"/>
-                        <Button Text="{Binding CityLabel, StringFormat='{0} ▾'}" Padding="0" HeightRequest="24"
-                                HorizontalOptions="Start" FontFamily="InterMedium" FontSize="13"
-                                TextColor="{StaticResource TextSecondary}" BackgroundColor="Transparent"/>
+                    <Button Text="{Binding CityLabel, StringFormat='{0} ▾'}" Padding="0" HeightRequest="36"
+                            HorizontalOptions="Start" FontFamily="InterMedium" FontSize="13"
+                            TextColor="{StaticResource TextSecondary}" BackgroundColor="Transparent"
+                            Command="{Binding ChangeCityCommand}"
+                            SemanticProperties.Description="Ubah kota untuk rekomendasi dan radar"/>
                     </VerticalStackLayout>
-                    <Border Grid.Column="1" WidthRequest="42" HeightRequest="42" StrokeThickness="1"
+                    <Border Grid.Column="1" WidthRequest="44" HeightRequest="44" StrokeThickness="1"
                             Stroke="{StaticResource BorderStrong}" BackgroundColor="{StaticResource CardColor}"
                             StrokeShape="RoundRectangle 999" VerticalOptions="Center">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToProfileCommand}"/>
+                        </Border.GestureRecognizers>
                         <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="15"
                                TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Border>
@@ -31,10 +36,23 @@
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="Center"/>
 
+                <!-- ===== Error state (empty ≠ error) ===== -->
+                <Frame IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
+                       BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
+                        <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                Command="{Binding LoadEventsCommand}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
                 <!-- ===== Hero ===== -->
                 <VerticalStackLayout Spacing="12" IsVisible="{Binding HasFeatured}">
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="{Binding GreetingEyebrow}" Style="{StaticResource Eyebrow}"/>
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                            <BoxView WidthRequest="24" HeightRequest="2" Color="{StaticResource StagePink}" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding GreetingEyebrow}" Style="{StaticResource StageEyebrow}"/>
+                        </Grid>
                         <Label Text="Apa yang lagi rame malam ini?"
                                Style="{StaticResource Display}" FontSize="30" LineHeight="1.05"/>
                     </VerticalStackLayout>
@@ -58,6 +76,8 @@
                             </BoxView>
 
                             <VerticalStackLayout Padding="16" Spacing="10" VerticalOptions="End">
+                                <Label Text="LIVE PICK • GIGRADAR" FontFamily="InterSemiBold" FontSize="10"
+                                       CharacterSpacing="1.4" TextColor="{StaticResource StageAmber}"/>
                                 <HorizontalStackLayout Spacing="8">
                                     <Border IsVisible="{Binding FeaturedEvent.GenreName, Converter={StaticResource StringNotEmptyConverter}}"
                                             Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
@@ -129,7 +149,7 @@
                     <VerticalStackLayout Spacing="8">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                             <VerticalStackLayout Spacing="2">
-                                <Label Text="RADAR" Style="{StaticResource Eyebrow}"/>
+                                <Label Text="RADAR / LIVE SIGNAL" Style="{StaticResource Eyebrow}"/>
                                 <Label Text="Gig di sekitar kamu" Style="{StaticResource Subheading}"/>
                             </VerticalStackLayout>
                             <Button Grid.Column="1" Text="Buka radar" Style="{StaticResource BtnSmall}"
@@ -218,4 +238,4 @@
         </ScrollView>
     </RefreshView>
 
-</ContentPage>
+</ContentPage>

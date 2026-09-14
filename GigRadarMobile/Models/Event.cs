@@ -28,16 +28,17 @@ namespace GigRadarMobile.Models
         {
             "SoldOut" => "Tiket Habis",
             "Completed" => "Event Selesai",
-            "Draft" => "Draft",
+            "Draft" => "Draf",
             _ => "Aktif"
         };
 
+        // Nilai literal = token design system (DangerColor/TextMuted/WarningColor/SuccessColor).
         public Color StatusColor => Status switch
         {
-            "SoldOut" => Color.FromArgb("#FF6B6B"),
-            "Completed" => Color.FromArgb("#9E9E9E"),
-            "Draft" => Color.FromArgb("#FFB020"),
-            _ => Color.FromArgb("#39FF14")
+            "SoldOut" => Color.FromArgb("#F43F5E"),
+            "Completed" => Color.FromArgb("#71717A"),
+            "Draft" => Color.FromArgb("#F59E0B"),
+            _ => Color.FromArgb("#22C55E")
         };
 
         public bool ShowsStatusBadge => Status != "Published";

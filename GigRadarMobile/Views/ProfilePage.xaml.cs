@@ -18,9 +18,4 @@ public partial class ProfilePage : ContentPage
         base.OnAppearing();
         await _viewModel.LoadProfileCommand.ExecuteAsync(null);
     }
-
-    private void OnEditClicked(object? sender, EventArgs e)
-    {
-        _viewModel.IsEditing = !_viewModel.IsEditing;
-    }
 }

@@ -14,6 +14,10 @@ namespace GigRadarMobile.ViewModels
 
         [ObservableProperty] private ObservableCollection<Ticket> _tickets = new();
         [ObservableProperty] private bool _isLoading;
+        [ObservableProperty] private bool _isRefreshing;
+        [ObservableProperty] private bool _hasError;
+        [ObservableProperty] private string _errorMessage = "";
+        [ObservableProperty] private bool _hasTickets;
 
         public TicketViewModel(ApiService api, AuthService auth)
         {
@@ -26,20 +30,25 @@ namespace GigRadarMobile.ViewModels
         {
             if (IsLoading) return;
             IsLoading = true;
+            HasError = false;
+            ErrorMessage = "";
 
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
                 var tickets = await _api.GetMyTicketsAsync();
                 Tickets = new ObservableCollection<Ticket>(tickets);
+                HasTickets = tickets.Count > 0;
             }
             catch (Exception ex)
             {
-                await Alerts.ShowAsync("Error", ex.Message);
+                HasError = true;
+                ErrorMessage = "Gagal memuat tiket: " + ex.Message;
             }
             finally
             {
                 IsLoading = false;
+                IsRefreshing = false;
             }
         }
     }

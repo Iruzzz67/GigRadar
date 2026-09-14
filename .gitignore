@@ -60,3 +60,7 @@ out/
 *.pdb
 *.exe
 publish/
+
+# Database runtime (seed/user data — jangan di-track)
+GigRadarApi/GigRadar.db
+GigRadarApi/GigRadar.db-*

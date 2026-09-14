@@ -31,16 +31,18 @@ namespace GigRadarMobile.Models
         {
             "SoldOut" => "Tiket Habis",
             "Completed" => "Selesai",
-            "Draft" => "Draft",
+            "Draft" => "Draf",
             _ => "Aktif"
         };
         public string SoldLabel => $"{TicketsSold} tiket terjual · {RemainingStock} stok tersisa";
+        // Nilai literal = token design system (SuccessColor/WarningColor/DangerColor/TextMuted)
+        // karena C# tidak bisa memakai StaticResource.
         public Color StatusColor => Status switch
         {
-            "SoldOut" => Color.FromArgb("#FF6B6B"),
-            "Completed" => Color.FromArgb("#9E9E9E"),
-            "Draft" => Color.FromArgb("#FFB020"),
-            _ => Color.FromArgb("#39FF14")
+            "SoldOut" => Color.FromArgb("#F43F5E"),
+            "Completed" => Color.FromArgb("#71717A"),
+            "Draft" => Color.FromArgb("#F59E0B"),
+            _ => Color.FromArgb("#22C55E")
         };
 
         /// <summary>Status aktif = Published (bisa dijual).</summary>
@@ -51,5 +53,8 @@ namespace GigRadarMobile.Models
 
         /// <summary>Label aksi utama: tandai habis (saat aktif) atau aktifkan lagi (saat tidak aktif).</summary>
         public string PrimaryActionLabel => IsActive ? "🎟️ Tandai Habis" : "🔄 Aktifkan Lagi";
+
+        /// <summary>Label status bahasa tunggal (ID) — konsisten dengan badge halaman lain.</summary>
+        public string StatusLabelId => StatusLabel;
     }
 }

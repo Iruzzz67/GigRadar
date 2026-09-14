@@ -34,6 +34,8 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private bool _hasFeatured;
         [ObservableProperty] private RadarDrawable _teaserRadar = new();
         [ObservableProperty] private bool _hasWeekendEvents;
+        [ObservableProperty] private bool _hasError;
+        [ObservableProperty] private string _errorMessage = "";
 
         public enum LocationStatusType
         {
@@ -70,6 +72,8 @@ namespace GigRadarMobile.ViewModels
         {
             if (IsLoading) return;
             IsLoading = true;
+            HasError = false;
+            ErrorMessage = "";
 
             try
             {
@@ -140,12 +144,62 @@ namespace GigRadarMobile.ViewModels
             }
             catch (Exception ex)
             {
-                await Alerts.ShowAsync("Error", $"Gagal memuat: {ex.Message}");
+                // Error tampil inline dengan tombol coba lagi — bukan empty state yang menyesatkan.
+                HasError = true;
+                ErrorMessage = "Gagal memuat: " + ex.Message;
             }
             finally
             {
                 IsLoading = false;
                 IsRefreshing = false;
+            }
+        }
+
+        /// <summary>Ubah kota via dialog — tersimpan ke profil (PUT /api/users/me) + preference lokal.</summary>
+        [RelayCommand]
+        private async Task ChangeCityAsync()
+        {
+            var newCity = await Alerts.PromptAsync("Ubah kota",
+                "Kota untuk rekomendasi dan radar kamu:",
+                placeholder: "Nama kota", initialValue: CityLabel);
+
+            if (string.IsNullOrWhiteSpace(newCity)) return;
+            var trimmed = newCity.Trim();
+            if (string.Equals(trimmed, CityLabel, StringComparison.OrdinalIgnoreCase)) return;
+
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                // name & photoUrl null → nilai lama dipertahankan server.
+                var updated = await _api.UpdateProfileAsync(name: null, city: trimmed);
+                if (updated == null)
+                {
+                    await Alerts.ShowAsync("Gagal", "Kota tidak bisa disimpan. Periksa koneksi lalu coba lagi.");
+                    return;
+                }
+
+                Preferences.Default.Set("user_city", trimmed);
+                CityLabel = trimmed;
+                GreetingEyebrow = $"MALAM INI DI {trimmed.ToUpperInvariant()}";
+                await LoadEventsCommand.ExecuteAsync(null);
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Avatar di header → tab Profile.</summary>
+        [RelayCommand]
+        private async Task GoToProfileAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync("//profile");
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
             }
         }
 

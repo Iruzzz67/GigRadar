@@ -86,8 +86,10 @@ namespace GigRadarMobile.Models
         public DateTime UpdatedAt { get; set; }
 
         public string DateLabel => CreatedAt.ToString("dd MMM yyyy");
-        public string StatusLabel => IsPublished ? "Published" : "Draft";
-        public Color StatusColor => IsPublished ? Color.FromArgb("#39FF14") : Color.FromArgb("#B0B0B0");
+        /// <summary>Label status post — bahasa tunggal (ID) agar konsisten dengan badge lain.</summary>
+        public string StatusLabel => IsPublished ? "Tayang" : "Draf";
+        // Nilai literal = token design system (SuccessColor/TextMuted) — C# tidak bisa StaticResource.
+        public Color StatusColor => IsPublished ? Color.FromArgb("#22C55E") : Color.FromArgb("#71717A");
     }
 
     public class ArtistMember
@@ -154,14 +156,14 @@ namespace GigRadarMobile.Models
         {
             "SoldOut" => "Tiket Habis",
             "Completed" => "Selesai",
-            "Draft" => "Draft",
-            _ => "Published"
+            "Draft" => "Draf",
+            _ => "Aktif"
         };
         public Color StatusColor => Status switch
         {
-            "SoldOut" => Color.FromArgb("#FFB020"),
-            "Completed" => Color.FromArgb("#B0B0B0"),
-            _ => Color.FromArgb("#39FF14")
+            "SoldOut" => Color.FromArgb("#F59E0B"),
+            "Completed" => Color.FromArgb("#71717A"),
+            _ => Color.FromArgb("#22C55E")
         };
     }
 }

@@ -13,6 +13,6 @@ public partial class ArtistDashboardPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        (BindingContext as ArtistDashboardViewModel)?.Load();
+        (BindingContext as ArtistDashboardViewModel)?.LoadCommand.Execute(null);
     }
 }

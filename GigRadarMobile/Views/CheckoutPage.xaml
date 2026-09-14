@@ -46,16 +46,22 @@
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Nama lengkap" Style="{StaticResource Caption}"/>
                     <Entry Text="{Binding FullName}" Placeholder="Nama sesuai KTP"/>
+                    <Label Text="{Binding FullNameError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                           IsVisible="{Binding FullNameError, Converter={StaticResource StringNotEmptyConverter}}"/>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Nomor telepon" Style="{StaticResource Caption}"/>
                     <Entry Text="{Binding Phone}" Placeholder="08xxxxxxxxxx" Keyboard="Telephone"/>
+                    <Label Text="{Binding PhoneError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                           IsVisible="{Binding PhoneError, Converter={StaticResource StringNotEmptyConverter}}"/>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Email" Style="{StaticResource Caption}"/>
                     <Entry Text="{Binding Email}" Placeholder="email@contoh.com" Keyboard="Email"/>
+                    <Label Text="{Binding EmailError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                           IsVisible="{Binding EmailError, Converter={StaticResource StringNotEmptyConverter}}"/>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Spacing="6">
@@ -65,6 +71,8 @@
                         <DatePicker Date="{Binding BirthDate}" MaximumDate="{x:Static sys:DateTime.Today}"
                                     Format="dd MMM yyyy" FontSize="15" TextColor="{StaticResource TextPrimary}"/>
                     </Border>
+                    <Label Text="{Binding BirthDateError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                           IsVisible="{Binding BirthDateError, Converter={StaticResource StringNotEmptyConverter}}"/>
                 </VerticalStackLayout>
             </VerticalStackLayout>
 

@@ -37,6 +37,8 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private bool _hasEvents;
         [ObservableProperty] private bool _isFilterActive;
         [ObservableProperty] private string _emptyMessage = "Cari gig di sekitar lokasimu.";
+        [ObservableProperty] private bool _hasError;
+        [ObservableProperty] private string _errorMessage = "";
         [ObservableProperty] private GigEvent? _selectedEvent;
         [ObservableProperty] private bool _hasSelection;
         [ObservableProperty] private string _selectedName = "";
@@ -94,24 +96,28 @@ namespace GigRadarMobile.ViewModels
         {
             if (IsLoading) return;
             IsLoading = true;
+            HasError = false;
+            ErrorMessage = "";
 
             try
             {
                 var location = await TryGetLocationAsync();
                 if (location != null)
                 {
-                    _centerLat = location.Latitude;
-                    _centerLng = location.Longitude;
+                    CenterLat = location.Latitude;
+                    CenterLng = location.Longitude;
                 }
 
                 _api.SetAuthToken(_auth.GetToken());
-                _allEvents = await _api.GetNearbyEventsAsync(_centerLat, _centerLng, RadiusKm);
+                _allEvents = await _api.GetNearbyEventsAsync(CenterLat, CenterLng, RadiusKm);
 
                 ApplyFilters();
             }
             catch (Exception ex)
             {
-                await Alerts.ShowAsync("Error", $"Gagal memuat radar: {ex.Message}");
+                // Error inline dengan retry — bukan popup yang hilang dan bukan empty state palsu.
+                HasError = true;
+                ErrorMessage = "Gagal memuat radar: " + ex.Message;
             }
             finally
             {
@@ -167,12 +173,21 @@ namespace GigRadarMobile.ViewModels
             UpdateSelectedPreview();
         }
 
+        public void SelectEventById(int eventId)
+        {
+            var eventItem = Events.FirstOrDefault(item => item.EventId == eventId);
+            if (eventItem == null) return;
+
+            SelectedEvent = eventItem;
+            UpdateSelectedPreview();
+        }
+
         private void ApplyFilters()
         {
             var selectedGenre = GenreFilters.FirstOrDefault(f => f.IsSelected && f.Name != "Semua")?.Name;
 
             var nodes = RadarBuilder.Build(
-                _allEvents, _centerLat, _centerLng, RadiusKm,
+                _allEvents, CenterLat, CenterLng, RadiusKm,
                 genre: selectedGenre, tonightOnly: TonightOnly);
 
             Radar.Nodes = nodes;
@@ -213,7 +228,7 @@ namespace GigRadarMobile.ViewModels
             var e = SelectedEvent;
             SelectedName = e.Name;
             SelectedMeta = $"{e.VenueName} • {e.TimeFormatted}";
-            SelectedDistance = $"{GeoHelper.FormatKm(GeoHelper.HaversineKm(_centerLat, _centerLng, e.Latitude, e.Longitude))} dari kamu";
+            SelectedDistance = $"{GeoHelper.FormatKm(GeoHelper.HaversineKm(CenterLat, CenterLng, e.Latitude, e.Longitude))} dari kamu";
             SelectedPrice = e.PriceFormatted;
             SelectedDay = e.StartDate.ToString("dd");
             SelectedMonth = e.StartDate.ToString("MMM").ToUpperInvariant();
@@ -244,7 +259,7 @@ namespace GigRadarMobile.ViewModels
 
         private async Task<Location?> TryGetLocationAsync()
         {
-            return await _locationService.GetCurrentLocationAsync();
+            return await _locationService.GetBestAvailableLocationAsync();
         }
     }
-}
+}

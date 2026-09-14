@@ -17,7 +17,7 @@
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
             <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
-                   BackgroundColor="#2A1219" BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                   BackgroundColor="{StaticResource DangerSoft}" BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
                 <Label Text="{Binding StatusMessage}" TextColor="{StaticResource DangerColor}" FontSize="13"/>
             </Frame>
 

@@ -150,6 +150,16 @@
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
+                <!-- Error state -->
+                <Frame IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
+                       BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
+                        <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                Command="{Binding RetryCommand}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
                 <!-- Hasil header -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" IsVisible="{Binding HasResults}">
                     <Label Text="{Binding ResultCountLabel}" Style="{StaticResource Caption}" VerticalOptions="Center"/>
@@ -157,8 +167,8 @@
                             Command="{Binding ClearFiltersCommand}"/>
                 </Grid>
 
-                <!-- LIST view -->
-                <VerticalStackLayout Spacing="2" IsVisible="{Binding IsListView}">
+                <!-- LIST view (juga tampil di Radar — radar bukan satu-satunya akses info) -->
+                <VerticalStackLayout Spacing="2" IsVisible="{Binding IsEventListVisible}">
                     <CollectionView ItemsSource="{Binding Events}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:GigEvent">
@@ -184,9 +194,9 @@
                     </CollectionView>
                 </VerticalStackLayout>
 
-                <!-- GRID view -->
+                <!-- GRID view (tinggi proporsional, bukan 600 fix — scroll mengikuti isi) -->
                 <CollectionView IsVisible="{Binding IsGridView}" ItemsSource="{Binding Events}" SelectionMode="None"
-                                HeightRequest="600">
+                                HeightRequest="{Binding GridHeight}">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="12"/>
                     </CollectionView.ItemsLayout>

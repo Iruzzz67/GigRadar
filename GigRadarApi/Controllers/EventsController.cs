@@ -157,27 +157,11 @@ namespace GigRadarApi.Controllers
             public string? Status { get; set; }
         }
 
+        /// <summary>Delegasi ke EventValidator — aturan validasi live di Services (bisa di-unit-test).</summary>
         private IActionResult? ValidateEvent(Event evt)
         {
-            if (evt == null)
-                return BadRequest(new { message = "Body event wajib dikirim" });
-
-            if (string.IsNullOrWhiteSpace(evt.Name))
-                return BadRequest(new { message = "Nama event wajib diisi" });
-
-            if (evt.EndDate < evt.StartDate)
-                return BadRequest(new { message = "EndDate tidak boleh sebelum StartDate" });
-
-            if (evt.MinPrice < 0 || evt.MaxPrice < 0)
-                return BadRequest(new { message = "Harga tidak boleh negatif" });
-
-            if (evt.MinPrice > evt.MaxPrice)
-                return BadRequest(new { message = "MinPrice tidak boleh lebih besar dari MaxPrice" });
-
-            if (evt.Capacity < 0)
-                return BadRequest(new { message = "Kapasitas tidak boleh negatif" });
-
-            return null;
+            var errors = EventValidator.Validate(evt);
+            return errors.Count == 0 ? null : BadRequest(new { message = errors[0] });
         }
     }
 }

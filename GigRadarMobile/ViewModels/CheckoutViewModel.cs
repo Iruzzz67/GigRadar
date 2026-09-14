@@ -23,9 +23,15 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private string _email;
         [ObservableProperty] private DateTime _birthDate = new(2000, 1, 1);
 
+        // Error inline per field (UX guideline #8: error dekat field, bukan hanya alert)
+        [ObservableProperty] private string _fullNameError = "";
+        [ObservableProperty] private string _phoneError = "";
+        [ObservableProperty] private string _emailError = "";
+        [ObservableProperty] private string _birthDateError = "";
+
         [ObservableProperty] private bool _isProcessing;
 
-        public const int MinimumAge = 17;
+        public const int MinimumAge = CheckoutValidators.MinimumAge;
 
         public CheckoutViewModel(ApiService api, AuthService auth)
         {
@@ -55,17 +61,18 @@ namespace GigRadarMobile.ViewModels
             OnPropertyChanged(nameof(PriceFormatted));
         }
 
+        // Kosongkan error saat pengguna memperbaiki isian.
+        partial void OnFullNameChanged(string value) => FullNameError = "";
+        partial void OnPhoneChanged(string value) => PhoneError = "";
+        partial void OnEmailChanged(string value) => EmailError = "";
+        partial void OnBirthDateChanged(DateTime value) => BirthDateError = "";
+
         [RelayCommand]
         private async Task PayAsync()
         {
             if (IsProcessing) return;
 
-            var validation = ValidateBuyer();
-            if (validation != null)
-            {
-                await Alerts.ShowAsync("Verifikasi Gagal", validation);
-                return;
-            }
+            if (!ValidateBuyer()) return;
 
             IsProcessing = true;
             try
@@ -101,37 +108,35 @@ namespace GigRadarMobile.ViewModels
         }
 
         /// <summary>
-        /// Verifikasi data diri: nama, telepon, email, dan umur minimal — menentukan
-        /// apakah pembeli diperbolehkan membeli tiket.
+        /// Verifikasi data diri: nama, telepon, email, dan umur minimal. Error ditampilkan
+        /// inline di bawah masing-masing field; mengembalikan true bila semua valid.
         /// </summary>
-        private string? ValidateBuyer()
+        private bool ValidateBuyer()
         {
-            if (string.IsNullOrWhiteSpace(FullName) || FullName.Trim().Length < 3)
-                return "Nama lengkap wajib diisi (minimal 3 karakter).";
+            var isValid = true;
 
-            var digits = new string(Phone.Where(char.IsDigit).ToArray());
-            if (digits.Length < 9)
-                return "Nomor telepon tidak valid (minimal 9 digit).";
+            FullNameError = CheckoutValidators.IsValidFullName(FullName)
+                ? ""
+                : "Nama wajib diisi (minimal 3 karakter).";
+            if (FullNameError.Length > 0) isValid = false;
 
-            if (string.IsNullOrWhiteSpace(Email) || !Email.Contains('@') || !Email.Contains('.'))
-                return "Format email tidak valid.";
+            PhoneError = CheckoutValidators.IsValidPhone(Phone)
+                ? ""
+                : "Nomor telepon tidak valid (minimal 9 digit).";
+            if (PhoneError.Length > 0) isValid = false;
 
-            if (BirthDate == default)
-                return "Tanggal lahir wajib diisi.";
+            EmailError = CheckoutValidators.IsValidEmail(Email)
+                ? ""
+                : "Format email tidak valid.";
+            if (EmailError.Length > 0) isValid = false;
 
-            var age = CalculateAge(BirthDate);
-            if (age < MinimumAge)
-                return $"Maaf, kamu belum memenuhi syarat umur minimal {MinimumAge} tahun untuk membeli tiket ini.";
+            var age = CheckoutValidators.CalculateAge(BirthDate);
+            BirthDateError = age < MinimumAge
+                ? $"Umur minimal {MinimumAge} tahun untuk membeli tiket ini."
+                : "";
+            if (BirthDateError.Length > 0) isValid = false;
 
-            return null;
-        }
-
-        private static int CalculateAge(DateTime birthDate)
-        {
-            var today = DateTime.Today;
-            var age = today.Year - birthDate.Year;
-            if (birthDate.Date > today.AddYears(-age)) age--;
-            return age;
+            return isValid;
         }
     }
 }

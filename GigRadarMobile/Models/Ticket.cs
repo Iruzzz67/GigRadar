@@ -22,5 +22,21 @@ namespace GigRadarMobile.Models
         public string VenueName => Event?.VenueName ?? "TBA";
         public string PurchasedFormatted => PurchasedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm");
         public string QrDisplay => QRCode.Length > 24 ? QRCode[..24] + "..." : QRCode;
+
+        /// <summary>Label status tiket (Active/Used/Cancelled).</summary>
+        public string StatusLabel => Status switch
+        {
+            "Used" => "Sudah dipakai",
+            "Cancelled" => "Dibatalkan",
+            _ => "Aktif"
+        };
+
+        // Nilai literal = token design system (SuccessColor/TextMuted/DangerColor).
+        public Color StatusColor => Status switch
+        {
+            "Used" => Color.FromArgb("#71717A"),
+            "Cancelled" => Color.FromArgb("#F43F5E"),
+            _ => Color.FromArgb("#22C55E")
+        };
     }
 }

@@ -37,7 +37,8 @@
                                     </VerticalStackLayout>
                                     <Button Grid.Column="1" VerticalOptions="Center" Text="▼" FontSize="12"
                                             BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource PrimaryColor}"
-                                            CornerRadius="8" HeightRequest="36" Padding="12,0"
+                                            CornerRadius="8" HeightRequest="44" Padding="12,0"
+                                            SemanticProperties.Description="Buka atau tutup daftar tipe tiket event ini"
                                             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ToggleEventCommand}"
                                             CommandParameter="{Binding .}">
                                         <Button.Triggers>
@@ -76,13 +77,13 @@
                                                                    TextColor="{Binding StockColor}" HorizontalTextAlignment="End"/>
                                                         </VerticalStackLayout>
                                                         <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
-                                                            <Button Text="Edit" FontSize="12" HeightRequest="30" Padding="12,0"
+                                                            <Button Text="Edit" FontSize="12" HeightRequest="36" Padding="12,0"
                                                                     BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}"
                                                                     CornerRadius="8"
                                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=EditTypeCommand}"
                                                                     CommandParameter="{Binding .}"/>
-                                                            <Button Text="Hapus" FontSize="12" HeightRequest="30" Padding="12,0"
-                                                                    BackgroundColor="#2A1219" TextColor="{StaticResource DangerColor}"
+                                                            <Button Text="Hapus" FontSize="12" HeightRequest="36" Padding="12,0"
+                                                                    BackgroundColor="{StaticResource DangerSoft}" TextColor="{StaticResource DangerColor}"
                                                                     CornerRadius="8"
                                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=DeleteTypeCommand}"
                                                                     CommandParameter="{Binding .}"/>

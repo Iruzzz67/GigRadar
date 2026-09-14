@@ -26,24 +26,83 @@ namespace GigRadarMobile.Services
                     : new AuthenticationHeaderValue("Bearer", token);
         }
 
+        /// <summary>Pesan ramah untuk exception jaringan yang umum (tanpa bahasa Inggris teknis).</summary>
+        private static string FriendlyNetworkMessage(Exception ex)
+        {
+            if (ex is HttpRequestException || ex.InnerException is HttpRequestException)
+                return "Tidak bisa terhubung ke server. Pastikan API berjalan lalu coba lagi.";
+            if (ex is TaskCanceledException)
+                return "Koneksi timeout. Periksa jaringan lalu coba lagi.";
+            return ex.Message;
+        }
+
+        /// <summary>
+        /// GET yang melempar exception saat jaringan gagal atau server merespons error —
+        /// sehingga ViewModel bisa membedakan "memang kosong" dari "gagal memuat"
+        /// (error state inline + retry di tiap halaman).
+        /// </summary>
         private async Task<T?> GetAsync<T>(string url)
         {
-            var response = await _http.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return default;
+            HttpResponseMessage response;
+            try
+            {
+                response = await _http.GetAsync(url);
+            }
+            catch (Exception ex)
+            {
+                throw new HttpRequestException(FriendlyNetworkMessage(ex), ex);
+            }
+
+            if (!response.IsSuccessStatusCode)
+                throw new HttpRequestException($"Server merespons {(int)response.StatusCode}");
+
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(json, _jsonOptions);
         }
 
+        /// <summary>
+        /// POST: melempar exception saat jaringan gagal atau server error (5xx).
+        /// Untuk 4xx, body tetap dikembalikan agar pesan validasi dari server
+        /// (mis. "Email sudah terdaftar") bisa dibaca oleh pemanggil.
+        /// </summary>
         private async Task<T?> PostAsync<T>(string url, object data)
         {
-            var response = await _http.PostAsJsonAsync(url, data, _jsonOptions);
+            HttpResponseMessage response;
+            try
+            {
+                response = await _http.PostAsJsonAsync(url, data, _jsonOptions);
+            }
+            catch (Exception ex)
+            {
+                throw new HttpRequestException(FriendlyNetworkMessage(ex), ex);
+            }
+
+            if ((int)response.StatusCode >= 500)
+                throw new HttpRequestException($"Server sedang bermasalah ({(int)response.StatusCode}). Coba lagi nanti.");
+
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(json, _jsonOptions);
         }
 
+        /// <summary>
+        /// PUT: melempar exception saat jaringan gagal atau server error (5xx).
+        /// Untuk 4xx, body tetap dikembalikan agar pemanggil bisa menilai hasilnya.
+        /// </summary>
         private async Task<T?> PutAsync<T>(string url, object data)
         {
-            var response = await _http.PutAsJsonAsync(url, data, _jsonOptions);
+            HttpResponseMessage response;
+            try
+            {
+                response = await _http.PutAsJsonAsync(url, data, _jsonOptions);
+            }
+            catch (Exception ex)
+            {
+                throw new HttpRequestException(FriendlyNetworkMessage(ex), ex);
+            }
+
+            if ((int)response.StatusCode >= 500)
+                throw new HttpRequestException($"Server sedang bermasalah ({(int)response.StatusCode}). Coba lagi nanti.");
+
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(json, _jsonOptions);
         }
@@ -507,9 +566,23 @@ namespace GigRadarMobile.Services
 
         // ── Favorites ─────────────────────────────────────
 
-        public async Task ToggleFavoriteAsync(int eventId)
+        /// <summary>Toggle favorit — mengembalikan state akhir dari server (saved = true berarti tersimpan).</summary>
+        public async Task<bool> ToggleFavoriteAsync(int eventId)
         {
-            await PostAsync<object>($"/api/users/favorites/{eventId}", new { });
+            var envelope = await PostAsync<FavoriteToggleEnvelope>($"/api/users/favorites/{eventId}", new { });
+            return envelope?.Saved ?? false;
+        }
+
+        private class FavoriteToggleEnvelope
+        {
+            public string? Message { get; set; }
+            public bool Saved { get; set; }
+        }
+
+        /// <summary>Daftar event yang disimpan user login (GET /api/users/favorites).</summary>
+        public async Task<List<FavoriteItem>> GetFavoritesAsync()
+        {
+            return await GetAsync<List<FavoriteItem>>("/api/users/favorites") ?? new();
         }
 
         private class PurchaseEnvelope
@@ -553,6 +626,15 @@ namespace GigRadarMobile.Services
         {
             public string Message { get; set; } = "";
         }
+    }
+
+    /// <summary>Baris favorit dari GET /api/users/favorites (event ikut disertakan server).</summary>
+    public class FavoriteItem
+    {
+        public int FavoriteId { get; set; }
+        public int UserId { get; set; }
+        public int EventId { get; set; }
+        public GigEvent? Event { get; set; }
     }
 
     /// <summary>Baris permohonan role untuk konsol Admin (GET /api/users/role-requests).</summary>

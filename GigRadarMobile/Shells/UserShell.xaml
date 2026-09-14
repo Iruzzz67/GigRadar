@@ -4,15 +4,19 @@
        xmlns:views="clr-namespace:GigRadarMobile.Views"
        x:Class="GigRadarMobile.Shells.UserShell"
        Shell.FlyoutBehavior="Disabled"
+    Shell.BackgroundColor="{StaticResource BackgroundColor}"
+    Shell.TabBarBackgroundColor="{StaticResource SurfaceColor}"
+    Shell.TabBarTitleColor="{StaticResource PrimaryColor}"
+    Shell.TabBarUnselectedColor="{StaticResource TextMuted}"
        Title="GigRadar">
 
     <!-- GIGRADAR_ROLE_SYSTEM.md §26 — UserShell -->
     <TabBar>
-        <ShellContent Title="Discover" ContentTemplate="{DataTemplate views:HomePage}" Route="home"/>
-        <ShellContent Title="Explore" ContentTemplate="{DataTemplate views:ExplorePage}" Route="explore"/>
-        <ShellContent Title="Radar" ContentTemplate="{DataTemplate views:RadarPage}" Route="radar"/>
-        <ShellContent Title="Tickets" ContentTemplate="{DataTemplate views:TicketPage}" Route="tickets"/>
-        <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
+        <ShellContent Title="Discover" Icon="home.png" ContentTemplate="{DataTemplate views:HomePage}" Route="home"/>
+        <ShellContent Title="Explore" Icon="search.png" ContentTemplate="{DataTemplate views:ExplorePage}" Route="explore"/>
+        <ShellContent Title="Radar" Icon="radar.png" ContentTemplate="{DataTemplate views:RadarPage}" Route="radar"/>
+        <ShellContent Title="Tickets" Icon="ticket.png" ContentTemplate="{DataTemplate views:TicketPage}" Route="tickets"/>
+        <ShellContent Title="Profile" Icon="profile.png" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
     </TabBar>
 
 </Shell>

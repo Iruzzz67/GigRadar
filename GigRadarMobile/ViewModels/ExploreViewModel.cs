@@ -36,6 +36,8 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private bool _hasVenues;
         [ObservableProperty] private string _emptyMessage = "";
         [ObservableProperty] private bool _isFiltered;
+        [ObservableProperty] private bool _hasError;
+        [ObservableProperty] private string _errorMessage = "";
         [ObservableProperty] private string _selectedGenre = "Semua";
         [ObservableProperty] private string _dateFilter = "Semua";
         [ObservableProperty] private double _radiusKm = 25;
@@ -69,6 +71,8 @@ namespace GigRadarMobile.ViewModels
         private async Task InitializeAsync()
         {
             IsLoading = true;
+            HasError = false;
+            ErrorMessage = "";
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
@@ -100,12 +104,21 @@ namespace GigRadarMobile.ViewModels
             }
             catch (Exception ex)
             {
-                EmptyMessage = $"Gagal memuat: {ex.Message}";
+                HasError = true;
+                ErrorMessage = "Gagal memuat data: " + ex.Message;
+                EmptyMessage = "";
             }
             finally
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task RetryAsync()
+        {
+            _initialized = false;
+            await OnPageAppearingAsync();
         }
 
         partial void OnSearchTextChanged(string value)
@@ -127,11 +140,21 @@ namespace GigRadarMobile.ViewModels
             _debounce.Start();
         }
 
+        /// <summary>List event tetap tampil di List dan Radar — radar bukan satu-satunya cara akses info.</summary>
+        public bool IsEventListVisible => IsListView || IsRadarView;
+
+        /// <summary>
+        /// Tinggi grid proporsional terhadap isi (dulu fix 600px): membesar mengikuti
+        /// jumlah event (maks 1200), tidak menyisakan ruang kosong saat hasil sedikit.
+        /// </summary>
+        public double GridHeight => Math.Min(1200, Math.Max(300, Events.Count * 190.0));
+
         partial void OnViewModeChanged(string value)
         {
             IsListView = value == "List";
             IsGridView = value == "Grid";
             IsRadarView = value == "Radar";
+            OnPropertyChanged(nameof(IsEventListVisible));
         }
 
         [RelayCommand]
@@ -229,6 +252,7 @@ namespace GigRadarMobile.ViewModels
                 .ToList();
 
             Events = new ObservableCollection<GigEvent>(withDistance.Select(x => x.Event));
+            OnPropertyChanged(nameof(GridHeight));
 
             // Artist + venue hanya dicari saat ada query.
             if (!string.IsNullOrEmpty(query))

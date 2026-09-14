@@ -28,9 +28,10 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private bool _hasEvents;
 
         public string RoleBadge => UserRole.ToUpperInvariant();
+        // Nilai literal = token design system (PrimaryColor / GenreColors.Electronic).
         public Color RoleBadgeColor => string.Equals(UserRole, "Admin", StringComparison.OrdinalIgnoreCase)
-            ? Color.FromArgb("#39FF14")
-            : Color.FromArgb("#7B2FFF");
+            ? Color.FromArgb("#A3FF12")
+            : Color.FromArgb("#7DD3FC");
 
         public string Initials => BuildInitials(UserName);
 
@@ -101,7 +102,13 @@ namespace GigRadarMobile.ViewModels
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
-                await _api.UpdateProfileAsync(UserName, UserCity, UserPhotoUrl);
+                var updated = await _api.UpdateProfileAsync(UserName, UserCity, UserPhotoUrl);
+                if (updated == null)
+                {
+                    await Alerts.ShowAsync("Gagal", "Data diri tidak bisa disimpan. Periksa koneksi lalu coba lagi.");
+                    return; // Form tetap terbuka, isian dipertahankan.
+                }
+
                 _auth.UpdateStoredName(UserName);
                 IsEditing = false;
                 await Alerts.ShowAsync("Berhasil", "Data diri tersimpan!");

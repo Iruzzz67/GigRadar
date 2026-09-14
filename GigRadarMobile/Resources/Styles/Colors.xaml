@@ -10,17 +10,18 @@
     -->
 
     <!-- Surfaces -->
-    <Color x:Key="BackgroundColor">#0A0A0B</Color>
-    <Color x:Key="SurfaceColor">#131316</Color>
-    <Color x:Key="CardColor">#18181B</Color>
-    <Color x:Key="CardElevatedColor">#1E1E23</Color>
-    <Color x:Key="BorderColor">#26262C</Color>
-    <Color x:Key="BorderStrong">#3A3A44</Color>
+    <Color x:Key="BackgroundColor">#0B0A0E</Color>
+    <Color x:Key="SurfaceColor">#141218</Color>
+    <Color x:Key="CardColor">#1A1720</Color>
+    <Color x:Key="CardElevatedColor">#24202B</Color>
+    <Color x:Key="BorderColor">#2C2733</Color>
+    <Color x:Key="BorderStrong">#494052</Color>
 
     <!-- Text -->
     <Color x:Key="TextPrimary">#F4F4F5</Color>
     <Color x:Key="TextSecondary">#A1A1AA</Color>
-    <Color x:Key="TextMuted">#71717A</Color>
+    <!-- #8B8B93 ≈ 5.0:1 di BackgroundColor (sebelumnya #71717A ≈ 4.3:1 — di bawah WCAG 4.5:1) -->
+    <Color x:Key="TextMuted">#8B8B93</Color>
     <Color x:Key="OnDark">#F4F4F5</Color>
 
     <!-- Accent (radar signal lime) -->
@@ -29,10 +30,16 @@
     <Color x:Key="AccentSoft">#1B260D</Color>
     <Color x:Key="OnAccent">#0A0A0B</Color>
 
+    <!-- Stage accents: digunakan sebagai aksen sekunder, bukan dekorasi berlebihan. -->
+    <Color x:Key="StagePink">#FF4D8D</Color>
+    <Color x:Key="StageAmber">#F6C453</Color>
+    <Color x:Key="StageSoft">#2C1725</Color>
+
     <!-- Semantic -->
     <Color x:Key="SuccessColor">#22C55E</Color>
     <Color x:Key="WarningColor">#F59E0B</Color>
     <Color x:Key="DangerColor">#F43F5E</Color>
+    <Color x:Key="DangerSoft">#2A1219</Color> <!-- latar tint aksi destruktif (padanan AccentSoft untuk danger) -->
 
     <!-- Neutral scale (utilitas) -->
     <Color x:Key="White">#FFFFFF</Color>

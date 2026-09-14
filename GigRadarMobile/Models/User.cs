@@ -39,13 +39,13 @@ namespace GigRadarMobile.Models
             _ => string.Empty
         };
 
-        /// <summary>Warna badge role.</summary>
+        /// <summary>Warna badge role (nilai literal = token design system).</summary>
         public Color RoleColor => Role switch
         {
-            "Admin" => Color.FromArgb("#39FF14"),
-            "EO" => Color.FromArgb("#7B2FFF"),
-            "Artist" => Color.FromArgb("#FFB020"),
-            _ => Color.FromArgb("#B0B0B0")
+            "Admin" => Color.FromArgb("#A3FF12"),   // PrimaryColor
+            "EO" => Color.FromArgb("#7DD3FC"),      // GenreColors.Electronic
+            "Artist" => Color.FromArgb("#F59E0B"),  // WarningColor
+            _ => Color.FromArgb("#71717A")           // TextMuted
         };
     }
 

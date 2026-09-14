@@ -16,6 +16,9 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private ObservableCollection<Genre> _genres = new();
         [ObservableProperty] private ObservableCollection<int> _selectedGenreIds = new();
         [ObservableProperty] private bool _isLoading;
+        [ObservableProperty] private bool _hasError;
+        [ObservableProperty] private string _errorMessage = "";
+        [ObservableProperty] private string _selectedCountLabel = "Belum ada genre dipilih";
 
         public OnboardingViewModel(ApiService api, AuthService auth)
         {
@@ -27,6 +30,8 @@ namespace GigRadarMobile.ViewModels
         private async Task LoadGenresAsync()
         {
             IsLoading = true;
+            HasError = false;
+            ErrorMessage = "";
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
@@ -35,12 +40,21 @@ namespace GigRadarMobile.ViewModels
             }
             catch (Exception ex)
             {
-                await Alerts.ShowAsync("Error", ex.Message);
+                // Error inline + retry — bukan alert yang bisa terlewat.
+                HasError = true;
+                ErrorMessage = "Gagal memuat genre: " + ex.Message;
             }
             finally
             {
                 IsLoading = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task RetryAsync()
+        {
+            if (!IsLoading)
+                await LoadGenresAsync();
         }
 
         [RelayCommand]
@@ -51,6 +65,11 @@ namespace GigRadarMobile.ViewModels
                 SelectedGenreIds.Add(genre.GenreId);
             else
                 SelectedGenreIds.Remove(genre.GenreId);
+
+            // Counter selalu terlihat — user tahu progres tanpa menebak.
+            SelectedCountLabel = SelectedGenreIds.Count == 0
+                ? "Belum ada genre dipilih"
+                : $"{SelectedGenreIds.Count} genre dipilih";
         }
 
         [RelayCommand]

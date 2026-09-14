@@ -73,6 +73,17 @@ public sealed class LocationService
         }
     }
 
+    public async Task<Location?> GetBestAvailableLocationAsync(
+        GeolocationAccuracy accuracy = GeolocationAccuracy.Medium,
+        CancellationToken cancellationToken = default)
+    {
+        var current = await GetCurrentLocationAsync(accuracy, cancellationToken);
+        if (current != null)
+            return current;
+
+        return await GetLastKnownLocationAsync();
+    }
+
     public async Task<Location?> GetLastKnownLocationAsync()
     {
         try

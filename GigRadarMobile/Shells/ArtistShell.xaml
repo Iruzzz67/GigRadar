@@ -7,7 +7,8 @@
        Title="GigRadar Artist">
 
     <!-- GIGRADAR_ROLE_SYSTEM.md §26 — ArtistShell
-         (Music / Posts / Gigs menyusul di Phase 3 — lihat dokumen) -->
+         Dashboard memakai data nyata (GET /api/artist/me/dashboard).
+         Tab Music / Posts / Gigs (manajemen konten) menyusul di Phase 3. -->
     <TabBar>
         <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:ArtistDashboardPage}" Route="artist-dashboard"/>
         <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>

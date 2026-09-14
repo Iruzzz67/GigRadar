@@ -138,12 +138,12 @@ namespace GigRadarMobile.ViewModels
         {
             try
             {
-                var location = await _locationService.GetCurrentLocationAsync();
+                var location = await _locationService.GetBestAvailableLocationAsync();
                 if (location != null)
                 {
                     LatText = location.Latitude.ToString(CultureInfo.InvariantCulture);
                     LngText = location.Longitude.ToString(CultureInfo.InvariantCulture);
-                    await Alerts.ShowAsync("Info", "Berhasil mengambil lokasi perangkat.");
+                    await Alerts.ShowAsync("Info", "Berhasil mengambil lokasi perangkat. Koordinat ini akan dipakai sebagai lokasi event.");
                 }
                 else
                 {
@@ -310,10 +310,12 @@ namespace GigRadarMobile.ViewModels
                 return "Kapasitas penonton tidak valid (angka lebih dari 0).";
 
             if (string.IsNullOrWhiteSpace(LatText) ||
-                !double.TryParse(LatText.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+                !double.TryParse(LatText.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var latitude) ||
+                latitude is < -90 or > 90)
                 return "Koordinat Latitude tidak valid.";
             if (string.IsNullOrWhiteSpace(LngText) ||
-                !double.TryParse(LngText.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+                !double.TryParse(LngText.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var longitude) ||
+                longitude is < -180 or > 180)
                 return "Koordinat Longitude tidak valid.";
 
             return null;

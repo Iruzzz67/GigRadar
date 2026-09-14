@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
              xmlns:models="clr-namespace:GigRadarMobile.Models"
-             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
-             xmlns:sensors="clr-namespace:Microsoft.Maui.Devices.Sensors;assembly=Microsoft.Maui.Essentials"
              x:Class="GigRadarMobile.Views.RadarPage"
              x:DataType="vm:RadarViewModel"
              Shell.NavBarIsVisible="False"
@@ -89,22 +87,22 @@
             <ScrollView>
                 <VerticalStackLayout Padding="20,8,20,28" Spacing="20">
 
+                    <!-- Error state -->
+                    <Frame IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
+                           BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
+                            <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                    Command="{Binding LoadCommand}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
                     <!-- Radar -->
                     <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{StaticResource BorderColor}"
                             StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="12">
                         <Grid>
-                            <maps:Map x:Name="RadarMap" HeightRequest="330" Margin="0" 
-                                      ItemsSource="{Binding Events}"
-                                      IsScrollEnabled="True" IsZoomEnabled="True">
-                                <maps:Map.ItemTemplate>
-                                    <DataTemplate x:DataType="models:GigEvent">
-                                        <maps:Pin Location="{Binding Location}"
-                                                  Address="{Binding VenueName}"
-                                                  Label="{Binding Name}"
-                                                  Type="Place" />
-                                    </DataTemplate>
-                                </maps:Map.ItemTemplate>
-                            </maps:Map>
+                            <WebView x:Name="MapWebView" HeightRequest="330"
+                                     Navigating="OnMapNavigating" />
                             <VerticalStackLayout Padding="14,12" Spacing="2" HorizontalOptions="Start" VerticalOptions="Start" InputTransparent="True">
                                 <Label Text="{Binding CityLabel, StringFormat='RADAR • {0}'}" FontSize="10" FontAttributes="Bold"
                                        CharacterSpacing="1.4" TextColor="{StaticResource TextMuted}"/>
@@ -191,4 +189,4 @@
         </RefreshView>
     </Grid>
 
-</ContentPage>
+</ContentPage>

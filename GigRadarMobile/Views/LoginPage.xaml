@@ -48,7 +48,13 @@
 
                     <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email"/>
 
-                    <Entry Text="{Binding Password}" Placeholder="Password" IsPassword="True"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Entry Grid.Column="0" Text="{Binding Password}" Placeholder="Password" IsPassword="{Binding HidePassword}"/>
+                        <Button Grid.Column="1" Text="{Binding ShowPasswordGlyph}" WidthRequest="44" HeightRequest="44" CornerRadius="10"
+                                FontSize="16" Padding="0" BackgroundColor="Transparent" TextColor="{StaticResource TextMuted}"
+                                Command="{Binding TogglePasswordCommand}"
+                                SemanticProperties.Description="{Binding ShowPasswordSemantic}"/>
+                    </Grid>
 
                     <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HeightRequest="20"/>
 

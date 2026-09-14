@@ -8,7 +8,7 @@ using GigRadarMobile.Services;
 namespace GigRadarMobile.ViewModels
 {
     /// <summary>
-    /// Halaman admin/EO: kelola tipe tiket (Festival/Tribun/Bundling) & stok per event.
+    /// Halaman admin/EO: kelola tipe tiket (Festival/Tribun/Bundling) &amp; stok per event.
     /// </summary>
     public partial class ManageTicketsViewModel : ObservableObject
     {

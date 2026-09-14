@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!-- Harus match TFM Windows dari app MAUI (MAUI tidak expose net10.0 polos) -->
+		<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<LangVersion>latest</LangVersion>
+		<!-- Matikan proses Resizetizer MAUI di test project — item icon/image dari app
+		     mengalir transitif lewat ProjectReference dan memicu error duplicate names -->
+		<EnableMauiImageProcessing>false</EnableMauiImageProcessing>
+		<EnableMauiSplashScreenProcessing>false</EnableMauiSplashScreenProcessing>
+		<EnableMauiFontProcessing>false</EnableMauiFontProcessing>
+		<EnableMauiAssetProcessing>false</EnableMauiAssetProcessing>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
+		<PackageReference Include="coverlet.collector" Version="6.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+		  Test menargetkan logika murni (Helpers) dari app MAUI.
+		  Item Maui* (icon/image/font) yang mengalir transitif lewat ProjectReference
+		  dihapus agar Resizetizer tidak error "duplicate file names" di test project.
+		-->
+		<ProjectReference Include="..\GigRadarMobile\GigRadarMobile.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiIcon Remove="**" />
+		<MauiImage Remove="**" />
+		<MauiFont Remove="**" />
+		<MauiAsset Remove="**" />
+		<MauiSplashScreen Remove="**" />
+		<MauiXaml Remove="**" />
+	</ItemGroup>
+
+</Project>

@@ -15,10 +15,23 @@
             <Label Text="Genre yang kamu dengerin" Style="{StaticResource PageTitle}"/>
             <Label Text="Pilih minimal satu. Ini dipakai buat rekomendasi dan radar kamu."
                    Style="{StaticResource Body}" FontSize="12"/>
+            <!-- Counter live: progres pilihan user selalu terlihat -->
+            <Label Text="{Binding SelectedCountLabel}" Style="{StaticResource Caption}" TextColor="{StaticResource PrimaryColor}"/>
         </VerticalStackLayout>
 
         <Grid Grid.Row="1">
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="Center" VerticalOptions="Center"/>
+
+            <!-- Error state + retry (empty ≠ error) -->
+            <Frame IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
+                   BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False"
+                   VerticalOptions="Center" Margin="0,0,0,20">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
+                    <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                            Command="{Binding RetryCommand}"/>
+                </VerticalStackLayout>
+            </Frame>
 
             <ScrollView IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
                 <FlexLayout Wrap="Wrap" Direction="Row" JustifyContent="Start" AlignItems="Center"

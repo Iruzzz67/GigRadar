@@ -8,15 +8,26 @@
              BackgroundColor="{StaticResource BackgroundColor}"
              Title="My Tickets">
 
-    <VerticalStackLayout Spacing="0">
-        <VerticalStackLayout Padding="20,16,20,4" Spacing="4">
-            <Label Text="TIKETS" Style="{StaticResource Eyebrow}"/>
+    <RefreshView Command="{Binding LoadTicketsCommand}" IsRefreshing="{Binding IsRefreshing}">
+        <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20,16,20,20" RowSpacing="8">
+        <VerticalStackLayout Grid.Row="0" Padding="0,0,0,4" Spacing="4">
+            <Label Text="TIKET" Style="{StaticResource Eyebrow}"/>
             <Label Text="Tiketku" Style="{StaticResource PageTitle}"/>
         </VerticalStackLayout>
 
-        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20"/>
+        <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20"/>
 
-        <CollectionView ItemsSource="{Binding Tickets}" SelectionMode="None" Margin="20,8,20,20">
+        <!-- Error state -->
+        <Frame Grid.Row="2" IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
+               BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
+                <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                        Command="{Binding LoadTicketsCommand}"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Tickets}" SelectionMode="None">
             <CollectionView.EmptyView>
                 <VerticalStackLayout Spacing="8" Padding="0,60">
                     <Label Text="Belum ada tiket" Style="{StaticResource Subheading}" HorizontalTextAlignment="Center"/>
@@ -40,7 +51,8 @@
                                         <Label Text="{Binding TicketType}" Style="{StaticResource Meta}"
                                                FontFamily="InterSemiBold" TextColor="{StaticResource PrimaryColor}"/>
                                         <Label Text="•" TextColor="{StaticResource TextMuted}"/>
-                                        <Label Text="{Binding Status}" Style="{StaticResource Meta}"/>
+                                        <Label Text="{Binding StatusLabel}" Style="{StaticResource Meta}"
+                                               FontFamily="InterSemiBold" TextColor="{Binding StatusColor}"/>
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                                 <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
@@ -61,6 +73,7 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+        </Grid>
+    </RefreshView>
 
 </ContentPage>

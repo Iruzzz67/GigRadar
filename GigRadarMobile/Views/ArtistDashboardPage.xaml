@@ -1,34 +1,171 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:vm="clr-namespace:GigRadarMobile.ViewModels" x:Class="GigRadarMobile.Views.ArtistDashboardPage" x:DataType="vm:ArtistDashboardViewModel" BackgroundColor="{StaticResource BackgroundColor}" Title="GigRadar">
-    <ScrollView>
-        <VerticalStackLayout Padding="20,18,20,28" Spacing="18">
-            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                <Frame Grid.Column="0" WidthRequest="52" HeightRequest="52" CornerRadius="26" Padding="0" HasShadow="False" BackgroundColor="{StaticResource CardElevatedColor}" BorderColor="{StaticResource BorderColor}">
-                    <Label Text="🎸" FontSize="25" HorizontalOptions="Center" VerticalOptions="Center"/>
-                </Frame>
-                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                    <Label Text="Selamat datang kembali" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-                    <Label Text="{Binding UserName}" FontSize="19" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                </VerticalStackLayout>
-                <Frame Grid.Column="2" WidthRequest="40" HeightRequest="40" CornerRadius="20" Padding="0" HasShadow="False" BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}">
-                    <Label Text="♧" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" TextColor="{StaticResource TextSecondary}"/>
-                </Frame>
-            </Grid>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.ArtistDashboardPage"
+             x:DataType="vm:ArtistDashboardViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Dashboard Artist">
 
-            <Frame BackgroundColor="#171A12" CornerRadius="22" Padding="20" HasShadow="False" BorderColor="#38451F">
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="ARTIST PROFILE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
-                    <Label Text="Bangun karier. Temukan gig.&#10;Terhubung dengan lebih banyak audience." FontSize="24" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" LineHeight="1.05"/>
-                    <Label Text="{Binding UserRole}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-                    <Button Text="Lengkapi profil →" HeightRequest="44" CornerRadius="12" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Frame>
+    <RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsRefreshing}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                <Frame Grid.Column="0" Style="{StaticResource Card}"><VerticalStackLayout Spacing="5"><Label Text="🎵" FontSize="20"/><Label Text="Music" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/><Label Text="Track &amp; album" FontSize="11" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout></Frame>
-                <Frame Grid.Column="1" Style="{StaticResource Card}"><VerticalStackLayout Spacing="5"><Label Text="📍" FontSize="20"/><Label Text="Gigs" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/><Label Text="Jadwal tampil" FontSize="11" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout></Frame>
-            </Grid>
-            <Frame Style="{StaticResource Card}"><Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14"><Label Text="✨" FontSize="22" VerticalOptions="Center"/><VerticalStackLayout Grid.Column="1" Spacing="3"><Label Text="Artist Journey" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/><Label Text="Perkembangan dan pencapaian kamu" FontSize="11" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout><Label Grid.Column="2" Text="›" FontSize="28" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/></Grid></Frame>
-        </VerticalStackLayout>
-    </ScrollView>
+                <!-- Header -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Border Grid.Column="0" WidthRequest="52" HeightRequest="52" StrokeThickness="0"
+                            StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                        <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="17"
+                               TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                        <Label Text="ARTIST DASHBOARD" Style="{StaticResource Eyebrow}"/>
+                        <Label Text="{Binding UserName}" Style="{StaticResource SectionTitle}" FontSize="19"
+                               LineBreakMode="TailTruncation"/>
+                    </VerticalStackLayout>
+                    <Label Grid.Column="2" Text="{Binding UserRole}" Style="{StaticResource Meta}"
+                           TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                </Grid>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+                <!-- Error state -->
+                <Frame IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
+                       BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
+                        <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                Command="{Binding LoadCommand}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Hero: profil artist + aksi utama -->
+                <Frame BackgroundColor="{StaticResource AccentSoft}" BorderColor="{StaticResource BorderStrong}"
+                       CornerRadius="18" Padding="18" HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="PROFIL KAMU" Style="{StaticResource Eyebrow}"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding GenreLabel}" Style="{StaticResource Subheading}"/>
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="📍" FontSize="12" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                                    <Label Text="{Binding CityLabel}" Style="{StaticResource Caption}"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" WidthRequest="48" HeightRequest="48" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardColor}"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="15"
+                                       TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                        </Grid>
+                        <Button Text="Edit profil artist" Style="{StaticResource BtnPrimary}" HeightRequest="44"
+                                Command="{Binding ToggleEditCommand}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Statistik karier -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding FollowersLabel}" Style="{StaticResource Numeric}" FontSize="25"
+                                   FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
+                            <Label Text="Pengikut" Style="{StaticResource Caption}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding TracksLabel}" Style="{StaticResource Numeric}" FontSize="25"
+                                   FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
+                            <Label Text="Track" Style="{StaticResource Caption}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding AlbumsLabel}" Style="{StaticResource Numeric}" FontSize="25"
+                                   FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
+                            <Label Text="Album" Style="{StaticResource Caption}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding PostsLabel}" Style="{StaticResource Numeric}" FontSize="25"
+                                   FontAttributes="Bold" TextColor="{StaticResource SuccessColor}"/>
+                            <Label Text="Post" Style="{StaticResource Caption}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Gig mendatang -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Label Text="Gig mendatang" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="{Binding GigsCountLabel}" Style="{StaticResource Meta}"
+                           VerticalOptions="Center"/>
+                </Grid>
+
+                <Label Text="Belum ada gig mendatang. Event yang menampilkan kamu di line-up akan muncul di sini."
+                       IsVisible="{Binding HasGigs, Converter={StaticResource InvertedBoolConverter}}"
+                       Style="{StaticResource Body}"/>
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding UpcomingGigs}" Spacing="2"
+                                     IsVisible="{Binding HasGigs}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:ArtistGig">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,9">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDashboardViewModel}}, Path=GoToGigCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Grid.GestureRecognizers>
+                                <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
+                                    <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}"
+                                           FontSize="22" HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold"
+                                           CharacterSpacing="1" TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" Style="{StaticResource Subheading}" MaxLines="2"
+                                           LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding LocationLabel}" Style="{StaticResource Caption}" MaxLines="1"
+                                           LineBreakMode="TailTruncation"/>
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding StartDate, StringFormat='{0:HH:mm}'}" Style="{StaticResource Meta}"/>
+                                        <Label Text="{Binding StatusLabel}" Style="{StaticResource Meta}"
+                                               TextColor="{Binding StatusColor}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                    <Label Text="{Binding PriceLabel}" Style="{StaticResource Numeric}" FontSize="13"
+                                           TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"
+                                           LineBreakMode="TailTruncation"/>
+                                    <Label Text="›" FontSize="20" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Form edit profil artist -->
+                <Frame Style="{StaticResource Card}" IsVisible="{Binding IsEditing}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Edit profil artist" Style="{StaticResource Subheading}"/>
+                        <Entry Text="{Binding FormName}" Placeholder="Nama artist"/>
+                        <Entry Text="{Binding FormGenre}" Placeholder="Genre (mis. Indie Rock)"/>
+                        <Entry Text="{Binding FormCity}" Placeholder="Kota domisili"/>
+                        <Editor Text="{Binding FormBio}" Placeholder="Bio singkat band/kamu"
+                                AutoSize="TextChanges"/>
+                        <Entry Text="{Binding FormPhotoUrl}" Placeholder="URL foto profil (opsional)"
+                                Keyboard="Url"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Button Grid.Column="0" Text="Batal" Style="{StaticResource BtnDark}" HeightRequest="44"
+                                    Command="{Binding ToggleEditCommand}"/>
+                            <Button Grid.Column="1" Text="Simpan" Style="{StaticResource BtnPrimary}" HeightRequest="44"
+                                    Command="{Binding SaveProfileCommand}"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
 </ContentPage>

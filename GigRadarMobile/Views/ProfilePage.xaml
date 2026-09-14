@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:services="clr-namespace:GigRadarMobile.Services"
              x:Class="GigRadarMobile.Views.ProfilePage"
              x:DataType="vm:ProfileViewModel"
              BackgroundColor="{StaticResource BackgroundColor}"
@@ -39,7 +40,44 @@
                 </VerticalStackLayout>
             </Border>
 
-            <Button Text="Edit profil" Style="{StaticResource BtnOutline}" HeightRequest="48" Clicked="OnEditClicked"/>
+            <Button Text="Edit profil" Style="{StaticResource BtnOutline}" HeightRequest="48"
+                    Command="{Binding ToggleEditCommand}"/>
+
+            <!-- Event tersimpan -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasFavorites}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <Label Text="EVENT TERSIMPAN" Style="{StaticResource Eyebrow}" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="{Binding FavoritesSummary}" Style="{StaticResource Meta}" VerticalOptions="Center"/>
+                </Grid>
+                <CollectionView ItemsSource="{Binding Favorites}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="services:FavoriteItem">
+                            <Border Style="{StaticResource CardFlatBorder}" Padding="14" Margin="0,0,0,8">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProfileViewModel}}, Path=OpenFavoriteCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
+                                        <Label Text="{Binding Event.StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}"
+                                               FontSize="20" HorizontalTextAlignment="Center"/>
+                                        <Label Text="{Binding Event.StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold"
+                                               CharacterSpacing="1" TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Event.Name}" Style="{StaticResource Subheading}" FontSize="14"
+                                               MaxLines="1" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding Event.VenueName}" Style="{StaticResource Meta}" MaxLines="1"
+                                               LineBreakMode="TailTruncation"/>
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="♥" FontSize="16" TextColor="{StaticResource PrimaryColor}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
 
             <!-- Akses staff -->
             <VerticalStackLayout Spacing="10" IsVisible="{Binding IsStaff}">

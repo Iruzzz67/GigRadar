@@ -17,6 +17,15 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private bool _isRegister;
         [ObservableProperty] private bool _isLoading;
 
+        // Show/hide password (semantics untuk screen reader).
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowPasswordGlyph))]
+        [NotifyPropertyChangedFor(nameof(ShowPasswordSemantic))]
+        private bool _hidePassword = true;
+
+        public string ShowPasswordGlyph => HidePassword ? "👁" : "🙈";
+        public string ShowPasswordSemantic => HidePassword ? "Tampilkan password" : "Sembunyikan password";
+
         /// <summary>Pilihan role saat daftar (§25): User langsung aktif, Artist/EO menunggu verifikasi admin.</summary>
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedRoleDescription))]
@@ -33,12 +42,24 @@ namespace GigRadarMobile.ViewModels
         {
             _api = api;
             _auth = auth;
+
+#if DEBUG
+            // Debug-only: prefilled kredensial untuk mempercepat testing di device fisik.
+            _email = "rst@mail.com";
+            _password = "test123";
+#endif
         }
 
         [RelayCommand]
         private void ToggleMode()
         {
             IsRegister = !IsRegister;
+        }
+
+        [RelayCommand]
+        private void TogglePassword()
+        {
+            HidePassword = !HidePassword;
         }
 
         [RelayCommand]

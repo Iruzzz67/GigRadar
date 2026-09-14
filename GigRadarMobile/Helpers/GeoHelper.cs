@@ -34,7 +34,7 @@ public static class GeoHelper
     }
 
     public static string FormatKm(double km)
-        => km < 1 ? $"{Math.Round(km * 1000)} m" : $"{km:0.#} km";
+        => km < 1 ? $"{Math.Round(km * 1000, MidpointRounding.AwayFromZero)} m" : $"{km:0.#} km";
 
     private static double ToRad(double deg) => deg * Math.PI / 180.0;
     private static double ToDeg(double rad) => rad * 180.0 / Math.PI;

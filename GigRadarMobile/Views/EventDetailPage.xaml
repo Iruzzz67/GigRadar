@@ -31,13 +31,16 @@
                     <Grid Padding="16,12" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" VerticalOptions="Start">
                         <Button Grid.Column="0" Text="‹" FontSize="24" Padding="0" WidthRequest="44" HeightRequest="44"
                                 CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
-                                Command="{Binding GoBackCommand}"/>
+                                Command="{Binding GoBackCommand}"
+                                SemanticProperties.Description="Kembali"/>
                         <Button Grid.Column="2" Text="↗" FontSize="17" Padding="0" WidthRequest="44" HeightRequest="44"
                                 CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
-                                Command="{Binding ShareCommand}"/>
+                                Command="{Binding ShareCommand}"
+                                SemanticProperties.Description="Bagikan event ini"/>
                         <Button Grid.Column="3" Text="♡" FontSize="18" Padding="0" WidthRequest="44" HeightRequest="44"
                                 CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
-                                Command="{Binding ToggleFavoriteCommand}">
+                                Command="{Binding ToggleFavoriteCommand}"
+                                SemanticProperties.Description="Simpan atau hapus event dari favorit">
                             <Button.Triggers>
                                 <DataTrigger TargetType="Button" Binding="{Binding IsFavorited}" Value="True">
                                     <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
