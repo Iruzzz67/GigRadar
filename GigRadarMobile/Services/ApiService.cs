@@ -14,7 +14,8 @@ namespace GigRadarMobile.Services
         {
             _http = httpClient;
             _http.BaseAddress = new Uri(ApiConfiguration.BaseUrl);
-            _http.Timeout = TimeSpan.FromSeconds(30);
+            // 90s: menampung wake-up cold start free-tier host (ping 6×8s + retry asli).
+            _http.Timeout = TimeSpan.FromSeconds(90);
             // UA eksplisit: proxy/CDN di depan production API (Cloudflare) menantang
             // request TANPA User-Agent (default .NET) dengan 403 — dengan UA, lolos.
             _http.DefaultRequestHeaders.UserAgent.ParseAdd("GigRadarMobile/1.0 (Android)");
@@ -40,6 +41,41 @@ namespace GigRadarMobile.Services
         }
 
         /// <summary>
+        /// Free-tier host (SnapDeploy dkk) menidurkan container saat idle — request pertama
+        /// kena 502/503. Method ini mendeteksi kondisi itu, mem-ping sampai server bangun
+        /// (respons JSON dari /api/events), lalu MENGULANG request asli. Bagi pengguna:
+        /// login/refresh pertama hanya lebih lambat, bukan gagal.
+        /// </summary>
+        private async Task<HttpResponseMessage> SendWithWakeUpAsync(Func<Task<HttpResponseMessage>> send, int maxWakeAttempts = 6)
+        {
+            var response = await send();
+
+            var code = (int)response.StatusCode;
+            if (code is not (502 or 503))
+                return response;
+
+            for (var attempt = 0; attempt < maxWakeAttempts; attempt++)
+            {
+                try
+                {
+                    using var ping = await _http.GetAsync("/api/events");
+                    var mediaType = ping.Content.Headers.ContentType?.MediaType;
+                    if (mediaType != null && mediaType.Contains("json", StringComparison.OrdinalIgnoreCase))
+                        break; // server hidup dan menjawab JSON
+                }
+                catch
+                {
+                    // ping timeout saat server masih booting — tunggu lalu coba lagi
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(8));
+            }
+
+            // Server (diharapkan) sudah bangun — ulangi request asli sekali.
+            return await send();
+        }
+
+        /// <summary>
         /// GET yang melempar exception saat jaringan gagal atau server merespons error —
         /// sehingga ViewModel bisa membedakan "memang kosong" dari "gagal memuat"
         /// (error state inline + retry di tiap halaman).
@@ -49,7 +85,7 @@ namespace GigRadarMobile.Services
             HttpResponseMessage response;
             try
             {
-                response = await _http.GetAsync(url);
+                response = await SendWithWakeUpAsync(() => _http.GetAsync(url));
             }
             catch (Exception ex)
             {
@@ -73,7 +109,7 @@ namespace GigRadarMobile.Services
             HttpResponseMessage response;
             try
             {
-                response = await _http.PostAsJsonAsync(url, data, _jsonOptions);
+                response = await SendWithWakeUpAsync(() => _http.PostAsJsonAsync(url, data, _jsonOptions));
             }
             catch (Exception ex)
             {
@@ -81,7 +117,7 @@ namespace GigRadarMobile.Services
             }
 
             if ((int)response.StatusCode >= 500)
-                throw new HttpRequestException($"Server sedang bermasalah ({(int)response.StatusCode}). Coba lagi nanti.");
+                throw new HttpRequestException($"Server sedang bangun/tidak merespons ({(int)response.StatusCode}). Tunggu ±1 menit lalu coba lagi.");
 
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(json, _jsonOptions);
@@ -96,7 +132,7 @@ namespace GigRadarMobile.Services
             HttpResponseMessage response;
             try
             {
-                response = await _http.PutAsJsonAsync(url, data, _jsonOptions);
+                response = await SendWithWakeUpAsync(() => _http.PutAsJsonAsync(url, data, _jsonOptions));
             }
             catch (Exception ex)
             {
