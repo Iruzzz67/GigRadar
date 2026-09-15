@@ -5,10 +5,16 @@ namespace GigRadarMobile.Services;
 /// </summary>
 public static class ApiConfiguration
 {
-#if ANDROID
+#if DEBUG && ANDROID
     // Device USB: localhost diteruskan ke PC melalui `adb reverse tcp:5000 tcp:5000`.
     // Jalankan kembali adb reverse setiap device tersambung ulang.
+    // Emulator Android: ganti ke http://10.0.2.2:5000/ (10.0.2.2 = loopback host).
     public const string BaseUrl = "http://localhost:5000/";
+#elif RELEASE && ANDROID
+    // ⚠️ BLOCKER: production HTTPS API endpoint belum tersedia.
+    // WAJIB diganti dengan domain HTTPS asli sebelum release final.
+    // Lihat docs/ANDROID_PRODUCTION.md §1 (langkah ganti URL) — satu baris ini saja.
+    public const string BaseUrl = "https://YOUR-PRODUCTION-API-DOMAIN/";
 #elif WINDOWS
     // Windows app berjalan di PC yang sama dengan API
     public const string BaseUrl = "http://localhost:5000/";

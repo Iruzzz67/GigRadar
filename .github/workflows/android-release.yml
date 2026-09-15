@@ -1,0 +1,51 @@
+name: Android Release
+
+on:
+  workflow_dispatch: {}   # jalankan manual dari tab Actions
+  # push:
+  #   tags: [ "v*" ]      # opsional: build otomatis tiap tag versi
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install MAUI Android workload
+        run: dotnet workload install maui-android
+
+      # Decode keystore dari secret (signed build). Abaikan bila secrets belum diset
+      # — APK tetap dihasilkan tanpa signature release.
+      - name: Decode keystore from secrets
+        id: keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        if: ${{ env.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          $bytes = [Convert]::FromBase64String($env:ANDROID_KEYSTORE_BASE64)
+          [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\gigradar-release.keystore", $bytes)
+          "path=$env:RUNNER_TEMP\gigradar-release.keystore" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Restore
+        run: dotnet restore GigRadarMobile/GigRadarMobile.csproj
+
+      - name: Build Android Release APK
+        env:
+          GIGRADAR_KEYSTORE_PATH: ${{ steps.keystore.outputs.path }}
+          GIGRADAR_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          GIGRADAR_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          GIGRADAR_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: dotnet publish GigRadarMobile/GigRadarMobile.csproj -f net10.0-android -c Release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gigradar-android-release
+          path: GigRadarMobile/bin/Release/net10.0-android/publish/*.apk
+          if-no-files-found: error

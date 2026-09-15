@@ -49,6 +49,7 @@ Thumbs.db
 *.apk
 *.aab
 *.keystore
+*.jks
 !**/android/app/debug.keystore
 
 # Env files

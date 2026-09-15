@@ -32,6 +32,41 @@
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
+
+		<!--
+		  Android Release: hasilkan APK (bukan .aab) agar mudah di-install langsung.
+		  Trimming dinonaktifkan: ApiService memakai System.Text.Json berbasis reflection,
+		  dan stabilitas runtime diprioritaskan di atas ukuran APK.
+		-->
+		<AndroidPackageFormat Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release'">apk</AndroidPackageFormat>
+		<PublishTrimmed Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release'">false</PublishTrimmed>
+		<RunAOTCompilation Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release'">false</RunAOTCompilation>
+
+		<!--
+		  Signing Release via environment variables (JANGAN hardcode password di sini):
+		    GIGRADAR_KEYSTORE_PATH      - path ke file .keystore/.jks
+		    GIGRADAR_KEYSTORE_PASSWORD  - password keystore
+		    GIGRADAR_KEY_ALIAS          - alias key
+		    GIGRADAR_KEY_PASSWORD       - password key (boleh sama dengan store)
+		  Jika variabel tidak diset, APK Release dihasilkan TANPA signing release
+		  (tidak dapat dipasang) — set variabel atau pakai scripts/build-android-release.ps1.
+		  Cara membuat keystore: lihat docs/ANDROID_PRODUCTION.md §2.
+		-->
+		<AndroidKeyStore Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release' AND '$(GIGRADAR_KEYSTORE_PATH)' != ''">True</AndroidKeyStore>
+		<!-- v1 wajib utk minSdk 23 (Android 6); v2 utk Android 7+. -->
+		<AndroidSigningSchemeV1 Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release'">true</AndroidSigningSchemeV1>
+		<AndroidSigningSchemeV2 Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release'">true</AndroidSigningSchemeV2>
+		<AndroidSigningKeyStore Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release' AND '$(GIGRADAR_KEYSTORE_PATH)' != ''">$(GIGRADAR_KEYSTORE_PATH)</AndroidSigningKeyStore>
+		<AndroidSigningKeyAlias Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release' AND '$(GIGRADAR_KEY_ALIAS)' != ''">$(GIGRADAR_KEY_ALIAS)</AndroidSigningKeyAlias>
+		<AndroidSigningStorePass Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release' AND '$(GIGRADAR_KEYSTORE_PASSWORD)' != ''">$(GIGRADAR_KEYSTORE_PASSWORD)</AndroidSigningStorePass>
+		<AndroidSigningKeyPass Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release' AND '$(GIGRADAR_KEY_PASSWORD)' != ''">$(GIGRADAR_KEY_PASSWORD)</AndroidSigningKeyPass>
+
+		<!--
+		  Cleartext HTTP: hanya diizinkan pada Debug (API lokal via adb reverse / localhost).
+		  Release wajib HTTPS — nilai placeholder disetel dari konfigurasi build.
+		-->
+		<AndroidManifestPlaceholders Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Debug'">gigradarCleartext=true</AndroidManifestPlaceholders>
+		<AndroidManifestPlaceholders Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' != 'Debug'">gigradarCleartext=false</AndroidManifestPlaceholders>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
@@ -60,7 +95,6 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls.Maps" Version="10.0.101" />
 	</ItemGroup>
 
 </Project>
