@@ -15,6 +15,9 @@ namespace GigRadarMobile.Services
             _http = httpClient;
             _http.BaseAddress = new Uri(ApiConfiguration.BaseUrl);
             _http.Timeout = TimeSpan.FromSeconds(30);
+            // UA eksplisit: proxy/CDN di depan production API (Cloudflare) menantang
+            // request TANPA User-Agent (default .NET) dengan 403 — dengan UA, lolos.
+            _http.DefaultRequestHeaders.UserAgent.ParseAdd("GigRadarMobile/1.0 (Android)");
             _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
 

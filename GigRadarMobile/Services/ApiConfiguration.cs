@@ -11,10 +11,9 @@ public static class ApiConfiguration
     // Emulator Android: ganti ke http://10.0.2.2:5000/ (10.0.2.2 = loopback host).
     public const string BaseUrl = "http://localhost:5000/";
 #elif RELEASE && ANDROID
-    // ⚠️ BLOCKER: production HTTPS API endpoint belum tersedia.
-    // WAJIB diganti dengan domain HTTPS asli sebelum release final.
-    // Lihat docs/ANDROID_PRODUCTION.md §1 (langkah ganti URL) — satu baris ini saja.
-    public const string BaseUrl = "https://YOUR-PRODUCTION-API-DOMAIN/";
+    // Production API — SnapDeploy container (HTTPS, auto HTTPS cert).
+    // Deploy: branch feat/android-production-apk-cli → snapdeploy.dev (free tier, auto-sleep).
+    public const string BaseUrl = "https://gigradar-6d752.containers.snapdeploy.app/";
 #elif WINDOWS
     // Windows app berjalan di PC yang sama dengan API
     public const string BaseUrl = "http://localhost:5000/";
