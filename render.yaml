@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: gigradar-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/events
+    envVars:
+      - key: SEED_DEMO_DATA
+        value: "true"
+      - key: JwtSettings__SecretKey
+        generateValue: true          # secret acak otomatis oleh Render
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      # SQLite ditulis ke disk persisten yang di-mount di /app/data
+      - key: ConnectionStrings__DefaultConnection
+        value: "Data Source=/app/data/GigRadar.db"
+    disk:
+      name: gigradar-sqlite
+      mountPath: /app/data
+      sizeGB: 1
