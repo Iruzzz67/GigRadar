@@ -13,10 +13,8 @@ services:
         generateValue: true          # secret acak otomatis oleh Render
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      # SQLite ditulis ke disk persisten yang di-mount di /app/data
+      # SQLite ditulis ke /app/data — di free plan TANPA disk (butuh kartu),
+      # path ini ephemeral: data demo reset saat instance tidur/re-deploy.
+      # Untuk data permanen, tambahkan kembali blok disk + instance paid.
       - key: ConnectionStrings__DefaultConnection
         value: "Data Source=/app/data/GigRadar.db"
-    disk:
-      name: gigradar-sqlite
-      mountPath: /app/data
-      sizeGB: 1

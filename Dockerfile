@@ -17,4 +17,4 @@ COPY --from=build /app/publish .
 # Render menyetel PORT saat runtime — diekspor lewat shell karena ENV Docker
 # tidak meng-expand variabel runtime. Default 8080 untuk lokal.
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "export ASPNETCORE_URLS=http://+:${PORT:-8080} && exec dotnet GigRadarApi.dll"]
+ENTRYPOINT ["sh", "-c", "mkdir -p /app/data && export ASPNETCORE_URLS=http://+:${PORT:-8080} && exec dotnet GigRadarApi.dll"]
