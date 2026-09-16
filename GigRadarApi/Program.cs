@@ -6,11 +6,17 @@ using Microsoft.OpenApi.Models;
 using GigRadarApi.Data;
 using GigRadarApi.Services;
 
+// Npgsql 6+ memetakan DateTime ke `timestamp with time zone` dan menolak Kind=Unspecified
+// (seed & tanggal event memakai Kind=Unspecified, seperti perilaku SQLite sebelumnya).
+// Switch ini menjaga mapping DateTime -> `timestamp without time zone` agar behavior
+// tanggal tidak berubah sama sekali setelah migrasi SQLite -> PostgreSQL.
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
-// PostgreSQL
+// PostgreSQL (EF Core + Npgsql)
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -78,11 +84,14 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Auto-migrate
-using (var scope = app.Services.CreateScope())
+if (!EF.IsDesignTime)
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-    TicketSchemaBootstrap.Ensure(db);
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+        TicketSchemaBootstrap.Ensure(db);
+    }
 }
 
 if (app.Environment.IsDevelopment())

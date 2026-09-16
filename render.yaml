@@ -7,14 +7,11 @@ services:
     plan: free
     healthCheckPath: /api/events
     envVars:
-      - key: SEED_DEMO_DATA
-        value: "true"
       - key: JwtSettings__SecretKey
         generateValue: true          # secret acak otomatis oleh Render
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
-      # SQLite ditulis ke /app/data — di free plan TANPA disk (butuh kartu),
-      # path ini ephemeral: data demo reset saat instance tidur/re-deploy.
-      # Untuk data permanen, tambahkan kembali blok disk + instance paid.
-      - key: ConnectionStrings__DefaultConnection
-        value: "Data Source=/app/data/GigRadar.db"
+      # PostgreSQL (Neon) — paste connection string pooled dari dashboard Neon
+      # ke env var DATABASE_URL saat deploy. Jangan commit kredensial ke repo.
+      - key: DATABASE_URL
+        sync: false
