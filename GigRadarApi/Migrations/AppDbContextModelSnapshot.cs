@@ -85,7 +85,7 @@ namespace GigRadarApi.Migrations
                             Bio = "Shoegaze band dari Jakarta. Suara bising yang hangat, melodi yang melayang.",
                             City = "Jakarta",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1808),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8071),
                             Genre = "Shoegaze",
                             IsVerified = false,
                             Name = "Hollow Men",
@@ -100,7 +100,7 @@ namespace GigRadarApi.Migrations
                             Bio = "Midwest emo vibes",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1873),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8172),
                             Genre = "Midwest Emo",
                             IsVerified = false,
                             Name = "Concrete Beach",
@@ -114,7 +114,7 @@ namespace GigRadarApi.Migrations
                             Bio = "Indie rock with shoegaze influences",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1876),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8177),
                             Genre = "Indie Rock",
                             IsVerified = false,
                             Name = "Static Bloom",
@@ -128,7 +128,7 @@ namespace GigRadarApi.Migrations
                             Bio = "Post-punk from the underground",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1881),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8189),
                             Genre = "Post-Punk",
                             IsVerified = false,
                             Name = "Pale Circles",
@@ -142,7 +142,7 @@ namespace GigRadarApi.Migrations
                             Bio = "Dream pop from Bogor",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1884),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8193),
                             Genre = "Dream Pop",
                             IsVerified = false,
                             Name = "Soft Collapse",
@@ -156,7 +156,7 @@ namespace GigRadarApi.Migrations
                             Bio = "Math rock with complex time signatures",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1886),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8343),
                             Genre = "Math Rock",
                             IsVerified = false,
                             Name = "Meridian",
@@ -207,7 +207,7 @@ namespace GigRadarApi.Migrations
                             AlbumId = 1,
                             ArtistId = 1,
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2034),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8819),
                             Description = "Album pertama — 10 lagu shoegaze.",
                             ReleaseDate = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Pale Light"
@@ -259,7 +259,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 1,
                             ArtistId = 1,
                             Category = "Formation",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2256),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9122),
                             Date = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Hollow Men terbentuk di garasi Raka, Jakarta Selatan.",
                             ImageUrl = "",
@@ -270,7 +270,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 2,
                             ArtistId = 1,
                             Category = "Single",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2260),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9133),
                             Date = new DateTime(2025, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "'Static Haze' dirilis di platform digital.",
                             ImageUrl = "",
@@ -281,7 +281,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 3,
                             ArtistId = 1,
                             Category = "Gig",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2262),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9138),
                             Date = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Tampil di showcase underground pertama di Bentara Budaya.",
                             ImageUrl = "",
@@ -292,7 +292,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 4,
                             ArtistId = 1,
                             Category = "Album",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2263),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9140),
                             Date = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Album perdana dirilis dengan 10 lagu.",
                             ImageUrl = "",
@@ -340,7 +340,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 1,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2205),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8997),
                             JoinedAt = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Raka",
                             PhotoUrl = "",
@@ -350,7 +350,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 2,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2208),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9001),
                             JoinedAt = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Bima",
                             PhotoUrl = "",
@@ -360,7 +360,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 3,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2210),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9003),
                             JoinedAt = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Sari",
                             PhotoUrl = "",
@@ -370,7 +370,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 4,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2211),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9005),
                             JoinedAt = new DateTime(2024, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Dimas",
                             PhotoUrl = "",
@@ -542,7 +542,7 @@ namespace GigRadarApi.Migrations
                             ArtistId = 1,
                             AudioUrl = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1970),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8704),
                             DurationSeconds = 210,
                             Genre = "Shoegaze",
                             ReleaseDate = new DateTime(2025, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -554,7 +554,7 @@ namespace GigRadarApi.Migrations
                             ArtistId = 1,
                             AudioUrl = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1980),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8718),
                             DurationSeconds = 245,
                             Genre = "Shoegaze",
                             ReleaseDate = new DateTime(2025, 8, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -566,12 +566,46 @@ namespace GigRadarApi.Migrations
                             ArtistId = 1,
                             AudioUrl = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1982),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(8721),
                             DurationSeconds = 198,
                             Genre = "Dream Pop",
                             ReleaseDate = new DateTime(2026, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Afterglow"
                         });
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.AuditLog", b =>
+                {
+                    b.Property<int>("AuditLogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AuditLogId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("AdminUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EntityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("AuditLogId");
+
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("GigRadarApi.Models.Event", b =>
@@ -656,7 +690,7 @@ namespace GigRadarApi.Migrations
                         {
                             EventId = 1,
                             Capacity = 200,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2398),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9420),
                             CreatedBy = 2,
                             Description = "Night penuh dengan suara Shoegaze dan Post-Punk",
                             EndDate = new DateTime(2026, 9, 5, 23, 0, 0, 0, DateTimeKind.Unspecified),
@@ -678,7 +712,7 @@ namespace GigRadarApi.Migrations
                         {
                             EventId = 2,
                             Capacity = 400,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2415),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9443),
                             CreatedBy = 1,
                             Description = "Festival emo terbesar di Bandung",
                             EndDate = new DateTime(2026, 9, 12, 23, 0, 0, 0, DateTimeKind.Unspecified),
@@ -700,7 +734,7 @@ namespace GigRadarApi.Migrations
                         {
                             EventId = 3,
                             Capacity = 500,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2420),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9451),
                             CreatedBy = 1,
                             Description = "Indie night di tengah kota Jakarta",
                             EndDate = new DateTime(2026, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -789,6 +823,46 @@ namespace GigRadarApi.Migrations
                             EventId = 3,
                             Order = 2
                         });
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.EventInvitation", b =>
+                {
+                    b.Property<int>("InvitationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("InvitationId"));
+
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("InvitationId");
+
+                    b.HasIndex("ArtistId");
+
+                    b.HasIndex("EventId", "ArtistId", "Status");
+
+                    b.ToTable("EventInvitations");
                 });
 
             modelBuilder.Entity("GigRadarApi.Models.EventTicketType", b =>
@@ -984,14 +1058,14 @@ namespace GigRadarApi.Migrations
                         {
                             FollowId = 1,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2303),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9281),
                             UserId = 1
                         },
                         new
                         {
                             FollowId = 2,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2306),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 647, DateTimeKind.Utc).AddTicks(9285),
                             UserId = 2
                         });
                 });
@@ -1089,6 +1163,371 @@ namespace GigRadarApi.Migrations
                             Icon = "🎤",
                             Name = "Pop"
                         });
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Merchandise", b =>
+                {
+                    b.Property<int>("MerchandiseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MerchandiseId"));
+
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ExternalPurchaseUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MerchandiseId");
+
+                    b.HasIndex("ArtistId");
+
+                    b.ToTable("Merchandises");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("NotificationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Organizer", b =>
+                {
+                    b.Property<int>("OrganizerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OrganizerId"));
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("FoundedYear")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LogoUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OrganizationName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SocialLinks")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("VerificationStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebsiteUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("OrganizerId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Organizers");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.OrganizerPortfolioItem", b =>
+                {
+                    b.Property<int>("PortfolioItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PortfolioItemId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DocumentationLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("EventDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("EventName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrganizerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PhotosUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PosterUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Venue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PortfolioItemId");
+
+                    b.HasIndex("OrganizerId");
+
+                    b.ToTable("OrganizerPortfolioItems");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.OrganizerVerification", b =>
+                {
+                    b.Property<int>("VerificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VerificationId"));
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OrganizationName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OrganizerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PortfolioCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PortfolioSummary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RejectedReason")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("ReviewedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("WebsiteUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("VerificationId");
+
+                    b.HasIndex("OrganizerId", "Status")
+                        .HasFilter("\"Status\" = 'PENDING'");
+
+                    b.ToTable("OrganizerVerifications");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.PostComment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CommentId"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PostComments");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.PostLike", b =>
+                {
+                    b.Property<int>("PostLikeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PostLikeId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PostLikeId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("PostId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("PostLikes");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Report", b =>
+                {
+                    b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReportId"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ModerationNote")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ReporterUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("ReviewedByAdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TargetId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ReportId");
+
+                    b.HasIndex("ReporterUserId");
+
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("GigRadarApi.Models.RoleRequest", b =>
@@ -1241,12 +1680,12 @@ namespace GigRadarApi.Migrations
                         {
                             UserId = 1,
                             City = "Jakarta",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 38, 954, DateTimeKind.Utc).AddTicks(7826),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 35, 977, DateTimeKind.Utc).AddTicks(504),
                             Email = "admin@gigradar.com",
                             Latitude = 0.0,
                             Longitude = 0.0,
                             Name = "Admin",
-                            PasswordHash = "$2a$11$IjMxs/zA.7kHl26TFo349.cF3UgaZRhrSEhWYYwMqc14VJ7B8B.h6",
+                            PasswordHash = "$2a$11$y5CtD1YivlZcwoUcGGSEd..XRS51oIJQRevfvHVZA0S0ZpOU6PjL2",
                             PhotoUrl = "",
                             Role = "Admin",
                             RoleStatus = "None"
@@ -1255,12 +1694,12 @@ namespace GigRadarApi.Migrations
                         {
                             UserId = 2,
                             City = "Jakarta",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 124, DateTimeKind.Utc).AddTicks(5032),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 172, DateTimeKind.Utc).AddTicks(5229),
                             Email = "eo@gigradar.com",
                             Latitude = 0.0,
                             Longitude = 0.0,
                             Name = "Event Organizer",
-                            PasswordHash = "$2a$11$orpqE5bCxskQOo34y8HIsOPyl9L0N7x1BkW049d5tbCdP4RZXQyWG",
+                            PasswordHash = "$2a$11$hiSnyu6GIHPvUNtB5PlDwuBqQPfgIf8WaPM94SAvYPitg6PXjSARu",
                             PhotoUrl = "",
                             Role = "EO",
                             RoleStatus = "None"
@@ -1269,12 +1708,12 @@ namespace GigRadarApi.Migrations
                         {
                             UserId = 3,
                             City = "Jakarta",
-                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 307, DateTimeKind.Utc).AddTicks(1187),
+                            CreatedAt = new DateTime(2026, 9, 17, 8, 16, 36, 419, DateTimeKind.Utc).AddTicks(3133),
                             Email = "artist@gigradar.com",
                             Latitude = 0.0,
                             Longitude = 0.0,
                             Name = "Hollow Men",
-                            PasswordHash = "$2a$11$UmWQ8ea5Jic2.9atuQHir.Ryt5X5fs5nMAiJHzvtV1ZJY4zgTSqiO",
+                            PasswordHash = "$2a$11$y3jwa50mP3gmoHEgATDFbeqM8diHazbp9xJ22ApCzYFjMfa9ytXEe",
                             PhotoUrl = "",
                             Role = "Artist",
                             RoleStatus = "None"
@@ -1497,6 +1936,25 @@ namespace GigRadarApi.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("GigRadarApi.Models.EventInvitation", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.Artist", "Artist")
+                        .WithMany()
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigRadarApi.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("GigRadarApi.Models.EventTicketType", b =>
                 {
                     b.HasOne("GigRadarApi.Models.Event", "Event")
@@ -1548,6 +2006,108 @@ namespace GigRadarApi.Migrations
                     b.Navigation("User");
 
                     b.Navigation("Venue");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Merchandise", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.Artist", "Artist")
+                        .WithMany()
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Notification", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Organizer", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.OrganizerPortfolioItem", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.Organizer", "Organizer")
+                        .WithMany("PortfolioItems")
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organizer");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.OrganizerVerification", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.Organizer", "Organizer")
+                        .WithMany()
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Organizer");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.PostComment", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.ArtistPost", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigRadarApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.PostLike", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.ArtistPost", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GigRadarApi.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Report", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.User", "Reporter")
+                        .WithMany()
+                        .HasForeignKey("ReporterUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reporter");
                 });
 
             modelBuilder.Entity("GigRadarApi.Models.RoleRequest", b =>
@@ -1622,6 +2182,13 @@ namespace GigRadarApi.Migrations
                     b.Navigation("Tracks");
                 });
 
+            modelBuilder.Entity("GigRadarApi.Models.ArtistPost", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Likes");
+                });
+
             modelBuilder.Entity("GigRadarApi.Models.Event", b =>
                 {
                     b.Navigation("EventArtists");
@@ -1629,6 +2196,11 @@ namespace GigRadarApi.Migrations
                     b.Navigation("Favorites");
 
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.Organizer", b =>
+                {
+                    b.Navigation("PortfolioItems");
                 });
 
             modelBuilder.Entity("GigRadarApi.Models.User", b =>

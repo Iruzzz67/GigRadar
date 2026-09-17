@@ -84,6 +84,8 @@ namespace GigRadarMobile.Models
         public bool IsPublished { get; set; } = true;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public int LikesCount { get; set; }
+        public int CommentsCount { get; set; }
 
         public string DateLabel => CreatedAt.ToString("dd MMM yyyy");
         /// <summary>Label status post — bahasa tunggal (ID) agar konsisten dengan badge lain.</summary>

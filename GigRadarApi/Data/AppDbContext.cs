@@ -25,6 +25,16 @@ namespace GigRadarApi.Data
         public DbSet<AudioTrack> AudioTracks { get; set; }
         public DbSet<RoleRequest> RoleRequests { get; set; }
         public DbSet<ArtistVerification> ArtistVerifications { get; set; }
+        public DbSet<Organizer> Organizers { get; set; }
+        public DbSet<OrganizerPortfolioItem> OrganizerPortfolioItems { get; set; }
+        public DbSet<OrganizerVerification> OrganizerVerifications { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
+        public DbSet<PostComment> PostComments { get; set; }
+        public DbSet<EventInvitation> EventInvitations { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Merchandise> Merchandises { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +50,23 @@ namespace GigRadarApi.Data
             modelBuilder.Entity<ArtistVerification>()
                 .HasIndex(v => new { v.ArtistId, v.Status })
                 .HasFilter($"\"{nameof(ArtistVerification.Status)}\" = 'PENDING'");
+
+            // Satu user ber-role EO maksimal satu profil organizer
+            modelBuilder.Entity<Organizer>().HasIndex(o => o.UserId).IsUnique();
+
+            // Hanya satu pengajuan PENDING per organizer (yang ditolak boleh diajukan ulang)
+            modelBuilder.Entity<OrganizerVerification>()
+                .HasIndex(v => new { v.OrganizerId, v.Status })
+                .HasFilter($"\"{nameof(OrganizerVerification.Status)}\" = 'PENDING'");
+
+            // Satu like per user per post (Bab 32 — toggle like)
+            modelBuilder.Entity<PostLike>()
+                .HasIndex(l => new { l.PostId, l.UserId })
+                .IsUnique();
+
+            // Satu undangan aktif per pasangan event-artist (Bab 26)
+            modelBuilder.Entity<EventInvitation>()
+                .HasIndex(i => new { i.EventId, i.ArtistId, i.Status });
 
             // EventArtist composite key
             modelBuilder.Entity<EventArtist>()

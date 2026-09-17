@@ -72,7 +72,17 @@ namespace GigRadarApi.Controllers
             var posts = await _context.ArtistPosts
                 .Where(p => p.ArtistId == id && p.IsPublished)
                 .OrderByDescending(p => p.CreatedAt)
-                .Select(p => new { p.PostId, p.Title, p.Content, p.ImageUrl, p.CreatedAt, p.UpdatedAt })
+                .Select(p => new
+                {
+                    p.PostId,
+                    p.Title,
+                    p.Content,
+                    p.ImageUrl,
+                    p.CreatedAt,
+                    p.UpdatedAt,
+                    likesCount = p.Likes.Count,
+                    commentsCount = p.Comments.Count
+                })
                 .ToListAsync();
 
             var journey = await _context.ArtistJourneyItems
@@ -131,7 +141,17 @@ namespace GigRadarApi.Controllers
             var posts = await _context.ArtistPosts
                 .Where(p => p.ArtistId == id && p.IsPublished)
                 .OrderByDescending(p => p.CreatedAt)
-                .Select(p => new { p.PostId, p.Title, p.Content, p.ImageUrl, p.CreatedAt, p.UpdatedAt })
+                .Select(p => new
+                {
+                    p.PostId,
+                    p.Title,
+                    p.Content,
+                    p.ImageUrl,
+                    p.CreatedAt,
+                    p.UpdatedAt,
+                    likesCount = p.Likes.Count,
+                    commentsCount = p.Comments.Count
+                })
                 .ToListAsync();
             return Ok(posts);
         }

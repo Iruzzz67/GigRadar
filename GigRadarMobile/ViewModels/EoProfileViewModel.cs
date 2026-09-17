@@ -27,6 +27,13 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private EoDashboard? _dashboard;
         [ObservableProperty] private bool _hasEvents;
 
+        // Verifikasi EO (Bab 15) — card status di dashboard seperti artist
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasVerificationCard))]
+        [NotifyPropertyChangedFor(nameof(VerificationLabel))]
+        [NotifyPropertyChangedFor(nameof(VerificationColor))]
+        private OrganizerVerificationStatus? _verification;
+
         public string RoleBadge => UserRole.ToUpperInvariant();
         // Nilai literal = token design system (PrimaryColor / GenreColors.Electronic).
         public Color RoleBadgeColor => string.Equals(UserRole, "Admin", StringComparison.OrdinalIgnoreCase)
@@ -34,6 +41,11 @@ namespace GigRadarMobile.ViewModels
             : Color.FromArgb("#7DD3FC");
 
         public string Initials => BuildInitials(UserName);
+
+        public bool HasVerificationCard => Verification != null && !Verification.IsVerified;
+        public string VerificationLabel => Verification?.StatusDisplay ?? "";
+        public string VerificationColor => Verification?.StatusColor ?? "#71717A";
+        public bool IsVerifiedBadgeVisible => Verification?.IsVerified == true;
 
         private static string BuildInitials(string name)
         {
@@ -82,6 +94,16 @@ namespace GigRadarMobile.ViewModels
                 var summary = await _api.GetEoDashboardAsync();
                 Dashboard = summary;
                 HasEvents = summary?.Events is { Count: > 0 };
+
+                // Status verifikasi EO (Bab 15) — gagal loading tidak boleh merusak halaman
+                try
+                {
+                    Verification = await _api.GetMyOrganizerVerificationStatusAsync();
+                }
+                catch
+                {
+                    Verification = null;
+                }
             }
             catch (Exception ex)
             {
@@ -138,6 +160,34 @@ namespace GigRadarMobile.ViewModels
             try
             {
                 await Shell.Current.GoToAsync(nameof(CreateEventPage));
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Buka halaman verifikasi EO (Bab 13–15).</summary>
+        [RelayCommand]
+        private async Task GoToVerificationAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(OrganizerVerificationPage));
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Buka halaman Portfolio &amp; Profil EO (Bab 14).</summary>
+        [RelayCommand]
+        private async Task GoToPortfolioAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(EoPortfolioPage));
             }
             catch (Exception ex)
             {

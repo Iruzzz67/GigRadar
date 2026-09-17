@@ -103,6 +103,12 @@ namespace GigRadarApi.Models
 
         [ForeignKey("ArtistId")]
         public Artist? Artist { get; set; }
+
+        [JsonIgnore]
+        public List<PostLike> Likes { get; set; } = new();
+
+        [JsonIgnore]
+        public List<PostComment> Comments { get; set; } = new();
     }
 
     /// <summary>Anggota band (§8 — band members).</summary>

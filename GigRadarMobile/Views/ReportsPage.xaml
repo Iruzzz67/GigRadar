@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.ReportsPage"
+             x:DataType="vm:ReportsViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Laporan">
+
+    <RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="MODERASI" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Laporan" Style="{StaticResource PageTitle}"/>
+                    <Label Text="Laporkan konten yang melanggar — Admin akan meninjau."
+                           Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                </VerticalStackLayout>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+                <!-- Form laporan baru (semua role) -->
+                <Frame BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}"
+                       CornerRadius="14" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="BUAT LAPORAN" Style="{StaticResource Eyebrow}"/>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Jenis target" Style="{StaticResource Caption}"/>
+                                <Picker ItemsSource="{Binding TargetTypes}" SelectedItem="{Binding TargetType}"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="ID target" Style="{StaticResource Caption}"/>
+                                <Entry Text="{Binding TargetId}" Placeholder="mis. 3" Keyboard="Numeric"/>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Kategori" Style="{StaticResource Caption}"/>
+                            <Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding Category}"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Deskripsi *" Style="{StaticResource Caption}"/>
+                            <Editor Text="{Binding Description}" Placeholder="Jelaskan masalahnya."
+                                    AutoSize="TextChanges" MinimumHeightRequest="80"/>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding FormError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                               IsVisible="{Binding FormError, Converter={StaticResource StringNotEmptyConverter}}"/>
+
+                        <Button Text="Kirim laporan" Style="{StaticResource BtnPrimary}" HeightRequest="46"
+                                Command="{Binding SubmitCommand}"
+                                IsEnabled="{Binding IsProcessing, Converter={StaticResource InvertedBoolConverter}}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Antrean moderasi (Admin saja) -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding IsAdmin}">
+                    <Label Text="ANTREAN MODERASI (OPEN)" Style="{StaticResource Eyebrow}" TextColor="{StaticResource WarningColor}"/>
+
+                    <Frame IsVisible="{Binding HasReports, Converter={StaticResource InvertedBoolConverter}}"
+                           BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}"
+                           CornerRadius="14" Padding="18" HasShadow="False">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="TIDAK ADA LAPORAN TERBUKA" Style="{StaticResource Eyebrow}"/>
+                            <Label Text="Semua laporan sudah diputuskan. Platform aman terkendali."
+                                   Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Reports}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:ReportItem">
+                                <Border Style="{StaticResource CardBorder}" Padding="14">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                <Label Text="{Binding TargetLabel}" Style="{StaticResource Subheading}" FontSize="15"/>
+                                                <Label Text="{Binding CategoryDisplay}" Style="{StaticResource Caption}" FontSize="12"
+                                                       TextColor="{StaticResource WarningColor}" FontAttributes="Bold"/>
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding CreatedAtDisplay}" Style="{StaticResource Meta}"
+                                                   TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                                        </Grid>
+                                        <Label Text="{Binding Description}" Style="{StaticResource Caption}" FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}" MaxLines="3"/>
+                                        <Label Text="{Binding ReporterName, StringFormat='Pelapor: {0}'}" Style="{StaticResource Meta}"
+                                               FontSize="11" TextColor="{StaticResource TextMuted}"/>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <Button Grid.Column="0" Text="Tolak" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ReportsViewModel}}, Path=DismissCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                            <Button Grid.Column="1" Text="Selesaikan" Style="{StaticResource BtnPrimary}" HeightRequest="42" WidthRequest="120"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ReportsViewModel}}, Path=ResolveCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

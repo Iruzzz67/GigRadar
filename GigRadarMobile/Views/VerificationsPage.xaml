@@ -12,9 +12,8 @@
 
         <VerticalStackLayout Grid.Row="0" Spacing="4">
             <Label Text="ADMIN" Style="{StaticResource Eyebrow}"/>
-            <Label Text="Verification Center" Style="{StaticResource PageTitle}"/>
-            <Label Text="Pengajuan verifikasi artist — hanya akun terverifikasi yang mendapat badge."
-                   Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
+            <Label Text="Verification Center" Style="{StaticResource PageTitle}"/>                    <Label Text="Pengajuan verifikasi artist &amp; EO — hanya akun terverifikasi yang mendapat badge."
+                           Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
         </VerticalStackLayout>
 
         <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
@@ -28,7 +27,7 @@
 
                 <!-- Antrean menunggu tinjauan -->
                 <VerticalStackLayout Spacing="8" IsVisible="{Binding HasPending}">
-                    <Label Text="MENUNGGU TINJAUAN" Style="{StaticResource Eyebrow}" TextColor="{StaticResource WarningColor}"/>
+                    <Label Text="MENUNGGU TINJAUAN — ARTIST" Style="{StaticResource Eyebrow}" TextColor="{StaticResource WarningColor}"/>
                     <CollectionView ItemsSource="{Binding Pending}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:ArtistVerificationItem">
@@ -69,20 +68,64 @@
                     </CollectionView>
                 </VerticalStackLayout>
 
+                <!-- Antrean verifikasi EO (Bab 15) -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasEoPending}">
+                    <Label Text="MENUNGGU TINJAUAN — EVENT ORGANIZER" Style="{StaticResource Eyebrow}" TextColor="{StaticResource WarningColor}"/>
+                    <CollectionView ItemsSource="{Binding EoPending}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:OrganizerVerificationItem">
+                                <Border Style="{StaticResource CardBorder}" Padding="14" Margin="0,0,0,8">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                <Label Text="{Binding OrganizerName}" Style="{StaticResource Subheading}" FontSize="16"/>
+                                                <Label Text="{Binding PortfolioLabel}" Style="{StaticResource Caption}"
+                                                       TextColor="{StaticResource TextSecondary}"/>
+                                            </VerticalStackLayout>
+                                            <Label Grid.Column="1" Text="{Binding SubmittedAtDisplay}" Style="{StaticResource Meta}"
+                                                   TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                                        </Grid>
+
+                                        <Label Text="DATA PENGAJUAN" Style="{StaticResource Meta}" TextColor="{StaticResource TextMuted}"/>
+                                        <Label Text="{Binding Description}" Style="{StaticResource Caption}" FontSize="12" MaxLines="3"
+                                               IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                        <Label Text="{Binding Contact, StringFormat='Kontak: {0}'}" Style="{StaticResource Caption}" FontSize="12"/>
+                                        <Label Text="{Binding PortfolioSummary}" Style="{StaticResource Caption}" FontSize="12" MaxLines="4"
+                                               TextColor="{StaticResource TextSecondary}"
+                                               IsVisible="{Binding HasPortfolioSummary}"/>
+                                        <Label Text="{Binding WebsiteUrl}" Style="{StaticResource Caption}" FontSize="12"
+                                               TextColor="{StaticResource PrimaryColor}" IsVisible="{Binding HasWebsite}"
+                                               LineBreakMode="TailTruncation"/>
+
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <Button Grid.Column="0" Text="Tolak" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=RejectEoCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                            <Button Grid.Column="1" Text="Setujui" Style="{StaticResource BtnPrimary}" HeightRequest="42" WidthRequest="120"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=ApproveEoCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
                 <!-- Empty state -->
-                <Frame IsVisible="{Binding HasPending, Converter={StaticResource InvertedBoolConverter}}"
+                <Frame IsVisible="{Binding HasAnyPending, Converter={StaticResource InvertedBoolConverter}}"
                        BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}"
                        CornerRadius="14" Padding="18" HasShadow="False">
                     <VerticalStackLayout Spacing="6">
                         <Label Text="TIDAK ADA ANTRIAN" Style="{StaticResource Eyebrow}"/>
-                        <Label Text="Semua pengajuan verifikasi sudah diputuskan. Bagus, kamu memegang kendali kualitas platform."
+                        <Label Text="Semua pengajuan verifikasi (artist &amp; EO) sudah diputuskan. Bagus, kamu memegang kendali kualitas platform."
                                Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
                     </VerticalStackLayout>
                 </Frame>
 
                 <!-- Riwayat keputusan -->
                 <VerticalStackLayout Spacing="8" IsVisible="{Binding HasHistory}">
-                    <Label Text="RIWAYAT KEPUTUSAN" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="RIWAYAT KEPUTUSAN — ARTIST" Style="{StaticResource Eyebrow}"/>
                     <CollectionView ItemsSource="{Binding History}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:ArtistVerificationItem">
@@ -90,6 +133,30 @@
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
                                         <VerticalStackLayout Grid.Column="0" Spacing="2">
                                             <Label Text="{Binding ArtistName}" Style="{StaticResource Subheading}" FontSize="14"/>
+                                            <Label Text="{Binding SubmittedAtDisplay}" Style="{StaticResource Meta}"
+                                                   TextColor="{StaticResource TextMuted}"/>
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="1" BackgroundColor="{Binding StatusColor}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 999" Padding="10,4" VerticalOptions="Center">
+                                            <Label Text="{Binding StatusDisplay}" FontSize="11" FontAttributes="Bold" TextColor="#0A0A0B"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Riwayat keputusan EO (Bab 15) -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasEoHistory}">
+                    <Label Text="RIWAYAT KEPUTUSAN — EVENT ORGANIZER" Style="{StaticResource Eyebrow}"/>
+                    <CollectionView ItemsSource="{Binding EoHistory}" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:OrganizerVerificationItem">
+                                <Border Style="{StaticResource CardBorder}" Padding="14" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding OrganizerName}" Style="{StaticResource Subheading}" FontSize="14"/>
                                             <Label Text="{Binding SubmittedAtDisplay}" Style="{StaticResource Meta}"
                                                    TextColor="{StaticResource TextMuted}"/>
                                         </VerticalStackLayout>

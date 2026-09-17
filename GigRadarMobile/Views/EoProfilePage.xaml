@@ -54,6 +54,31 @@
                 <Button Grid.Column="1" Text="Edit profil" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleEditCommand}"/>
             </Grid>
 
+            <!-- Verifikasi EO (Bab 15) + Portfolio (Bab 14) -->
+            <Frame IsVisible="{Binding HasVerificationCard}" BackgroundColor="{StaticResource CardColor}"
+                   BorderColor="{StaticResource BorderStrong}" CornerRadius="14" Padding="16" HasShadow="False">
+                <VerticalStackLayout Spacing="8">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                        <Border Grid.Column="0" WidthRequest="10" HeightRequest="10" StrokeThickness="0"
+                                StrokeShape="RoundRectangle 999" VerticalOptions="Center"
+                                BackgroundColor="{Binding VerificationColor}"/>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="VERIFIKASI EO" Style="{StaticResource Eyebrow}"/>
+                            <Label Text="{Binding VerificationLabel}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                        </VerticalStackLayout>
+                        <Label Grid.Column="2" Text="›" FontSize="18" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                    </Grid>
+                    <Label Text="Organisasi terverifikasi lebih dipercaya artist dan penonton."
+                           Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <Button Grid.Column="0" Text="Status verifikasi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                Command="{Binding GoToVerificationCommand}"/>
+                        <Button Grid.Column="1" Text="Portfolio EO" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                Command="{Binding GoToPortfolioCommand}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
             <Frame BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}" CornerRadius="16" Padding="15" HasShadow="False" IsVisible="{Binding IsEditing}">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Edit profil" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>

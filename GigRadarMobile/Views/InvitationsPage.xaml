@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.InvitationsPage"
+             x:DataType="vm:InvitationsViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Undangan">
+
+    <RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="GIG LINE-UP" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Undangan" Style="{StaticResource PageTitle}"/>
+                </VerticalStackLayout>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+                <!-- Form undang artist (EO saja) -->
+                <Frame IsVisible="{Binding IsEo}" BackgroundColor="{StaticResource AccentSoft}"
+                       BorderColor="{StaticResource BorderStrong}" CornerRadius="14" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="UNDANG ARTIST KE EVENT" FontSize="10" FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <Entry Grid.Column="0" Text="{Binding InviteEventId}" Placeholder="ID Event (mis. 1)"
+                                   Keyboard="Numeric"/>
+                            <Entry Grid.Column="1" Text="{Binding InviteArtistId}" Placeholder="ID Artist (mis. 2)"
+                                   Keyboard="Numeric"/>
+                        </Grid>
+                        <Entry Text="{Binding InviteMessage}" Placeholder="Pesan (opsional)"/>
+                        <Label Text="{Binding InviteError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                               IsVisible="{Binding InviteError, Converter={StaticResource StringNotEmptyConverter}}"/>
+                        <Button Text="Kirim undangan" Style="{StaticResource BtnPrimary}" HeightRequest="44"
+                                Command="{Binding SendInviteCommand}"
+                                IsEnabled="{Binding IsProcessing, Converter={StaticResource InvertedBoolConverter}}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Undangan diterima (artist) -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasReceived}">
+                    <Label Text="UNDANGAN MASUK" Style="{StaticResource Eyebrow}"/>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Received}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:InvitationItem">
+                                <Border Style="{StaticResource CardBorder}" Padding="14">
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                <Label Text="{Binding EventName}" Style="{StaticResource Subheading}" FontSize="15"/>
+                                                <Label Text="{Binding EventDateDisplay, StringFormat='📅 {0}'}" Style="{StaticResource Meta}"
+                                                       TextColor="{StaticResource TextMuted}"/>
+                                            </VerticalStackLayout>
+                                            <Border Grid.Column="1" BackgroundColor="{Binding StatusColor}" StrokeThickness="0"
+                                                    StrokeShape="RoundRectangle 999" Padding="10,4" VerticalOptions="Center">
+                                                <Label Text="{Binding StatusDisplay}" FontSize="11" FontAttributes="Bold" TextColor="#0A0A0B"/>
+                                            </Border>
+                                        </Grid>
+                                        <Label Text="{Binding Message}" Style="{StaticResource Caption}" FontSize="12"
+                                               TextColor="{StaticResource TextSecondary}"
+                                               IsVisible="{Binding Message, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding IsPending}">
+                                            <Button Grid.Column="0" Text="Tolak" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:InvitationsViewModel}}, Path=RejectCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                            <Button Grid.Column="1" Text="Terima" Style="{StaticResource BtnPrimary}" HeightRequest="42" WidthRequest="120"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:InvitationsViewModel}}, Path=AcceptCommand}"
+                                                    CommandParameter="{Binding .}"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Empty state undangan masuk -->
+                <Frame IsVisible="{Binding HasReceived, Converter={StaticResource InvertedBoolConverter}}"
+                       BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}"
+                       CornerRadius="14" Padding="18" HasShadow="False">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="BELUM ADA UNDANGAN MASUK" Style="{StaticResource Eyebrow}"/>
+                        <Label Text="Undangan dari Event Organizer untuk tampil di event mereka akan muncul di sini."
+                               Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Undangan terkirim (EO) -->
+                <VerticalStackLayout Spacing="8" IsVisible="{Binding HasSent}">
+                    <Label Text="UNDANGAN TERKIRIM" Style="{StaticResource Eyebrow}"/>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sent}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:InvitationItem">
+                                <Border Style="{StaticResource CardBorder}" Padding="14">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding ArtistName}" Style="{StaticResource Subheading}" FontSize="14"/>
+                                            <Label Text="{Binding EventName, StringFormat='untuk {0}'}" Style="{StaticResource Meta}"
+                                                   TextColor="{StaticResource TextMuted}"/>
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="1" BackgroundColor="{Binding StatusColor}" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 999" Padding="10,4" VerticalOptions="Center">
+                                            <Label Text="{Binding StatusDisplay}" FontSize="11" FontAttributes="Bold" TextColor="#0A0A0B"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

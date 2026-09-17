@@ -59,6 +59,12 @@ public static class MauiProgram
         builder.Services.AddTransient<UsersViewModel>();
         builder.Services.AddTransient<ArtistDashboardViewModel>();
         builder.Services.AddTransient<ArtistVerificationViewModel>();
+        builder.Services.AddTransient<OrganizerVerificationViewModel>();
+        builder.Services.AddTransient<EoPortfolioViewModel>();
+        builder.Services.AddTransient<NotificationsViewModel>();
+        builder.Services.AddTransient<InvitationsViewModel>();
+        builder.Services.AddTransient<MerchViewModel>();
+        builder.Services.AddTransient<ReportsViewModel>();
         builder.Services.AddTransient<VerificationsViewModel>();
 
         // Pages
@@ -82,6 +88,12 @@ public static class MauiProgram
         builder.Services.AddTransient<UsersPage>();
         builder.Services.AddTransient<ArtistDashboardPage>();
         builder.Services.AddTransient<ArtistVerificationPage>();
+        builder.Services.AddTransient<OrganizerVerificationPage>();
+        builder.Services.AddTransient<EoPortfolioPage>();
+        builder.Services.AddTransient<NotificationsPage>();
+        builder.Services.AddTransient<InvitationsPage>();
+        builder.Services.AddTransient<MerchPage>();
+        builder.Services.AddTransient<ReportsPage>();
         builder.Services.AddTransient<VerificationsPage>();
 
 #if DEBUG

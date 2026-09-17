@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.OrganizerVerificationPage"
+             x:DataType="vm:OrganizerVerificationViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Verifikasi EO">
+
+    <RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+
+                <!-- Header -->
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="EVENT ORGANIZER" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Verifikasi" Style="{StaticResource PageTitle}"/>
+                    <Label Text="Verifikasi membuat organisasi kamu lebih dipercaya oleh artist dan penonton."
+                           Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                </VerticalStackLayout>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+                <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}"
+                       TextColor="{StaticResource DangerColor}"
+                       IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"/>
+
+                <!-- Status card -->
+                <Frame IsVisible="{Binding HasStatus}" BackgroundColor="{StaticResource CardColor}"
+                       BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="10">
+
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="STATUS VERIFIKASI" Style="{StaticResource Eyebrow}"/>
+                                <Label Text="{Binding OrganizationNameDisplay}" Style="{StaticResource Subheading}"/>
+                                <Label Text="{Binding PortfolioCountLabel}" Style="{StaticResource Caption}"
+                                       TextColor="{StaticResource TextSecondary}"/>
+                            </VerticalStackLayout>
+                            <!-- Badge ✓ hanya saat server bilang IsVerified (Bab 15: Organizer Name ✓) -->
+                            <Border Grid.Column="1" IsVisible="{Binding IsVerifiedBadgeVisible}"
+                                    BackgroundColor="{StaticResource AccentSoft}" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 999" Padding="10,4">
+                                <Label Text="✓ Terverifikasi" FontSize="12" FontAttributes="Bold"
+                                       TextColor="{StaticResource PrimaryColor}"/>
+                            </Border>
+                        </Grid>
+
+                        <Frame BackgroundColor="{StaticResource CardElevatedColor}" BorderColor="{StaticResource BorderColor}"
+                               CornerRadius="10" Padding="12" HasShadow="False">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                <Border Grid.Column="0" WidthRequest="10" HeightRequest="10" StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 999" VerticalOptions="Center"
+                                        BackgroundColor="{Binding StatusDotColor}"/>
+                                <Label Grid.Column="1" Text="{Binding StatusDisplayText}" Style="{StaticResource Body}"
+                                       FontAttributes="Bold" VerticalOptions="Center"/>
+                            </Grid>
+                        </Frame>
+
+                        <!-- Alasan penolakan (Bab 15: pengajuan ditolak bisa diajukan ulang) -->
+                        <Frame IsVisible="{Binding HasRejectedReason}" BackgroundColor="{StaticResource DangerSoft}"
+                               BorderColor="{StaticResource BorderColor}" CornerRadius="10" Padding="12" HasShadow="False">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="ALASAN PENOLAKAN" Style="{StaticResource Eyebrow}" TextColor="{StaticResource DangerColor}"/>
+                                <Label Text="{Binding RejectedReasonDisplay}" Style="{StaticResource Body}" FontSize="13"/>
+                            </VerticalStackLayout>
+                        </Frame>
+
+                        <!-- Info menunggu tinjauan -->
+                        <Label IsVisible="{Binding IsPendingReview}"
+                               Text="Pengajuanmu sedang ditinjau Admin. Hasilnya akan muncul di halaman ini."
+                               Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
+
+                        <!-- Riwayat pengajuan terakhir -->
+                        <VerticalStackLayout Spacing="4" IsVisible="{Binding HasLatest}">
+                            <Label Text="PENGAJUAN TERAKHIR" Style="{StaticResource Eyebrow}"/>
+                            <Label Text="{Binding LatestSubmittedAtDisplay}" Style="{StaticResource Caption}"
+                                   TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+
+                        <Button Text="{Binding ToggleFormLabel}" Style="{StaticResource BtnOutline}" HeightRequest="44"
+                                IsVisible="{Binding CanSubmit}" Command="{Binding ToggleFormCommand}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Form pengajuan -->
+                <Frame IsVisible="{Binding IsFormVisible}" BackgroundColor="{StaticResource SurfaceColor}"
+                       BorderColor="{StaticResource BorderStrong}" CornerRadius="14" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="12">
+
+                        <Label Text="FORM PENGAJUAN" Style="{StaticResource Eyebrow}"/>
+                        <Label Text="Sebelum mengajukan: pastikan deskripsi &amp; lokasi organisasi sudah terisi di halaman Portfolio EO, dan minimal satu portofolio event sudah ditambahkan."
+                               Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="No. telepon / kontak *" Style="{StaticResource Caption}"/>
+                            <Entry Text="{Binding FormContact}" Placeholder="081234567890" Keyboard="Telephone"/>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding FormError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                               IsVisible="{Binding FormError, Converter={StaticResource StringNotEmptyConverter}}"/>
+
+                        <Button Text="Kirim pengajuan" Style="{StaticResource BtnPrimary}" HeightRequest="46"
+                                Command="{Binding SubmitCommand}"
+                                IsEnabled="{Binding IsSubmitting, Converter={StaticResource InvertedBoolConverter}}"/>
+                        <ActivityIndicator IsRunning="{Binding IsSubmitting}" IsVisible="{Binding IsSubmitting}" HeightRequest="20"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

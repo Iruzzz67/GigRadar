@@ -10,9 +10,11 @@
     <TabBar>
         <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:EoProfilePage}" Route="dashboard"/>
         <ShellContent Title="Events" ContentTemplate="{DataTemplate views:EoEventsPage}" Route="eo-events"/>
+        <ShellContent Title="Undangan" ContentTemplate="{DataTemplate views:InvitationsPage}" Route="eo-invitations"/>
         <ShellContent Title="Tickets" ContentTemplate="{DataTemplate views:ManageTicketsPage}" Route="eo-tickets"/>
         <ShellContent Title="Analytics" ContentTemplate="{DataTemplate views:EoAnalyticsPage}" Route="eo-analytics"/>
-        <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
+                <ShellContent Title="Notifikasi" ContentTemplate="{DataTemplate views:NotificationsPage}" Route="eoshell-notifications"/>
+<ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
     </TabBar>
 
 </Shell>

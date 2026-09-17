@@ -19,6 +19,12 @@ namespace GigRadarMobile.Shells
             Routing.RegisterRoute(nameof(EoProfilePage), typeof(EoProfilePage));
             Routing.RegisterRoute(nameof(CreateEventPage), typeof(CreateEventPage));
             Routing.RegisterRoute(nameof(ArtistVerificationPage), typeof(ArtistVerificationPage));
+            Routing.RegisterRoute(nameof(OrganizerVerificationPage), typeof(OrganizerVerificationPage));
+            Routing.RegisterRoute(nameof(EoPortfolioPage), typeof(EoPortfolioPage));
+            Routing.RegisterRoute(nameof(NotificationsPage), typeof(NotificationsPage));
+            Routing.RegisterRoute(nameof(InvitationsPage), typeof(InvitationsPage));
+            Routing.RegisterRoute(nameof(MerchPage), typeof(MerchPage));
+            Routing.RegisterRoute(nameof(ReportsPage), typeof(ReportsPage));
         }
     }
 }

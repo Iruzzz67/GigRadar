@@ -20,7 +20,7 @@ public class ArtistVerificationRequest
 /// - Setiap keputusan tercatat (ReviewedBy/RejectedReason/ReviewedAt) sebagai jejak audit.
 /// - Pengajuan yang ditolak boleh diajukan ulang (PENDING baru diperbolehkan setelah REJECTED).
 /// </summary>
-public class ArtistVerificationService(AppDbContext context)
+public class ArtistVerificationService(AppDbContext context, NotificationService notifications)
 {
     /// <summary>Filter status yang valid untuk query daftar pengajuan.</summary>
     public static readonly string[] AllowedStatusFilters = ["PENDING", "VERIFIED", "REJECTED"];
@@ -87,6 +87,17 @@ public class ArtistVerificationService(AppDbContext context)
         verification.Status = approve ? "VERIFIED" : "REJECTED";
         verification.ReviewedAt = DateTime.UtcNow;
         verification.ReviewedByUserId = adminUserId;
+
+        // Notifikasi keputusan ke artist (Bab 36 — ARTIST_VERIFICATION).
+        if (verification.Artist!.UserId != null)
+        {
+            await notifications.NotifyAsync(verification.Artist.UserId.Value, "ARTIST_VERIFICATION",
+                approve ? "Verifikasi disetujui" : "Verifikasi ditolak",
+                approve
+                    ? $"Selamat! \"{verification.Artist.Name}\" kini terverifikasi."
+                    : $"Pengajuan verifikasi \"{verification.Artist.Name}\" ditolak: {verification.RejectedReason}",
+                "verification");
+        }
 
         if (!approve)
         {

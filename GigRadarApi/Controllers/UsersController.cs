@@ -15,13 +15,16 @@ namespace GigRadarApi.Controllers
         private readonly AppDbContext _context;
         private readonly AuthService _authService;
         private readonly ArtistVerificationService _artistVerificationService;
+        private readonly OrganizerVerificationService _organizerVerificationService;
 
         public UsersController(AppDbContext context, AuthService authService,
-            ArtistVerificationService artistVerificationService)
+            ArtistVerificationService artistVerificationService,
+            OrganizerVerificationService organizerVerificationService)
         {
             _context = context;
             _authService = authService;
             _artistVerificationService = artistVerificationService;
+            _organizerVerificationService = organizerVerificationService;
         }
 
         /// <summary>
@@ -148,6 +151,45 @@ namespace GigRadarApi.Controllers
                 return BadRequest(new { message = "Alasan penolakan wajib diisi" });
 
             var (success, message) = await _artistVerificationService.ReviewAsync(
+                verificationId, adminId, approve: false, reason: request.Reason);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        // ── Verification Center: verifikasi EO (Bab 15, 22) — khusus Admin ──
+
+        /// <summary>Daftar pengajuan verifikasi EO (query ?status=PENDING|VERIFIED|REJECTED).</summary>
+        [HttpGet("organizer-verifications")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetOrganizerVerifications([FromQuery] string? status = "PENDING")
+        {
+            var items = await _organizerVerificationService.GetListAsync(status);
+            return Ok(items);
+        }
+
+        /// <summary>Admin menyetujui verifikasi EO — organizer mendapat badge verified (Bab 15).</summary>
+        [HttpPost("organizer-verifications/{verificationId}/approve")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveOrganizerVerification(int verificationId)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _organizerVerificationService.ReviewAsync(
+                verificationId, adminId, approve: true, reason: null);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        /// <summary>Admin menolak verifikasi EO — alasan wajib agar EO tahu apa yang perlu diperbaiki.</summary>
+        [HttpPost("organizer-verifications/{verificationId}/reject")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RejectOrganizerVerification(
+            int verificationId, [FromBody] RejectVerificationRequest? request)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            if (request == null || string.IsNullOrWhiteSpace(request.Reason))
+                return BadRequest(new { message = "Alasan penolakan wajib diisi" });
+
+            var (success, message) = await _organizerVerificationService.ReviewAsync(
                 verificationId, adminId, approve: false, reason: request.Reason);
             if (!success) return BadRequest(new { message });
             return Ok(new { message });

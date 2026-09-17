@@ -592,6 +592,288 @@ namespace GigRadarMobile.Services
                 : (false, envelope?.Message ?? "Gagal memproses verifikasi");
         }
 
+        // ── Profil, portofolio & verifikasi EO (Bab 12–15) ──
+
+        /// <summary>Profil + portofolio organizer milik user yang login (GET /api/organizer/me).</summary>
+        public async Task<OrganizerProfileResponse?> GetOrganizerMeAsync()
+        {
+            return await GetAsync<OrganizerProfileResponse>("/api/organizer/me");
+        }
+
+        /// <summary>Perbarui profil organizer (PUT /api/organizer/me).</summary>
+        public async Task<(bool Success, string Message)> UpdateOrganizerProfileAsync(
+            string organizationName, string description, string location, string contact,
+            string websiteUrl, string socialLinks, int? foundedYear)
+        {
+            var response = await _http.PutAsJsonAsync("/api/organizer/me", new
+            {
+                organizationName,
+                description,
+                location,
+                contact,
+                websiteUrl,
+                socialLinks,
+                foundedYear
+            }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Profil tersimpan")
+                : (false, envelope?.Message ?? "Gagal menyimpan profil");
+        }
+
+        /// <summary>Tambah item portofolio (POST /api/organizer/portfolio).</summary>
+        public async Task<(bool Success, string Message)> AddPortfolioItemAsync(
+            string eventName, DateTime? eventDate, string venue, string description,
+            string photosUrl, string documentationLink)
+        {
+            var response = await _http.PostAsJsonAsync("/api/organizer/portfolio", new
+            {
+                eventName,
+                eventDate,
+                venue,
+                description,
+                photosUrl,
+                documentationLink
+            }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Portofolio ditambahkan")
+                : (false, envelope?.Message ?? "Gagal menambah portofolio");
+        }
+
+        /// <summary>Hapus item portofolio milik sendiri (DELETE /api/organizer/portfolio/{id}).</summary>
+        public async Task<(bool Success, string Message)> DeletePortfolioItemAsync(int portfolioItemId)
+        {
+            var response = await _http.DeleteAsync($"/api/organizer/portfolio/{portfolioItemId}");
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Portofolio dihapus")
+                : (false, envelope?.Message ?? "Gagal menghapus portofolio");
+        }
+
+        /// <summary>Status verifikasi EO milik user yang login (GET /api/organizer/verification/status).</summary>
+        public async Task<OrganizerVerificationStatus?> GetMyOrganizerVerificationStatusAsync()
+        {
+            return await GetAsync<OrganizerVerificationStatus>("/api/organizer/verification/status");
+        }
+
+        /// <summary>Ajukan verifikasi EO (POST /api/organizer/verification).</summary>
+        public async Task<(bool Success, string Message)> SubmitOrganizerVerificationAsync(string contact)
+        {
+            var response = await _http.PostAsJsonAsync("/api/organizer/verification",
+                new { contact }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Pengajuan terkirim")
+                : (false, envelope?.Message ?? "Gagal mengirim pengajuan");
+        }
+
+        /// <summary>Daftar pengajuan verifikasi EO untuk Verification Center Admin.</summary>
+        public async Task<List<OrganizerVerificationItem>> GetOrganizerVerificationsAsync(string status = "PENDING")
+        {
+            return await GetAsync<List<OrganizerVerificationItem>>(
+                $"/api/users/organizer-verifications?status={status}") ?? new();
+        }
+
+        /// <summary>Admin memutuskan pengajuan verifikasi EO (approve tanpa alasan; reject wajib beralasan).</summary>
+        public async Task<(bool Success, string Message)> ReviewOrganizerVerificationAsync(
+            int verificationId, bool approve, string? reason = null)
+        {
+            var url = $"/api/users/organizer-verifications/{verificationId}/{(approve ? "approve" : "reject")}";
+            var response = approve
+                ? await _http.PostAsync(url, content: null)
+                : await _http.PostAsJsonAsync(url, new { reason }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Berhasil")
+                : (false, envelope?.Message ?? "Gagal memproses verifikasi");
+        }
+
+        // ── Sosial post & notifikasi (Bab 32, 36, 48) ────
+
+        /// <summary>Like/unlike post (toggle idempoten).</summary>
+        public async Task<(bool Success, bool Liked, int LikesCount)> TogglePostLikeAsync(int postId)
+        {
+            var response = await _http.PostAsync($"/api/posts/{postId}/like", content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode) return (false, false, 0);
+            using var doc = JsonDocument.Parse(json);
+            var liked = doc.RootElement.TryGetProperty("liked", out var l) && l.GetBoolean();
+            var count = doc.RootElement.TryGetProperty("likesCount", out var c) ? c.GetInt32() : 0;
+            return (true, liked, count);
+        }
+
+        /// <summary>Daftar komentar sebuah post.</summary>
+        public async Task<List<PostCommentItem>> GetPostCommentsAsync(int postId)
+        {
+            return await GetAsync<List<PostCommentItem>>($"/api/posts/{postId}/comments") ?? new();
+        }
+
+        /// <summary>Tulis komentar pada post.</summary>
+        public async Task<(bool Success, string Message)> AddPostCommentAsync(int postId, string content)
+        {
+            var response = await _http.PostAsJsonAsync($"/api/posts/{postId}/comments",
+                new { content }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Komentar terkirim")
+                : (false, envelope?.Message ?? "Gagal mengirim komentar");
+        }
+
+        /// <summary>Daftar notifikasi user yang login.</summary>
+        public async Task<List<NotificationItem>> GetNotificationsAsync(bool unreadOnly = false)
+        {
+            return await GetAsync<List<NotificationItem>>(
+                $"/api/notifications{(unreadOnly ? "?unread=true" : "")}") ?? new();
+        }
+
+        /// <summary>Jumlah notifikasi belum dibaca (badge).</summary>
+        public async Task<int> GetUnreadNotificationCountAsync()
+        {
+            var result = await GetAsync<UnreadCountResponse>("/api/notifications/unread-count");
+            return result?.Count ?? 0;
+        }
+
+        /// <summary>Tandai satu notifikasi dibaca.</summary>
+        public async Task MarkNotificationReadAsync(int notificationId)
+        {
+            await _http.PostAsync($"/api/notifications/{notificationId}/read", content: null);
+        }
+
+        /// <summary>Tandai semua notifikasi dibaca.</summary>
+        public async Task MarkAllNotificationsReadAsync()
+        {
+            await _http.PostAsync("/api/notifications/read-all", content: null);
+        }
+
+        // ── Undangan, merchandise & laporan (Bab 26, 31, 37, 49) ──
+
+        /// <summary>Daftar undangan milik user (diterima + terkirim).</summary>
+        public async Task<InvitationsResponse?> GetMyInvitationsAsync()
+        {
+            return await GetAsync<InvitationsResponse>("/api/invitations/me");
+        }
+
+        /// <summary>EO mengundang artist ke event.</summary>
+        public async Task<(bool Success, string Message)> InviteArtistAsync(int eventId, int artistId, string message)
+        {
+            var response = await _http.PostAsJsonAsync($"/api/events/{eventId}/invitations",
+                new { artistId, message }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Undangan terkirim")
+                : (false, envelope?.Message ?? "Gagal mengirim undangan");
+        }
+
+        /// <summary>Artist menerima/menolak undangan.</summary>
+        public async Task<(bool Success, string Message)> RespondInvitationAsync(int invitationId, bool accept)
+        {
+            var url = $"/api/invitations/{invitationId}/{(accept ? "accept" : "reject")}";
+            var response = await _http.PostAsync(url, content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Berhasil")
+                : (false, envelope?.Message ?? "Gagal memproses undangan");
+        }
+
+        /// <summary>EO membatalkan undangan yang masih menunggu.</summary>
+        public async Task<(bool Success, string Message)> CancelInvitationAsync(int invitationId)
+        {
+            var response = await _http.PostAsync($"/api/invitations/{invitationId}/cancel", content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Undangan dibatalkan")
+                : (false, envelope?.Message ?? "Gagal membatalkan");
+        }
+
+        /// <summary>Katalog merchandise artist (publik).</summary>
+        public async Task<List<MerchItem>> GetMerchandiseAsync(int artistId)
+        {
+            return await GetAsync<List<MerchItem>>($"/api/artists/{artistId}/merchandise") ?? new();
+        }
+
+        /// <summary>Merchandise milik artist yang login (termasuk arsip).</summary>
+        public async Task<List<MerchItem>> GetMyMerchandiseAsync()
+        {
+            return await GetAsync<List<MerchItem>>("/api/artists/me/merchandise") ?? new();
+        }
+
+        /// <summary>Tambah produk merchandise.</summary>
+        public async Task<(bool Success, string Message)> CreateMerchandiseAsync(
+            string name, string description, string imageUrl, decimal price, int stock, string externalUrl)
+        {
+            var response = await _http.PostAsJsonAsync("/api/artists/me/merchandise", new
+            {
+                name,
+                description,
+                imageUrl,
+                price,
+                stock,
+                externalPurchaseUrl = externalUrl
+            }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Merchandise ditambahkan")
+                : (false, envelope?.Message ?? "Gagal menambah merchandise");
+        }
+
+        /// <summary>Arsipkan produk merchandise milik sendiri.</summary>
+        public async Task<(bool Success, string Message)> ArchiveMerchandiseAsync(int merchandiseId)
+        {
+            var response = await _http.DeleteAsync($"/api/merchandise/{merchandiseId}");
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Merchandise diarsipkan")
+                : (false, envelope?.Message ?? "Gagal mengarsipkan");
+        }
+
+        /// <summary>Buat laporan konten/akun.</summary>
+        public async Task<(bool Success, string Message)> CreateReportAsync(
+            string targetType, int targetId, string category, string description)
+        {
+            var response = await _http.PostAsJsonAsync("/api/reports", new
+            {
+                targetType,
+                targetId,
+                category,
+                description
+            }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Laporan terkirim")
+                : (false, envelope?.Message ?? "Gagal mengirim laporan");
+        }
+
+        /// <summary>Admin: daftar laporan.</summary>
+        public async Task<List<ReportItem>> GetReportsAsync(string status = "OPEN")
+        {
+            return await GetAsync<List<ReportItem>>($"/api/admin/reports?status={status}") ?? new();
+        }
+
+        /// <summary>Admin: selesaikan / tolak laporan.</summary>
+        public async Task<(bool Success, string Message)> DecideReportAsync(int reportId, bool resolve, string note)
+        {
+            var url = $"/api/admin/reports/{reportId}/{(resolve ? "resolve" : "dismiss")}";
+            var response = await _http.PostAsJsonAsync(url, new { note }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Berhasil")
+                : (false, envelope?.Message ?? "Gagal memproses laporan");
+        }
+
         // ── Genres ────────────────────────────────────────
 
         public async Task<List<Genre>> GetGenresAsync()

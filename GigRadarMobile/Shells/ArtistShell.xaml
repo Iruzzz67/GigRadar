@@ -11,7 +11,10 @@
          Tab Music / Posts / Gigs (manajemen konten) menyusul di Phase 3. -->
     <TabBar>
         <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:ArtistDashboardPage}" Route="artist-dashboard"/>
-        <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
+        <ShellContent Title="Undangan" ContentTemplate="{DataTemplate views:InvitationsPage}" Route="artist-invitations"/>
+        <ShellContent Title="Merch" ContentTemplate="{DataTemplate views:MerchPage}" Route="artist-merch"/>
+                <ShellContent Title="Notifikasi" ContentTemplate="{DataTemplate views:NotificationsPage}" Route="artistshell-notifications"/>
+<ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
     </TabBar>
 
 </Shell>

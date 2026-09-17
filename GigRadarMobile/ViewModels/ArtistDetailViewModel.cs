@@ -20,6 +20,15 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private ObservableCollection<ArtistGig> _upcomingGigs = new();
         [ObservableProperty] private bool _hasUpcomingGigs;
         [ObservableProperty] private bool _hasMembers;
+        [ObservableProperty] private bool _hasPosts;
+
+        // Komentar (Bab 32): state panel komentar post yang terbuka
+        [ObservableProperty] private bool _isCommentsOpen;
+        [ObservableProperty] private ObservableCollection<PostCommentItem> _comments = new();
+        [ObservableProperty] private bool _hasComments;
+        [ObservableProperty] private string _newComment = "";
+        [ObservableProperty] private bool _isSendingComment;
+        private int _openPostId;
 
         public string HeroImageUrl =>
             !string.IsNullOrWhiteSpace(Artist?.CoverUrl) ? Artist.CoverUrl : (Artist?.PhotoUrl ?? "");
@@ -39,6 +48,7 @@ namespace GigRadarMobile.ViewModels
             OnPropertyChanged(nameof(LocationLabel));
 
             HasMembers = value?.Members is { Count: > 0 };
+            HasPosts = value?.Posts is { Count: > 0 };
 
             if (value != null)
                 _ = LoadUpcomingGigsAsync(value.ArtistId);
@@ -83,6 +93,97 @@ namespace GigRadarMobile.ViewModels
         private async Task GoBackAsync()
         {
             await Shell.Current.GoToAsync("..");
+        }
+
+        // ── Like & komentar post (Bab 32, 48) ────────────
+
+        /// <summary>Like/unlike post (toggle — Bab 48).</summary>
+        [RelayCommand]
+        private async Task ToggleLikeAsync(ArtistPost? post)
+        {
+            if (post == null) return;
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var (success, _, count) = await _api.TogglePostLikeAsync(post.PostId);
+                if (success)
+                {
+                    post.LikesCount = count;
+                    OnPropertyChanged(nameof(Artist.Posts));
+                }
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Buka/tutup panel komentar sebuah post.</summary>
+        [RelayCommand]
+        private async Task ToggleCommentsAsync(ArtistPost? post)
+        {
+            if (post == null) return;
+
+            if (IsCommentsOpen && _openPostId == post.PostId)
+            {
+                IsCommentsOpen = false;
+                return;
+            }
+
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var comments = await _api.GetPostCommentsAsync(post.PostId);
+                Comments = new ObservableCollection<PostCommentItem>(comments);
+                HasComments = Comments.Count > 0;
+                _openPostId = post.PostId;
+                IsCommentsOpen = true;
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Kirim komentar untuk post yang panelnya terbuka.</summary>
+        [RelayCommand]
+        private async Task SendCommentAsync()
+        {
+            var content = NewComment?.Trim() ?? "";
+            if (content.Length == 0 || _openPostId == 0) return;
+
+            try
+            {
+                IsSendingComment = true;
+                _api.SetAuthToken(_auth.GetToken());
+                var (success, message) = await _api.AddPostCommentAsync(_openPostId, content);
+                if (!success)
+                {
+                    await Alerts.ShowAsync("Gagal", message);
+                    return;
+                }
+
+                NewComment = "";
+                var comments = await _api.GetPostCommentsAsync(_openPostId);
+                Comments = new ObservableCollection<PostCommentItem>(comments);
+                HasComments = Comments.Count > 0;
+
+                // Update counter komentar pada post yang terbuka.
+                var post = Artist?.Posts.FirstOrDefault(p => p.PostId == _openPostId);
+                if (post != null)
+                {
+                    post.CommentsCount = comments.Count;
+                    OnPropertyChanged(nameof(Artist.Posts));
+                }
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+            finally
+            {
+                IsSendingComment = false;
+            }
         }
 
         /// <summary>

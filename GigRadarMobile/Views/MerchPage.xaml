@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.MerchPage"
+             x:DataType="vm:MerchViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Merchandise">
+
+    <RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="ARTIST SHOP" Style="{StaticResource Eyebrow}"/>
+                        <Label Text="Merchandise" Style="{StaticResource PageTitle}"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="+ Produk" Style="{StaticResource BtnOutline}" HeightRequest="40"
+                            VerticalOptions="End" Command="{Binding ToggleFormCommand}"/>
+                </Grid>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+                <!-- Form tambah produk -->
+                <Frame IsVisible="{Binding IsFormVisible}" BackgroundColor="{StaticResource SurfaceColor}"
+                       BorderColor="{StaticResource BorderStrong}" CornerRadius="14" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="PRODUK BARU" Style="{StaticResource Eyebrow}"/>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Nama produk *" Style="{StaticResource Caption}"/>
+                            <Entry Text="{Binding FormName}" Placeholder="Mis. Kaos Afterglow"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Deskripsi" Style="{StaticResource Caption}"/>
+                            <Editor Text="{Binding FormDescription}" Placeholder="Bahan, ukuran, dsb."
+                                    AutoSize="TextChanges" MinimumHeightRequest="70"/>
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Harga (Rp) *" Style="{StaticResource Caption}"/>
+                                <Entry Text="{Binding FormPrice}" Placeholder="150000" Keyboard="Numeric"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="6">
+                                <Label Text="Stok" Style="{StaticResource Caption}"/>
+                                <Entry Text="{Binding FormStock}" Placeholder="20" Keyboard="Numeric"/>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="URL gambar" Style="{StaticResource Caption}"/>
+                            <Entry Text="{Binding FormImageUrl}" Placeholder="https://... (opsional)" Keyboard="Url"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Link pembelian eksternal" Style="{StaticResource Caption}"/>
+                            <Entry Text="{Binding FormExternalUrl}" Placeholder="https://shop... (WhatsApp/toko online)" Keyboard="Url"/>
+                        </VerticalStackLayout>
+
+                        <Label Text="{Binding FormError}" Style="{StaticResource Meta}" TextColor="{StaticResource DangerColor}"
+                               IsVisible="{Binding FormError, Converter={StaticResource StringNotEmptyConverter}}"/>
+
+                        <Button Text="Simpan produk" Style="{StaticResource BtnPrimary}" HeightRequest="46"
+                                Command="{Binding SaveCommand}"
+                                IsEnabled="{Binding IsSaving, Converter={StaticResource InvertedBoolConverter}}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Empty state -->
+                <Frame IsVisible="{Binding HasItems, Converter={StaticResource InvertedBoolConverter}}"
+                       BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}"
+                       CornerRadius="14" Padding="18" HasShadow="False">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="BELUM ADA PRODUK" Style="{StaticResource Eyebrow}"/>
+                        <Label Text="Jual kaos, poster, atau kaset band kamu. Pembeli diarahkan ke link pembelian eksternal."
+                               Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Daftar produk -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Items}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:MerchItem">
+                            <Border Style="{StaticResource CardBorder}" Padding="14">
+                                <VerticalStackLayout Spacing="6">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="15"/>
+                                            <Label Text="{Binding PriceFormatted}" Style="{StaticResource Body}" FontSize="13"
+                                                   FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="1" Text="Arsipkan" FontSize="11" HeightRequest="36" Padding="10,0"
+                                                CornerRadius="9" BackgroundColor="{StaticResource DangerSoft}"
+                                                TextColor="{StaticResource DangerColor}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MerchViewModel}}, Path=ArchiveCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                    <Label Text="{Binding Description}" Style="{StaticResource Caption}" FontSize="12"
+                                           TextColor="{StaticResource TextSecondary}" MaxLines="2"
+                                           IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                    <HorizontalStackLayout Spacing="10">
+                                        <Label Text="{Binding StockLabel}" Style="{StaticResource Meta}" FontSize="11"
+                                               TextColor="{StaticResource TextMuted}"/>
+                                        <Label Text="{Binding ExternalPurchaseUrl}" Style="{StaticResource Meta}" FontSize="11"
+                                               TextColor="{StaticResource PrimaryColor}" LineBreakMode="TailTruncation"
+                                               IsVisible="{Binding HasPurchaseLink}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

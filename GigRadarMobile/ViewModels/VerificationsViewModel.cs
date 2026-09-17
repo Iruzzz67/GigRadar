@@ -8,8 +8,8 @@ using GigRadarMobile.Services;
 namespace GigRadarMobile.ViewModels;
 
 /// <summary>
-/// Verification Center Admin (GIGRADAR_APP_SPEC.md Bab 22) — daftar pengajuan
-/// verifikasi artist yang menunggu tinjauan + riwayat keputusan.
+/// Verification Center Admin (GIGRADAR_APP_SPEC.md Bab 22, 15, 8) — daftar pengajuan
+/// verifikasi artist DAN EO yang menunggu tinjauan + riwayat keputusan.
 /// Approve langsung; reject wajib beralasan (diteruskan ke backend).
 /// </summary>
 public partial class VerificationsViewModel : ObservableObject
@@ -25,12 +25,24 @@ public partial class VerificationsViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasHistory))]
     private ObservableCollection<ArtistVerificationItem> _history = new();
 
+    // Verifikasi EO (Bab 15)
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasEoPending))]
+    private ObservableCollection<OrganizerVerificationItem> _eoPending = new();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasEoHistory))]
+    private ObservableCollection<OrganizerVerificationItem> _eoHistory = new();
+
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string _statusMessage = "";
     [ObservableProperty] private bool _isProcessing;
 
     public bool HasPending => Pending.Count > 0;
     public bool HasHistory => History.Count > 0;
+    public bool HasEoPending => EoPending.Count > 0;
+    public bool HasEoHistory => EoHistory.Count > 0;
+    public bool HasAnyPending => HasPending || HasEoPending;
 
     public VerificationsViewModel(ApiService api, AuthService auth)
     {
@@ -47,12 +59,18 @@ public partial class VerificationsViewModel : ObservableObject
             StatusMessage = "";
             _api.SetAuthToken(_auth.GetToken());
 
-            // Satu panggilan tanpa filter, lalu dipisah di client: PENDING vs keputusan.
+            // Satu panggilan per jenis, lalu dipisah di client: PENDING vs keputusan.
             var all = await _api.GetArtistVerificationsAsync(status: "");
             Pending = new ObservableCollection<ArtistVerificationItem>(
                 all.Where(v => v.Status == "PENDING").OrderBy(v => v.SubmittedAt));
             History = new ObservableCollection<ArtistVerificationItem>(
                 all.Where(v => v.Status != "PENDING").OrderByDescending(v => v.SubmittedAt));
+
+            var allEo = await _api.GetOrganizerVerificationsAsync(status: "");
+            EoPending = new ObservableCollection<OrganizerVerificationItem>(
+                allEo.Where(v => v.Status == "PENDING").OrderBy(v => v.SubmittedAt));
+            EoHistory = new ObservableCollection<OrganizerVerificationItem>(
+                allEo.Where(v => v.Status != "PENDING").OrderByDescending(v => v.SubmittedAt));
         }
         catch (Exception ex)
         {
@@ -115,5 +133,38 @@ public partial class VerificationsViewModel : ObservableObject
         {
             IsProcessing = false;
         }
+    }
+
+    // ── Verifikasi EO (Bab 15) ───────────────────────────
+
+    [RelayCommand]
+    private async Task ApproveEoAsync(OrganizerVerificationItem? item)
+    {
+        if (item == null || IsProcessing) return;
+
+        var confirmed = await Alerts.ConfirmAsync(
+            "Setujui verifikasi EO",
+            $"Berikan badge verified pada organisasi \"{item.OrganizerName}\"?");
+        if (!confirmed) return;
+
+        await ProcessAsync(() => _api.ReviewOrganizerVerificationAsync(item.VerificationId, approve: true));
+    }
+
+    [RelayCommand]
+    private async Task RejectEoAsync(OrganizerVerificationItem? item)
+    {
+        if (item == null || IsProcessing) return;
+
+        var reason = await Alerts.PromptAsync(
+            "Tolak verifikasi EO",
+            $"Tuliskan alasan penolakan untuk \"{item.OrganizerName}\" (dilihat oleh EO).",
+            placeholder: "Mis. portofolio tidak dapat diverifikasi");
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            await Alerts.ShowAsync("Alasan wajib", "Penolakan harus disertai alasan agar EO tahu apa yang perlu diperbaiki.");
+            return;
+        }
+
+        await ProcessAsync(() => _api.ReviewOrganizerVerificationAsync(item.VerificationId, approve: false, reason));
     }
 }

@@ -17,6 +17,7 @@ public class ArtistVerificationTests : IDisposable
 {
     private readonly AppDbContext _context;
     private readonly ArtistVerificationService _service;
+    private readonly NotificationService _notificationService;
 
     // Id user seed: 1 = Admin.
     private const int AdminId = 1;
@@ -28,7 +29,8 @@ public class ArtistVerificationTests : IDisposable
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
         _context = new AppDbContext(options);
-        _service = new ArtistVerificationService(_context);
+        _notificationService = new NotificationService(_context);
+        _service = new ArtistVerificationService(_context, _notificationService);
     }
 
     public void Dispose() => _context.Database.EnsureDeleted();
