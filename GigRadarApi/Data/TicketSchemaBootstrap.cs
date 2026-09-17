@@ -28,11 +28,23 @@ public static class TicketSchemaBootstrap
             SetDemoTicketLink(conn);
             SeedEoUserIfMissing(conn);
             SeedArtistDemo(conn);
+            NormalizeVerificationStatus(conn);
         }
         finally
         {
             conn.Close();
         }
+    }
+
+    /// <summary>
+    /// Kolom VerificationStatus ditambahkan migration dengan default "" (perilaku standar
+    /// EF untuk kolom baru NOT NULL tanpa defaultValue eksplisit). Normalisasi idempoten:
+    /// baris yang masih kosong dianggap NOT_SUBMITTED (Bab 8).
+    /// </summary>
+    private static void NormalizeVerificationStatus(DbConnection conn)
+    {
+        Execute(conn,
+            """UPDATE "Artists" SET "VerificationStatus" = 'NOT_SUBMITTED' WHERE "VerificationStatus" = '';""");
     }
 
     private static void SeedTicketTypesIfEmpty(DbConnection conn)

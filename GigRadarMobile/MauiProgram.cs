@@ -20,7 +20,6 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseMauiMaps()
             .ConfigureFonts(fonts =>
             {
                 // Display: Space Grotesk. Body: Inter.
@@ -59,6 +58,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EoAnalyticsViewModel>();
         builder.Services.AddTransient<UsersViewModel>();
         builder.Services.AddTransient<ArtistDashboardViewModel>();
+        builder.Services.AddTransient<ArtistVerificationViewModel>();
+        builder.Services.AddTransient<VerificationsViewModel>();
 
         // Pages
         builder.Services.AddTransient<LoginPage>();
@@ -80,6 +81,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EoAnalyticsPage>();
         builder.Services.AddTransient<UsersPage>();
         builder.Services.AddTransient<ArtistDashboardPage>();
+        builder.Services.AddTransient<ArtistVerificationPage>();
+        builder.Services.AddTransient<VerificationsPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

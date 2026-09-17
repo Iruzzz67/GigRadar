@@ -29,6 +29,20 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty] private ObservableCollection<ArtistGig> _upcomingGigs = new();
         [ObservableProperty] private bool _hasGigs;
 
+        // Verifikasi artist (GIGRADAR_APP_SPEC.md Bab 8) — status dari GET /api/artist/verification/status
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(VerificationLabel))]
+        [NotifyPropertyChangedFor(nameof(VerificationColor))]
+        [NotifyPropertyChangedFor(nameof(HasVerificationCard))]
+        [NotifyPropertyChangedFor(nameof(IsVerifiedBadgeVisible))]
+        private ArtistVerificationStatus? _verification;
+
+        /// <summary>True bila kartu verifikasi perlu tampil (belum verified / ada yang perlu ditindak).</summary>
+        public bool HasVerificationCard => Verification != null && !Verification.IsVerified;
+        public bool IsVerifiedBadgeVisible => Verification?.IsVerified == true;
+        public string VerificationLabel => Verification?.StatusDisplay ?? "";
+        public string VerificationColor => Verification?.StatusColor ?? "#71717A";
+
         // Form edit profil artist
         [ObservableProperty] private bool _isEditing;
         [ObservableProperty] private string _formName = "";
@@ -82,6 +96,16 @@ namespace GigRadarMobile.ViewModels
                 Dashboard = data;
                 UpcomingGigs = new ObservableCollection<ArtistGig>(data?.UpcomingGigs ?? new List<ArtistGig>());
                 HasGigs = UpcomingGigs.Count > 0;
+
+                // Status verifikasi dimuat terpisah; kegagalannya tidak boleh menggagalkan dashboard.
+                try
+                {
+                    Verification = await _api.GetMyVerificationStatusAsync();
+                }
+                catch
+                {
+                    Verification = null;
+                }
 
                 OnPropertyChanged(nameof(FollowersLabel));
                 OnPropertyChanged(nameof(TracksLabel));
@@ -154,6 +178,22 @@ namespace GigRadarMobile.ViewModels
             catch (Exception ex)
             {
                 await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Buka halaman pengajuan verifikasi artist (Bab 7–8).</summary>
+        [RelayCommand]
+        private async Task GoToVerificationAsync()
+        {
+            if (_navigating) return;
+            _navigating = true;
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(ArtistVerificationPage));
+            }
+            finally
+            {
+                _navigating = false;
             }
         }
 

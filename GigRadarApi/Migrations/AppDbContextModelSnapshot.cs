@@ -49,6 +49,9 @@ namespace GigRadarApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -64,6 +67,10 @@ namespace GigRadarApi.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("VerificationStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("ArtistId");
 
                     b.HasIndex("UserId")
@@ -78,12 +85,14 @@ namespace GigRadarApi.Migrations
                             Bio = "Shoegaze band dari Jakarta. Suara bising yang hangat, melodi yang melayang.",
                             City = "Jakarta",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7553),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1808),
                             Genre = "Shoegaze",
+                            IsVerified = false,
                             Name = "Hollow Men",
                             PhotoUrl = "",
                             SocialLinks = "",
-                            UserId = 3
+                            UserId = 3,
+                            VerificationStatus = "NOT_SUBMITTED"
                         },
                         new
                         {
@@ -91,11 +100,13 @@ namespace GigRadarApi.Migrations
                             Bio = "Midwest emo vibes",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7631),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1873),
                             Genre = "Midwest Emo",
+                            IsVerified = false,
                             Name = "Concrete Beach",
                             PhotoUrl = "",
-                            SocialLinks = ""
+                            SocialLinks = "",
+                            VerificationStatus = "NOT_SUBMITTED"
                         },
                         new
                         {
@@ -103,11 +114,13 @@ namespace GigRadarApi.Migrations
                             Bio = "Indie rock with shoegaze influences",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7637),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1876),
                             Genre = "Indie Rock",
+                            IsVerified = false,
                             Name = "Static Bloom",
                             PhotoUrl = "",
-                            SocialLinks = ""
+                            SocialLinks = "",
+                            VerificationStatus = "NOT_SUBMITTED"
                         },
                         new
                         {
@@ -115,11 +128,13 @@ namespace GigRadarApi.Migrations
                             Bio = "Post-punk from the underground",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7645),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1881),
                             Genre = "Post-Punk",
+                            IsVerified = false,
                             Name = "Pale Circles",
                             PhotoUrl = "",
-                            SocialLinks = ""
+                            SocialLinks = "",
+                            VerificationStatus = "NOT_SUBMITTED"
                         },
                         new
                         {
@@ -127,11 +142,13 @@ namespace GigRadarApi.Migrations
                             Bio = "Dream pop from Bogor",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7649),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1884),
                             Genre = "Dream Pop",
+                            IsVerified = false,
                             Name = "Soft Collapse",
                             PhotoUrl = "",
-                            SocialLinks = ""
+                            SocialLinks = "",
+                            VerificationStatus = "NOT_SUBMITTED"
                         },
                         new
                         {
@@ -139,11 +156,13 @@ namespace GigRadarApi.Migrations
                             Bio = "Math rock with complex time signatures",
                             City = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7652),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1886),
                             Genre = "Math Rock",
+                            IsVerified = false,
                             Name = "Meridian",
                             PhotoUrl = "",
-                            SocialLinks = ""
+                            SocialLinks = "",
+                            VerificationStatus = "NOT_SUBMITTED"
                         });
                 });
 
@@ -188,7 +207,7 @@ namespace GigRadarApi.Migrations
                             AlbumId = 1,
                             ArtistId = 1,
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7861),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2034),
                             Description = "Album pertama — 10 lagu shoegaze.",
                             ReleaseDate = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Title = "Pale Light"
@@ -240,7 +259,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 1,
                             ArtistId = 1,
                             Category = "Formation",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8180),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2256),
                             Date = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Hollow Men terbentuk di garasi Raka, Jakarta Selatan.",
                             ImageUrl = "",
@@ -251,7 +270,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 2,
                             ArtistId = 1,
                             Category = "Single",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8188),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2260),
                             Date = new DateTime(2025, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "'Static Haze' dirilis di platform digital.",
                             ImageUrl = "",
@@ -262,7 +281,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 3,
                             ArtistId = 1,
                             Category = "Gig",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8191),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2262),
                             Date = new DateTime(2025, 9, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Tampil di showcase underground pertama di Bentara Budaya.",
                             ImageUrl = "",
@@ -273,7 +292,7 @@ namespace GigRadarApi.Migrations
                             JourneyId = 4,
                             ArtistId = 1,
                             Category = "Album",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8193),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2263),
                             Date = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Album perdana dirilis dengan 10 lagu.",
                             ImageUrl = "",
@@ -321,7 +340,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 1,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8096),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2205),
                             JoinedAt = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Raka",
                             PhotoUrl = "",
@@ -331,7 +350,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 2,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8104),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2208),
                             JoinedAt = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Bima",
                             PhotoUrl = "",
@@ -341,7 +360,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 3,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8106),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2210),
                             JoinedAt = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Sari",
                             PhotoUrl = "",
@@ -351,7 +370,7 @@ namespace GigRadarApi.Migrations
                         {
                             MemberId = 4,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8109),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2211),
                             JoinedAt = new DateTime(2024, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Dimas",
                             PhotoUrl = "",
@@ -422,6 +441,58 @@ namespace GigRadarApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GigRadarApi.Models.ArtistVerification", b =>
+                {
+                    b.Property<int>("VerificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VerificationId"));
+
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("LegalName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RejectedReason")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("ReviewedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SpotifyUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("SupportingInfo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("VerificationId");
+
+                    b.HasIndex("ArtistId", "Status")
+                        .HasFilter("\"Status\" = 'PENDING'");
+
+                    b.ToTable("ArtistVerifications");
+                });
+
             modelBuilder.Entity("GigRadarApi.Models.AudioTrack", b =>
                 {
                     b.Property<int>("TrackId")
@@ -471,7 +542,7 @@ namespace GigRadarApi.Migrations
                             ArtistId = 1,
                             AudioUrl = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7768),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1970),
                             DurationSeconds = 210,
                             Genre = "Shoegaze",
                             ReleaseDate = new DateTime(2025, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -483,7 +554,7 @@ namespace GigRadarApi.Migrations
                             ArtistId = 1,
                             AudioUrl = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7784),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1980),
                             DurationSeconds = 245,
                             Genre = "Shoegaze",
                             ReleaseDate = new DateTime(2025, 8, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -495,7 +566,7 @@ namespace GigRadarApi.Migrations
                             ArtistId = 1,
                             AudioUrl = "",
                             CoverUrl = "",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(7788),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(1982),
                             DurationSeconds = 198,
                             Genre = "Dream Pop",
                             ReleaseDate = new DateTime(2026, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -585,7 +656,7 @@ namespace GigRadarApi.Migrations
                         {
                             EventId = 1,
                             Capacity = 200,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8356),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2398),
                             CreatedBy = 2,
                             Description = "Night penuh dengan suara Shoegaze dan Post-Punk",
                             EndDate = new DateTime(2026, 9, 5, 23, 0, 0, 0, DateTimeKind.Unspecified),
@@ -607,7 +678,7 @@ namespace GigRadarApi.Migrations
                         {
                             EventId = 2,
                             Capacity = 400,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8380),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2415),
                             CreatedBy = 1,
                             Description = "Festival emo terbesar di Bandung",
                             EndDate = new DateTime(2026, 9, 12, 23, 0, 0, 0, DateTimeKind.Unspecified),
@@ -629,7 +700,7 @@ namespace GigRadarApi.Migrations
                         {
                             EventId = 3,
                             Capacity = 500,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8386),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2420),
                             CreatedBy = 1,
                             Description = "Indie night di tengah kota Jakarta",
                             EndDate = new DateTime(2026, 9, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -913,14 +984,14 @@ namespace GigRadarApi.Migrations
                         {
                             FollowId = 1,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8256),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2303),
                             UserId = 1
                         },
                         new
                         {
                             FollowId = 2,
                             ArtistId = 1,
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 29, 15, DateTimeKind.Utc).AddTicks(8259),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 448, DateTimeKind.Utc).AddTicks(2306),
                             UserId = 2
                         });
                 });
@@ -1170,12 +1241,12 @@ namespace GigRadarApi.Migrations
                         {
                             UserId = 1,
                             City = "Jakarta",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 28, 477, DateTimeKind.Utc).AddTicks(3449),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 38, 954, DateTimeKind.Utc).AddTicks(7826),
                             Email = "admin@gigradar.com",
                             Latitude = 0.0,
                             Longitude = 0.0,
                             Name = "Admin",
-                            PasswordHash = "$2a$11$9ehs.zDkjVcvvGfOSC.YO.mNghWd65WTFeIL0fjkxe1rSuAqYktz.",
+                            PasswordHash = "$2a$11$IjMxs/zA.7kHl26TFo349.cF3UgaZRhrSEhWYYwMqc14VJ7B8B.h6",
                             PhotoUrl = "",
                             Role = "Admin",
                             RoleStatus = "None"
@@ -1184,12 +1255,12 @@ namespace GigRadarApi.Migrations
                         {
                             UserId = 2,
                             City = "Jakarta",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 28, 650, DateTimeKind.Utc).AddTicks(3816),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 124, DateTimeKind.Utc).AddTicks(5032),
                             Email = "eo@gigradar.com",
                             Latitude = 0.0,
                             Longitude = 0.0,
                             Name = "Event Organizer",
-                            PasswordHash = "$2a$11$W52VCNIhewwZgsSn49MFOerm4XkndO3R2ECnrF/HQqnfgDgoL2PAS",
+                            PasswordHash = "$2a$11$orpqE5bCxskQOo34y8HIsOPyl9L0N7x1BkW049d5tbCdP4RZXQyWG",
                             PhotoUrl = "",
                             Role = "EO",
                             RoleStatus = "None"
@@ -1198,12 +1269,12 @@ namespace GigRadarApi.Migrations
                         {
                             UserId = 3,
                             City = "Jakarta",
-                            CreatedAt = new DateTime(2026, 9, 16, 2, 32, 28, 817, DateTimeKind.Utc).AddTicks(8268),
+                            CreatedAt = new DateTime(2026, 9, 17, 4, 22, 39, 307, DateTimeKind.Utc).AddTicks(1187),
                             Email = "artist@gigradar.com",
                             Latitude = 0.0,
                             Longitude = 0.0,
                             Name = "Hollow Men",
-                            PasswordHash = "$2a$11$tNRCUptaA.arz9JTjVi78ue8Hd5Cyz3y2WvbqRCgycit2uslV3H8S",
+                            PasswordHash = "$2a$11$UmWQ8ea5Jic2.9atuQHir.Ryt5X5fs5nMAiJHzvtV1ZJY4zgTSqiO",
                             PhotoUrl = "",
                             Role = "Artist",
                             RoleStatus = "None"
@@ -1355,6 +1426,17 @@ namespace GigRadarApi.Migrations
                 {
                     b.HasOne("GigRadarApi.Models.Artist", "Artist")
                         .WithMany("Posts")
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artist");
+                });
+
+            modelBuilder.Entity("GigRadarApi.Models.ArtistVerification", b =>
+                {
+                    b.HasOne("GigRadarApi.Models.Artist", "Artist")
+                        .WithMany()
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

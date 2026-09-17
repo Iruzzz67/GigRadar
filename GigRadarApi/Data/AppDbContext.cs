@@ -24,6 +24,7 @@ namespace GigRadarApi.Data
         public DbSet<Follow> Follows { get; set; }
         public DbSet<AudioTrack> AudioTracks { get; set; }
         public DbSet<RoleRequest> RoleRequests { get; set; }
+        public DbSet<ArtistVerification> ArtistVerifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +35,11 @@ namespace GigRadarApi.Data
 
             // Satu user ber-role Artist maksimal satu profil artist
             modelBuilder.Entity<Artist>().HasIndex(a => a.UserId).IsUnique();
+
+            // Hanya satu pengajuan PENDING per artist (yang ditolak boleh diajukan ulang)
+            modelBuilder.Entity<ArtistVerification>()
+                .HasIndex(v => new { v.ArtistId, v.Status })
+                .HasFilter($"\"{nameof(ArtistVerification.Status)}\" = 'PENDING'");
 
             // EventArtist composite key
             modelBuilder.Entity<EventArtist>()

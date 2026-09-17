@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GigRadarApi.Data;
 using GigRadarApi.Models;
+using GigRadarApi.Services;
 
 namespace GigRadarApi.Controllers
 {
@@ -16,10 +17,12 @@ namespace GigRadarApi.Controllers
     public class ArtistController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ArtistVerificationService _verificationService;
 
-        public ArtistController(AppDbContext context)
+        public ArtistController(AppDbContext context, ArtistVerificationService verificationService)
         {
             _context = context;
+            _verificationService = verificationService;
         }
 
         private int CurrentUserId => int.Parse(User.FindFirst("UserId")!.Value);
@@ -52,6 +55,30 @@ namespace GigRadarApi.Controllers
         private async Task<Artist?> GetOwnArtistAsync()
         {
             return await _context.Artists.FirstOrDefaultAsync(a => a.UserId == CurrentUserId);
+        }
+
+        // ── Verifikasi (GIGRADAR_APP_SPEC.md Bab 7–8) ─────
+
+        /// <summary>
+        /// Ajukan verifikasi artist. Data pendukung (legal name, telepon, bukti) wajib;
+        /// hanya satu pengajuan PENDING per artist; keputusan diambil Admin.
+        /// </summary>
+        [HttpPost("verification")]
+        public async Task<IActionResult> SubmitVerification(
+            [FromBody] ArtistVerificationRequest request)
+        {
+            var (success, message, _) = await _verificationService.SubmitAsync(CurrentUserId, request);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        /// <summary>Status verifikasi artist milik user yang login + riwayat terakhir.</summary>
+        [HttpGet("verification/status")]
+        public async Task<IActionResult> MyVerificationStatus()
+        {
+            var status = await _verificationService.GetMyStatusAsync(CurrentUserId);
+            if (status == null) return NotFound(new { message = "Profil artist belum ada" });
+            return Ok(status);
         }
 
         // ── Profil ────────────────────────────────────────

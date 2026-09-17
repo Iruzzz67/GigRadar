@@ -34,6 +34,7 @@ namespace GigRadarApi.Controllers
                     a.Genre,
                     a.City,
                     a.Bio,
+                    a.IsVerified,
                     followersCount = a.Followers.Count(f => f.ArtistId == a.ArtistId),
                     tracksCount = a.Tracks.Count
                 })
@@ -92,6 +93,7 @@ namespace GigRadarApi.Controllers
                 artist.Genre,
                 artist.City,
                 artist.SocialLinks,
+                artist.IsVerified,
                 followersCount,
                 members,
                 tracks,

@@ -23,6 +23,10 @@
                         <Label Text="ARTIST DASHBOARD" Style="{StaticResource Eyebrow}"/>
                         <Label Text="{Binding UserName}" Style="{StaticResource SectionTitle}" FontSize="19"
                                LineBreakMode="TailTruncation"/>
+                        <!-- Badge verified hanya dari status server (Bab 8) -->
+                        <Label Text="✓ Terverifikasi" FontSize="11" FontAttributes="Bold"
+                               TextColor="{StaticResource SuccessColor}"
+                               IsVisible="{Binding IsVerifiedBadgeVisible}"/>
                     </VerticalStackLayout>
                     <Label Grid.Column="2" Text="{Binding UserRole}" Style="{StaticResource Meta}"
                            TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
@@ -62,6 +66,28 @@
                         </Grid>
                         <Button Text="Edit profil artist" Style="{StaticResource BtnPrimary}" HeightRequest="44"
                                 Command="{Binding ToggleEditCommand}"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Kartu verifikasi (Bab 8) — tampil saat belum verified -->
+                <Frame IsVisible="{Binding HasVerificationCard}" BackgroundColor="{StaticResource CardColor}"
+                       BorderColor="{StaticResource BorderStrong}" CornerRadius="14" Padding="16" HasShadow="False">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                            <Border Grid.Column="0" WidthRequest="10" HeightRequest="10" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 999" VerticalOptions="Center"
+                                    BackgroundColor="{Binding VerificationColor}"/>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="VERIFIKASI ARTIST" Style="{StaticResource Eyebrow}"/>
+                                <Label Text="{Binding VerificationLabel}" Style="{StaticResource Body}" FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="›" Style="{StaticResource PageTitle}" FontSize="18"
+                                   TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
+                        </Grid>
+                        <Label Text="Profil terverifikasi memberi kepercayaan lebih ke penonton dan EO."
+                               Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
+                        <Button Text="Lihat status verifikasi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                                Command="{Binding GoToVerificationCommand}"/>
                     </VerticalStackLayout>
                 </Frame>
 

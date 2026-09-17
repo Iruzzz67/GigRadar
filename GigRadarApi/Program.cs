@@ -51,6 +51,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<TicketService>();
+builder.Services.AddScoped<ArtistVerificationService>();
 
 // Controllers + Swagger
 builder.Services.AddControllers();

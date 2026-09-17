@@ -14,11 +14,14 @@ namespace GigRadarApi.Controllers
     {
         private readonly AppDbContext _context;
         private readonly AuthService _authService;
+        private readonly ArtistVerificationService _artistVerificationService;
 
-        public UsersController(AppDbContext context, AuthService authService)
+        public UsersController(AppDbContext context, AuthService authService,
+            ArtistVerificationService artistVerificationService)
         {
             _context = context;
             _authService = authService;
+            _artistVerificationService = artistVerificationService;
         }
 
         /// <summary>
@@ -108,6 +111,44 @@ namespace GigRadarApi.Controllers
         {
             var adminId = int.Parse(User.FindFirst("UserId")!.Value);
             var (success, message) = await _authService.RejectRoleRequestAsync(requestId, adminId);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        // ── Verification Center: verifikasi artist (Bab 22) — khusus Admin ──
+
+        /// <summary>Daftar pengajuan verifikasi artist (query ?status=PENDING|VERIFIED|REJECTED).</summary>
+        [HttpGet("artist-verifications")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetArtistVerifications([FromQuery] string? status = "PENDING")
+        {
+            var items = await _artistVerificationService.GetListAsync(status);
+            return Ok(items);
+        }
+
+        /// <summary>Admin menyetujui verifikasi — artist mendapat badge verified (Bab 8).</summary>
+        [HttpPost("artist-verifications/{verificationId}/approve")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ApproveArtistVerification(int verificationId)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _artistVerificationService.ReviewAsync(verificationId, adminId, approve: true, reason: null);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message });
+        }
+
+        /// <summary>Admin menolak verifikasi — alasan wajib agar artist tahu apa yang perlu diperbaiki.</summary>
+        [HttpPost("artist-verifications/{verificationId}/reject")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RejectArtistVerification(
+            int verificationId, [FromBody] RejectVerificationRequest? request)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            if (request == null || string.IsNullOrWhiteSpace(request.Reason))
+                return BadRequest(new { message = "Alasan penolakan wajib diisi" });
+
+            var (success, message) = await _artistVerificationService.ReviewAsync(
+                verificationId, adminId, approve: false, reason: request.Reason);
             if (!success) return BadRequest(new { message });
             return Ok(new { message });
         }
@@ -219,5 +260,10 @@ namespace GigRadarApi.Controllers
         public string? Name { get; set; }
         public string? City { get; set; }
         public string? PhotoUrl { get; set; }
+    }
+
+    public class RejectVerificationRequest
+    {
+        public string? Reason { get; set; }
     }
 }

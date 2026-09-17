@@ -20,6 +20,12 @@ namespace GigRadarApi.Models
         public string Genre { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string SocialLinks { get; set; } = string.Empty;
+
+        // Verifikasi artist (GIGRADAR_APP_SPEC.md Bab 8):
+        // NOT_SUBMITTED | PENDING | VERIFIED | REJECTED — hanya diubah oleh Admin
+        // melalui ArtistVerificationService, tidak pernah dari input client.
+        public string VerificationStatus { get; set; } = "NOT_SUBMITTED";
+        public bool IsVerified { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UserId")]
@@ -132,6 +138,36 @@ namespace GigRadarApi.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("ArtistId")]
+        public Artist? Artist { get; set; }
+    }
+
+    /// <summary>
+    /// Pengajuan verifikasi artist (GIGRADAR_APP_SPEC.md Bab 7–8, 22).
+    /// Satu artist boleh memiliki beberapa pengajuan (yang ditolak dapat diajukan ulang);
+    /// hanya satu yang boleh berstatus PENDING. Keputusan selalu dijurnal di entitas ini
+    /// (ReviewdByUserId, RejectedReason, ReviewedAt) sebagai jejak audit.
+    /// </summary>
+    public class ArtistVerification
+    {
+        [Key]
+        public int VerificationId { get; set; }
+        public int ArtistId { get; set; }
+
+        public string LegalName { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string SpotifyUrl { get; set; } = string.Empty;
+        public string SupportingInfo { get; set; } = string.Empty;
+
+        /// <summary>PENDING | VERIFIED | REJECTED — pengajuan baru selalu PENDING.</summary>
+        public string Status { get; set; } = "PENDING";
+
+        public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? ReviewedAt { get; set; }
+        public int? ReviewedByUserId { get; set; }
+        public string RejectedReason { get; set; } = string.Empty;
+
+        [ForeignKey("ArtistId")]
+        [JsonIgnore]
         public Artist? Artist { get; set; }
     }
 }

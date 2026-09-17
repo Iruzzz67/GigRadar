@@ -549,6 +549,49 @@ namespace GigRadarMobile.Services
             return (true, ok?.Message ?? "Berhasil");
         }
 
+        // ── Verifikasi artist (Bab 7–8, 22) ──────────────
+
+        /// <summary>Status verifikasi artist milik user yang login (GET /api/artist/verification/status).</summary>
+        public async Task<ArtistVerificationStatus?> GetMyVerificationStatusAsync()
+        {
+            return await GetAsync<ArtistVerificationStatus>("/api/artist/verification/status");
+        }
+
+        /// <summary>Ajukan verifikasi artist (POST /api/artist/verification).</summary>
+        public async Task<(bool Success, string Message)> SubmitVerificationAsync(
+            string legalName, string phone, string spotifyUrl, string supportingInfo)
+        {
+            var response = await _http.PostAsJsonAsync("/api/artist/verification",
+                new { legalName, phone, spotifyUrl, supportingInfo }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Pengajuan terkirim")
+                : (false, envelope?.Message ?? "Gagal mengirim pengajuan");
+        }
+
+        /// <summary>Daftar pengajuan verifikasi artist untuk Verification Center Admin.</summary>
+        public async Task<List<ArtistVerificationItem>> GetArtistVerificationsAsync(string status = "PENDING")
+        {
+            return await GetAsync<List<ArtistVerificationItem>>(
+                $"/api/users/artist-verifications?status={status}") ?? new();
+        }
+
+        /// <summary>Admin memutuskan pengajuan verifikasi (approve tanpa alasan; reject wajib beralasan).</summary>
+        public async Task<(bool Success, string Message)> ReviewArtistVerificationAsync(
+            int verificationId, bool approve, string? reason = null)
+        {
+            var url = $"/api/users/artist-verifications/{verificationId}/{(approve ? "approve" : "reject")}";
+            var response = approve
+                ? await _http.PostAsync(url, content: null)
+                : await _http.PostAsJsonAsync(url, new { reason }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Berhasil")
+                : (false, envelope?.Message ?? "Gagal memproses verifikasi");
+        }
+
         // ── Genres ────────────────────────────────────────
 
         public async Task<List<Genre>> GetGenresAsync()
