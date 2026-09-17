@@ -14,11 +14,18 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private GigEvent? _gigEvent;
-        [ObservableProperty] private ObservableCollection<EventTicketType> _ticketTypes = new();
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _hasTypes = true;
-        [ObservableProperty] private string _statusMessage = "";
+        [ObservableProperty]
+        public partial GigEvent? GigEvent { get; set; }
+        [ObservableProperty]
+        public partial ObservableCollection<EventTicketType> TicketTypes { get; set; } = new();
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool HasTypes { get; set; } = true;
+        [ObservableProperty]
+        public partial bool HasLoadError { get; set; }
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "";
 
         public TicketSelectionViewModel(ApiService api, AuthService auth)
         {
@@ -32,6 +39,8 @@ namespace GigRadarMobile.ViewModels
             if (GigEvent == null) return;
             IsLoading = true;
             StatusMessage = "";
+            HasLoadError = false;
+            HasTypes = true; // sembunyikan pesan kosong/error selama memuat
 
             try
             {
@@ -41,11 +50,17 @@ namespace GigRadarMobile.ViewModels
                 HasTypes = TicketTypes.Count > 0;
 
                 if (!HasTypes)
-                    StatusMessage = "Event ini belum memiliki tipe tiket. Coba lagi nanti.";
+                {
+                    HasLoadError = false;
+                    StatusMessage = GigEvent.HasExternalLink
+                        ? "Tiket event ini dijual melalui situs mitra resmi — gunakan tombol di bawah untuk membeli."
+                        : "EO event ini belum menerbitkan tipe tiket.\n\nKamu EO-nya? Buka tab Tickets → pilih event ini → \"Tambah Tipe Tiket\" (mis. Festival/Tribun) agar pembeli bisa membeli.";
+                }
             }
             catch (Exception ex)
             {
                 HasTypes = false;
+                HasLoadError = true;
                 StatusMessage = "Gagal memuat tipe tiket: " + ex.Message;
             }
             finally

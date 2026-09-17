@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.PlatformAnalyticsPage"
+             x:DataType="vm:PlatformAnalyticsViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Statistik Platform">
+
+    <RefreshView Command="{Binding LoadCommand}" IsRefreshing="{Binding IsLoading}">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="ADMIN" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Statistik Platform" Style="{StaticResource PageTitle}"/>
+                    <Label Text="Ringkasan ekosistem GigRadar — users, konten, dan antrean moderasi."
+                           Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                </VerticalStackLayout>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+                <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
+                       IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"/>
+
+                <!-- Komunitas -->
+                <Label Text="KOMUNITAS" Style="{StaticResource Eyebrow}"/>
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <Frame Grid.Column="0" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.TotalUsers}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
+                            <Label Text="Users" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.TotalArtists}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
+                            <Label Text="Artists" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Column="2" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.TotalEos}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
+                            <Label Text="EO" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Event & tiket -->
+                <Label Text="EVENT &amp; TIKET" Style="{StaticResource Eyebrow}"/>
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.TotalEvents}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                            <Label Text="Total event" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.ActiveEvents}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource SuccessColor}"/>
+                            <Label Text="Event aktif" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.TotalTickets}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
+                            <Label Text="Tiket terjual" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.TotalRevenueFormatted}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" LineBreakMode="TailTruncation"/>
+                            <Label Text="Total pendapatan" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+                <!-- Antrean moderasi -->
+                <Label Text="ANTREAN MODERASI" Style="{StaticResource Eyebrow}"/>
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                    <Frame Grid.Column="0" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.PendingVerificationsLabel}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
+                            <Label Text="Verifikasi menunggu" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.OpenReports}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource DangerColor}"/>
+                            <Label Text="Laporan terbuka" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Frame Grid.Column="2" Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Stats.PendingEoVerifications}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
+                            <Label Text="Verifikasi EO" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>

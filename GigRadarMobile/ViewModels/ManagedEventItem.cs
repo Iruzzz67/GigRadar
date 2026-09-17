@@ -12,8 +12,10 @@ namespace GigRadarMobile.ViewModels
     {
         public GigEvent Event { get; set; } = new();
 
-        [ObservableProperty] private bool _isExpanded;
-        [ObservableProperty] private bool _isLoadingTypes;
+        [ObservableProperty]
+        public partial bool IsExpanded { get; set; }
+        [ObservableProperty]
+        public partial bool IsLoadingTypes { get; set; }
 
         public ObservableCollection<EventTicketType> Types { get; set; } = new();
 

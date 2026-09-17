@@ -15,19 +15,30 @@ namespace GigRadarMobile.ViewModels
         private readonly AuthService _auth;
         private bool _navigating;
 
-        [ObservableProperty] private Artist? _artist;
-        [ObservableProperty] private string _playbackStatus = "Tap untuk preview lagu";
-        [ObservableProperty] private ObservableCollection<ArtistGig> _upcomingGigs = new();
-        [ObservableProperty] private bool _hasUpcomingGigs;
-        [ObservableProperty] private bool _hasMembers;
-        [ObservableProperty] private bool _hasPosts;
+        [ObservableProperty]
+        public partial Artist? Artist { get; set; }
+        [ObservableProperty]
+        public partial string PlaybackStatus { get; set; } = "Tap untuk preview lagu";
+        [ObservableProperty]
+        public partial ObservableCollection<ArtistGig> UpcomingGigs { get; set; } = new();
+        [ObservableProperty]
+        public partial bool HasUpcomingGigs { get; set; }
+        [ObservableProperty]
+        public partial bool HasMembers { get; set; }
+        [ObservableProperty]
+        public partial bool HasPosts { get; set; }
 
         // Komentar (Bab 32): state panel komentar post yang terbuka
-        [ObservableProperty] private bool _isCommentsOpen;
-        [ObservableProperty] private ObservableCollection<PostCommentItem> _comments = new();
-        [ObservableProperty] private bool _hasComments;
-        [ObservableProperty] private string _newComment = "";
-        [ObservableProperty] private bool _isSendingComment;
+        [ObservableProperty]
+        public partial bool IsCommentsOpen { get; set; }
+        [ObservableProperty]
+        public partial ObservableCollection<PostCommentItem> Comments { get; set; } = new();
+        [ObservableProperty]
+        public partial bool HasComments { get; set; }
+        [ObservableProperty]
+        public partial string NewComment { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsSendingComment { get; set; }
         private int _openPostId;
 
         public string HeroImageUrl =>
@@ -223,4 +234,4 @@ namespace GigRadarMobile.ViewModels
         private static string FormatCount(int count)
             => count >= 1000 ? $"{count / 1000f:0.#}rb" : count.ToString();
     }
-}
+}

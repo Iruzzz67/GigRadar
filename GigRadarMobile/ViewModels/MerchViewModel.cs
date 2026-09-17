@@ -18,18 +18,28 @@ public partial class MerchViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasItems))]
-    private ObservableCollection<MerchItem> _items = new();
+    public partial ObservableCollection<MerchItem> Items { get; set; } = new();
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private bool _isFormVisible;
-    [ObservableProperty] private string _formName = "";
-    [ObservableProperty] private string _formDescription = "";
-    [ObservableProperty] private string _formPrice = "";
-    [ObservableProperty] private string _formStock = "";
-    [ObservableProperty] private string _formImageUrl = "";
-    [ObservableProperty] private string _formExternalUrl = "";
-    [ObservableProperty] private string _formError = "";
-    [ObservableProperty] private bool _isSaving;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial bool IsFormVisible { get; set; }
+    [ObservableProperty]
+    public partial string FormName { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormDescription { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormPrice { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormStock { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormImageUrl { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormExternalUrl { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormError { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsSaving { get; set; }
 
     public bool HasItems => Items.Count > 0;
 

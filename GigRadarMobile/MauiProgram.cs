@@ -65,6 +65,7 @@ public static class MauiProgram
         builder.Services.AddTransient<InvitationsViewModel>();
         builder.Services.AddTransient<MerchViewModel>();
         builder.Services.AddTransient<ReportsViewModel>();
+        builder.Services.AddTransient<PlatformAnalyticsViewModel>();
         builder.Services.AddTransient<VerificationsViewModel>();
 
         // Pages
@@ -94,6 +95,7 @@ public static class MauiProgram
         builder.Services.AddTransient<InvitationsPage>();
         builder.Services.AddTransient<MerchPage>();
         builder.Services.AddTransient<ReportsPage>();
+        builder.Services.AddTransient<PlatformAnalyticsPage>();
         builder.Services.AddTransient<VerificationsPage>();
 
 #if DEBUG

@@ -19,10 +19,12 @@ public partial class NotificationsViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasNotifications))]
     [NotifyPropertyChangedFor(nameof(HasUnread))]
-    private ObservableCollection<NotificationItem> _items = new();
+    public partial ObservableCollection<NotificationItem> Items { get; set; } = new();
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private bool _isProcessing;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial bool IsProcessing { get; set; }
 
     public bool HasNotifications => Items.Count > 0;
     public bool HasUnread => Items.Any(i => i.IsUnread);

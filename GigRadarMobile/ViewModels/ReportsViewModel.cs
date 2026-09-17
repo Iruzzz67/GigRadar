@@ -19,18 +19,26 @@ public partial class ReportsViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasReports))]
-    private ObservableCollection<ReportItem> _reports = new();
+    public partial ObservableCollection<ReportItem> Reports { get; set; } = new();
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private bool _isProcessing;
-    [ObservableProperty] private bool _isAdmin;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial bool IsProcessing { get; set; }
+    [ObservableProperty]
+    public partial bool IsAdmin { get; set; }
 
     // Form laporan baru
-    [ObservableProperty] private string _targetType = "EVENT";
-    [ObservableProperty] private string _targetId = "";
-    [ObservableProperty] private string _category = "SPAM";
-    [ObservableProperty] private string _description = "";
-    [ObservableProperty] private string _formError = "";
+    [ObservableProperty]
+    public partial string TargetType { get; set; } = "EVENT";
+    [ObservableProperty]
+    public partial string TargetId { get; set; } = "";
+    [ObservableProperty]
+    public partial string Category { get; set; } = "SPAM";
+    [ObservableProperty]
+    public partial string Description { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormError { get; set; } = "";
 
     public bool HasReports => Reports.Count > 0;
     public List<string> TargetTypes { get; } = ["EVENT", "POST", "COMMENT", "ARTIST", "EO", "MERCHANDISE"];

@@ -29,9 +29,15 @@
 
 		<!-- Windows unpackaged: memudahkan build & run development tanpa MSIX -->
 		<WindowsPackageType>None</WindowsPackageType>
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
 
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
+    <!--
+      Matikan Fast Deployment pada Debug (assembly di-embed penuh ke APK).
+      FastDev menyebabkan native crash SIGSEGV di monodroid_load_assembly /
+      mono_assembly_name_new pada ROM baru (HyperOS / Android 16) saat app
+      memuat assembly dari device (crash acak di HP fisik).
+    -->
+    <EmbedAssembliesIntoApk Condition="'$(TargetFramework)' == 'net10.0-android'">true</EmbedAssembliesIntoApk>
 
 		<!--
 		  Android Release: hasilkan APK (bukan .aab) agar mudah di-install langsung.
@@ -92,7 +98,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 	</ItemGroup>

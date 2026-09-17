@@ -19,24 +19,27 @@ public partial class VerificationsViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasPending))]
-    private ObservableCollection<ArtistVerificationItem> _pending = new();
+    public partial ObservableCollection<ArtistVerificationItem> Pending { get; set; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasHistory))]
-    private ObservableCollection<ArtistVerificationItem> _history = new();
+    public partial ObservableCollection<ArtistVerificationItem> History { get; set; } = new();
 
     // Verifikasi EO (Bab 15)
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasEoPending))]
-    private ObservableCollection<OrganizerVerificationItem> _eoPending = new();
+    public partial ObservableCollection<OrganizerVerificationItem> EoPending { get; set; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasEoHistory))]
-    private ObservableCollection<OrganizerVerificationItem> _eoHistory = new();
+    public partial ObservableCollection<OrganizerVerificationItem> EoHistory { get; set; } = new();
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private string _statusMessage = "";
-    [ObservableProperty] private bool _isProcessing;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial string StatusMessage { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsProcessing { get; set; }
 
     public bool HasPending => Pending.Count > 0;
     public bool HasHistory => History.Count > 0;

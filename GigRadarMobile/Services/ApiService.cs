@@ -874,6 +874,20 @@ namespace GigRadarMobile.Services
                 : (false, envelope?.Message ?? "Gagal memproses laporan");
         }
 
+        // ── Analytics (Bab 69, STEP 21) ──────────────────
+
+        /// <summary>Analytics funnel per event milik EO yang login.</summary>
+        public async Task<List<EoEventAnalytics>> GetEoAnalyticsAsync()
+        {
+            return await GetAsync<List<EoEventAnalytics>>("/api/analytics/eo") ?? new();
+        }
+
+        /// <summary>Statistik platform (khusus Admin).</summary>
+        public async Task<PlatformAnalytics?> GetPlatformAnalyticsAsync()
+        {
+            return await GetAsync<PlatformAnalytics>("/api/analytics/platform");
+        }
+
         // ── Genres ────────────────────────────────────────
 
         public async Task<List<Genre>> GetGenresAsync()

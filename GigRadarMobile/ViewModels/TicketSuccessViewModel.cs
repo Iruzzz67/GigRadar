@@ -7,7 +7,8 @@ namespace GigRadarMobile.ViewModels
     [QueryProperty(nameof(Ticket), "Ticket")]
     public partial class TicketSuccessViewModel : ObservableObject
     {
-        [ObservableProperty] private Ticket? _ticket;
+        [ObservableProperty]
+        public partial Ticket? Ticket { get; set; }
 
         public string EventName => Ticket?.EventName ?? "";
         public string EventDate => Ticket?.EventDate ?? "";

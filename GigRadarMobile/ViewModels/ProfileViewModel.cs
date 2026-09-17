@@ -12,14 +12,22 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private string _userName = "";
-        [ObservableProperty] private string _userEmail = "";
-        [ObservableProperty] private string _userCity = "";
-        [ObservableProperty] private bool _isEditing;
-        [ObservableProperty] private bool _isStaff;
-        [ObservableProperty] private ObservableCollection<FavoriteItem> _favorites = new();
-        [ObservableProperty] private bool _hasFavorites;
-        [ObservableProperty] private string _favoritesSummary = "";
+        [ObservableProperty]
+        public partial string UserName { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserEmail { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserCity { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsEditing { get; set; }
+        [ObservableProperty]
+        public partial bool IsStaff { get; set; }
+        [ObservableProperty]
+        public partial ObservableCollection<FavoriteItem> Favorites { get; set; } = new();
+        [ObservableProperty]
+        public partial bool HasFavorites { get; set; }
+        [ObservableProperty]
+        public partial string FavoritesSummary { get; set; } = "";
 
         public string Initials => BuildInitials(UserName);
 

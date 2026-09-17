@@ -28,9 +28,11 @@ public partial class ArtistVerificationViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasLatest))]
     [NotifyPropertyChangedFor(nameof(LatestSubmittedAtDisplay))]
     [NotifyPropertyChangedFor(nameof(CanSubmit))]
-    private ArtistVerificationStatus? _status;
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private string _statusMessage = "";
+    public partial ArtistVerificationStatus? Status { get; set; }
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial string StatusMessage { get; set; } = "";
 
     // Properti computed untuk binding XAML — aman saat Status null (binding gagal = elemen
     // tak pernah tampil, tidak seperti binding nested yang bisa tertinggal visible).
@@ -52,13 +54,19 @@ public partial class ArtistVerificationViewModel : ObservableObject
     // Status form
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ToggleFormLabel))]
-    private bool _isFormVisible;
-    [ObservableProperty] private string _formLegalName = "";
-    [ObservableProperty] private string _formPhone = "";
-    [ObservableProperty] private string _formSpotifyUrl = "";
-    [ObservableProperty] private string _formSupportingInfo = "";
-    [ObservableProperty] private string _formError = "";
-    [ObservableProperty] private bool _isSubmitting;
+    public partial bool IsFormVisible { get; set; }
+    [ObservableProperty]
+    public partial string FormLegalName { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormPhone { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormSpotifyUrl { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormSupportingInfo { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormError { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsSubmitting { get; set; }
 
     public ArtistVerificationViewModel(ApiService api, AuthService auth)
     {

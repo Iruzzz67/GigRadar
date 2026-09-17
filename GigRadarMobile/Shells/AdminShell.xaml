@@ -15,6 +15,7 @@
         <ShellContent Title="Verifikasi" ContentTemplate="{DataTemplate views:VerificationsPage}" Route="admin-verifications"/>
         <ShellContent Title="Users" ContentTemplate="{DataTemplate views:UsersPage}" Route="admin-users"/>
         <ShellContent Title="Laporan" ContentTemplate="{DataTemplate views:ReportsPage}" Route="admin-reports"/>
+        <ShellContent Title="Analitik" ContentTemplate="{DataTemplate views:PlatformAnalyticsPage}" Route="admin-analytics"/>
                 <ShellContent Title="Notifikasi" ContentTemplate="{DataTemplate views:NotificationsPage}" Route="adminshell-notifications"/>
 <ShellContent Title="Profile" ContentTemplate="{DataTemplate views:ProfilePage}" Route="profile"/>
     </TabBar>

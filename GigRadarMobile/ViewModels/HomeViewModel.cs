@@ -18,24 +18,42 @@ namespace GigRadarMobile.ViewModels
         private const double TeaserLat = -6.2088;
         private const double TeaserLng = 106.8456;
 
-        [ObservableProperty] private ObservableCollection<GigEvent> _recommendedEvents = new();
-        [ObservableProperty] private ObservableCollection<GigEvent> _nearbyEvents = new();
-        [ObservableProperty] private ObservableCollection<GigEvent> _tonightEvents = new();
-        [ObservableProperty] private ObservableCollection<GigEvent> _weekendEvents = new();
-        [ObservableProperty] private ObservableCollection<Artist> _artists = new();
-        [ObservableProperty] private ObservableCollection<string> _genreChips = new();
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _isRefreshing;
-        [ObservableProperty] private string _userName = "";
-        [ObservableProperty] private string _cityLabel = "Jakarta";
-        [ObservableProperty] private string _initials = "";
-        [ObservableProperty] private string _greetingEyebrow = "MALAM INI DI JAKARTA";
-        [ObservableProperty] private GigEvent? _featuredEvent;
-        [ObservableProperty] private bool _hasFeatured;
-        [ObservableProperty] private RadarDrawable _teaserRadar = new();
-        [ObservableProperty] private bool _hasWeekendEvents;
-        [ObservableProperty] private bool _hasError;
-        [ObservableProperty] private string _errorMessage = "";
+        [ObservableProperty]
+        public partial ObservableCollection<GigEvent> RecommendedEvents { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<GigEvent> NearbyEvents { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<GigEvent> TonightEvents { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<GigEvent> WeekendEvents { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<Artist> Artists { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<string> GenreChips { get; set; } = new();
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool IsRefreshing { get; set; }
+        [ObservableProperty]
+        public partial string UserName { get; set; } = "";
+        [ObservableProperty]
+        public partial string CityLabel { get; set; } = "Jakarta";
+        [ObservableProperty]
+        public partial string Initials { get; set; } = "";
+        [ObservableProperty]
+        public partial string GreetingEyebrow { get; set; } = "MALAM INI DI JAKARTA";
+        [ObservableProperty]
+        public partial GigEvent? FeaturedEvent { get; set; }
+        [ObservableProperty]
+        public partial bool HasFeatured { get; set; }
+        [ObservableProperty]
+        public partial RadarDrawable TeaserRadar { get; set; } = new();
+        [ObservableProperty]
+        public partial bool HasWeekendEvents { get; set; }
+        [ObservableProperty]
+        public partial bool HasError { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = "";
 
         public enum LocationStatusType
         {
@@ -48,9 +66,12 @@ namespace GigRadarMobile.ViewModels
             Error
         }
 
-        [ObservableProperty] private LocationStatusType _locationStatus = LocationStatusType.Unknown;
-        [ObservableProperty] private double? _currentLatitude;
-        [ObservableProperty] private double? _currentLongitude;
+        [ObservableProperty]
+        public partial LocationStatusType LocationStatus { get; set; } = LocationStatusType.Unknown;
+        [ObservableProperty]
+        public partial double? CurrentLatitude { get; set; }
+        [ObservableProperty]
+        public partial double? CurrentLongitude { get; set; }
 
         public bool IsUsingDeviceLocation => CurrentLatitude.HasValue && CurrentLongitude.HasValue;
 
@@ -241,4 +262,4 @@ namespace GigRadarMobile.ViewModels
             return (parts[0][..1] + parts[^1][..1]).ToUpperInvariant();
         }
     }
-}
+}

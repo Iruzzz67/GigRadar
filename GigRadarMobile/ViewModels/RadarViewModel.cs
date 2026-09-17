@@ -12,7 +12,8 @@ namespace GigRadarMobile.ViewModels
     public partial class GenreFilterItem : ObservableObject
     {
         public required string Name { get; init; }
-        [ObservableProperty] private bool _isSelected;
+        [ObservableProperty]
+        public partial bool IsSelected { get; set; }
     }
 
     public partial class RadarViewModel : ObservableObject
@@ -22,31 +23,55 @@ namespace GigRadarMobile.ViewModels
         private readonly LocationService _locationService;
         private List<GigEvent> _allEvents = new();
 
-        [ObservableProperty] private double _centerLat = -6.2088;
-        [ObservableProperty] private double _centerLng = 106.8456;
+        [ObservableProperty]
+        public partial double CenterLat { get; set; } = -6.2088;
+        [ObservableProperty]
+        public partial double CenterLng { get; set; } = 106.8456;
 
-        [ObservableProperty] private ObservableCollection<GigEvent> _events = new();
-        [ObservableProperty] private ObservableCollection<GenreFilterItem> _genreFilters = new();
-        [ObservableProperty] private RadarDrawable _radar = new();
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _isRefreshing;
-        [ObservableProperty] private string _cityLabel = "Jakarta";
-        [ObservableProperty] private string _countLabel = "";
-        [ObservableProperty] private double _radiusKm = 25;
-        [ObservableProperty] private bool _tonightOnly;
-        [ObservableProperty] private bool _hasEvents;
-        [ObservableProperty] private bool _isFilterActive;
-        [ObservableProperty] private string _emptyMessage = "Cari gig di sekitar lokasimu.";
-        [ObservableProperty] private bool _hasError;
-        [ObservableProperty] private string _errorMessage = "";
-        [ObservableProperty] private GigEvent? _selectedEvent;
-        [ObservableProperty] private bool _hasSelection;
-        [ObservableProperty] private string _selectedName = "";
-        [ObservableProperty] private string _selectedMeta = "";
-        [ObservableProperty] private string _selectedDistance = "";
-        [ObservableProperty] private string _selectedPrice = "";
-        [ObservableProperty] private string _selectedDay = "";
-        [ObservableProperty] private string _selectedMonth = "";
+        [ObservableProperty]
+        public partial ObservableCollection<GigEvent> Events { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<GenreFilterItem> GenreFilters { get; set; } = new();
+        [ObservableProperty]
+        public partial RadarDrawable Radar { get; set; } = new();
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool IsRefreshing { get; set; }
+        [ObservableProperty]
+        public partial string CityLabel { get; set; } = "Jakarta";
+        [ObservableProperty]
+        public partial string CountLabel { get; set; } = "";
+        [ObservableProperty]
+        public partial double RadiusKm { get; set; } = 25;
+        [ObservableProperty]
+        public partial bool TonightOnly { get; set; }
+        [ObservableProperty]
+        public partial bool HasEvents { get; set; }
+        [ObservableProperty]
+        public partial bool IsFilterActive { get; set; }
+        [ObservableProperty]
+        public partial string EmptyMessage { get; set; } = "Cari gig di sekitar lokasimu.";
+        [ObservableProperty]
+        public partial bool HasError { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial GigEvent? SelectedEvent { get; set; }
+        [ObservableProperty]
+        public partial bool HasSelection { get; set; }
+        [ObservableProperty]
+        public partial string SelectedName { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedMeta { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedDistance { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedPrice { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedDay { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedMonth { get; set; } = "";
 
         public RadarViewModel(ApiService api, AuthService auth, LocationService locationService)
         {

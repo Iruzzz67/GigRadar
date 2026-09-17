@@ -32,16 +32,22 @@ public partial class OrganizerVerificationViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasLatest))]
     [NotifyPropertyChangedFor(nameof(LatestSubmittedAtDisplay))]
     [NotifyPropertyChangedFor(nameof(CanSubmit))]
-    private OrganizerVerificationStatus? _status;
+    public partial OrganizerVerificationStatus? Status { get; set; }
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private string _statusMessage = "";
-    [ObservableProperty] private bool _isFormVisible;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial string StatusMessage { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsFormVisible { get; set; }
 
     partial void OnIsFormVisibleChanged(bool value) => OnPropertyChanged(nameof(ToggleFormLabel));
-    [ObservableProperty] private string _formContact = "";
-    [ObservableProperty] private string _formError = "";
-    [ObservableProperty] private bool _isSubmitting;
+    [ObservableProperty]
+    public partial string FormContact { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormError { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsSubmitting { get; set; }
 
     // Properti computed untuk binding XAML — aman saat Status null.
     public bool HasStatus => Status != null;

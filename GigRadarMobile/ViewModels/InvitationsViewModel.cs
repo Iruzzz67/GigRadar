@@ -19,22 +19,30 @@ public partial class InvitationsViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasReceived))]
-    private ObservableCollection<InvitationItem> _received = new();
+    public partial ObservableCollection<InvitationItem> Received { get; set; } = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSent))]
-    private ObservableCollection<InvitationItem> _sent = new();
+    public partial ObservableCollection<InvitationItem> Sent { get; set; } = new();
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private bool _isProcessing;
-    [ObservableProperty] private bool _isEo;
-    [ObservableProperty] private bool _isInviteFormVisible;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial bool IsProcessing { get; set; }
+    [ObservableProperty]
+    public partial bool IsEo { get; set; }
+    [ObservableProperty]
+    public partial bool IsInviteFormVisible { get; set; }
 
     // Form undang (EO): event + artist dipilih lewat id sederhana
-    [ObservableProperty] private string _inviteEventId = "";
-    [ObservableProperty] private string _inviteArtistId = "";
-    [ObservableProperty] private string _inviteMessage = "";
-    [ObservableProperty] private string _inviteError = "";
+    [ObservableProperty]
+    public partial string InviteEventId { get; set; } = "";
+    [ObservableProperty]
+    public partial string InviteArtistId { get; set; } = "";
+    [ObservableProperty]
+    public partial string InviteMessage { get; set; } = "";
+    [ObservableProperty]
+    public partial string InviteError { get; set; } = "";
 
     public bool HasReceived => Received.Count > 0;
     public bool HasSent => Sent.Count > 0;

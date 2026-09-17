@@ -25,6 +25,7 @@ namespace GigRadarMobile.Shells
             Routing.RegisterRoute(nameof(InvitationsPage), typeof(InvitationsPage));
             Routing.RegisterRoute(nameof(MerchPage), typeof(MerchPage));
             Routing.RegisterRoute(nameof(ReportsPage), typeof(ReportsPage));
+            Routing.RegisterRoute(nameof(PlatformAnalyticsPage), typeof(PlatformAnalyticsPage));
         }
     }
 }

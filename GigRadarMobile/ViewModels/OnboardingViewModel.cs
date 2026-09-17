@@ -13,12 +13,18 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private ObservableCollection<Genre> _genres = new();
-        [ObservableProperty] private ObservableCollection<int> _selectedGenreIds = new();
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _hasError;
-        [ObservableProperty] private string _errorMessage = "";
-        [ObservableProperty] private string _selectedCountLabel = "Belum ada genre dipilih";
+        [ObservableProperty]
+        public partial ObservableCollection<Genre> Genres { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<int> SelectedGenreIds { get; set; } = new();
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool HasError { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedCountLabel { get; set; } = "Belum ada genre dipilih";
 
         public OnboardingViewModel(ApiService api, AuthService auth)
         {

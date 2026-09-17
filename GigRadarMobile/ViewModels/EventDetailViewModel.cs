@@ -19,15 +19,32 @@ namespace GigRadarMobile.ViewModels
         private double _userLat = -6.2088;
         private double _userLng = 106.8456;
 
-        [ObservableProperty] private GigEvent? _gigEvent;
-        [ObservableProperty] private Artist? _selectedArtist;
-        [ObservableProperty] private string _playbackStatus = "Tap untuk preview lagu";
-        [ObservableProperty] private bool _isFavorited;
-        [ObservableProperty] private string _favoriteLabel = "Simpan";
-        [ObservableProperty] private string _distanceLabel = "";
-        [ObservableProperty] private bool _isBuyable;
-        [ObservableProperty] private ObservableCollection<EventTicketType> _ticketTypes = new();
-        [ObservableProperty] private bool _hasTicketTypes;
+        [ObservableProperty]
+        public partial GigEvent? GigEvent { get; set; }
+        [ObservableProperty]
+        public partial Artist? SelectedArtist { get; set; }
+        [ObservableProperty]
+        public partial string PlaybackStatus { get; set; } = "Tap untuk preview lagu";
+        [ObservableProperty]
+        public partial bool IsFavorited { get; set; }
+        [ObservableProperty]
+        public partial string FavoriteLabel { get; set; } = "Simpan";
+        [ObservableProperty]
+        public partial string DistanceLabel { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsBuyable { get; set; }
+        [ObservableProperty]
+        public partial ObservableCollection<EventTicketType> TicketTypes { get; set; } = new();
+        [ObservableProperty]
+        public partial bool HasTicketTypes { get; set; }
+
+        /// <summary>Info di sticky bar: kenapa pembelian belum bisa dilakukan.</summary>
+        [ObservableProperty]
+        public partial string TicketHint { get; set; } = "";
+
+        /// <summary>Buy hanya aktif bila event aktif DAN ada tipe tiket ATAU link eksternal.</summary>
+        public bool CanBuy => GigEvent != null && GigEvent.Status == "Published"
+            && (GigEvent.HasExternalLink || HasTicketTypes);
 
         public string BuyButtonText
         {
@@ -65,8 +82,12 @@ namespace GigRadarMobile.ViewModels
             OnPropertyChanged(nameof(PriceFromLabel));
             OnPropertyChanged(nameof(PriceCaption));
             OnPropertyChanged(nameof(ShowPriceFallback));
+            OnPropertyChanged(nameof(CanBuy));
 
             if (value == null) return;
+
+            // Selama tipe tiket belum termuat, jangan izinkan pembelian.
+            TicketHint = value.HasExternalLink ? "" : "Memuat ketersediaan tiket…";
 
             _ = LoadFavoriteStateAsync(value.EventId);
 
@@ -135,7 +156,13 @@ namespace GigRadarMobile.ViewModels
             {
                 HasTicketTypes = false;
             }
+
+            TicketHint = HasTicketTypes || (GigEvent?.HasExternalLink ?? false)
+                ? ""
+                : "Tiket belum tersedia — EO event ini belum menerbitkan tipe tiket.";
+
             OnPropertyChanged(nameof(ShowPriceFallback));
+            OnPropertyChanged(nameof(CanBuy));
         }
 
         [RelayCommand]
@@ -223,6 +250,15 @@ namespace GigRadarMobile.ViewModels
                     return;
                 }
 
+                // Event aktif tetapi belum ada tipe tiket → jangan bawa ke halaman kosong.
+                if (!HasTicketTypes)
+                {
+                    await Alerts.ShowAsync("Tiket belum tersedia",
+                        "EO event ini belum menerbitkan tipe tiket, jadi pembelian belum bisa dilakukan.\n\n" +
+                        "Kamu EO-nya? Buka tab Tickets → pilih event ini → \"Tambah Tipe Tiket\" (mis. Festival/Tribun).");
+                    return;
+                }
+
                 // Jika tidak, tampilkan pilihan tipe tiket (Festival/Tribun/Bundling).
                 await Shell.Current.GoToAsync(nameof(TicketSelectionPage),
                     new Dictionary<string, object> { { "Event", GigEvent } });
@@ -247,4 +283,4 @@ namespace GigRadarMobile.ViewModels
             await Shell.Current.GoToAsync("..");
         }
     }
-}
+}

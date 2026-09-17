@@ -11,17 +11,22 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private string _email = "";
-        [ObservableProperty] private string _password = "";
-        [ObservableProperty] private string _name = "";
-        [ObservableProperty] private bool _isRegister;
-        [ObservableProperty] private bool _isLoading;
+        [ObservableProperty]
+        public partial string Email { get; set; } = "";
+        [ObservableProperty]
+        public partial string Password { get; set; } = "";
+        [ObservableProperty]
+        public partial string Name { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsRegister { get; set; }
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
 
         // Show/hide password (semantics untuk screen reader).
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ShowPasswordGlyph))]
         [NotifyPropertyChangedFor(nameof(ShowPasswordSemantic))]
-        private bool _hidePassword = true;
+        public partial bool HidePassword { get; set; } = true;
 
         public string ShowPasswordGlyph => HidePassword ? "👁" : "🙈";
         public string ShowPasswordSemantic => HidePassword ? "Tampilkan password" : "Sembunyikan password";
@@ -29,7 +34,7 @@ namespace GigRadarMobile.ViewModels
         /// <summary>Pilihan role saat daftar (§25): User langsung aktif, Artist/EO menunggu verifikasi admin.</summary>
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedRoleDescription))]
-        private string _selectedRole = "User";
+        public partial string SelectedRole { get; set; } = "User";
 
         public string SelectedRoleDescription => SelectedRole switch
         {
@@ -45,8 +50,8 @@ namespace GigRadarMobile.ViewModels
 
 #if DEBUG
             // Debug-only: prefilled kredensial untuk mempercepat testing di device fisik.
-            _email = "rst@mail.com";
-            _password = "test123";
+            Email = "admin@gigradar.com";
+            Password = "admin123";
 #endif
         }
 

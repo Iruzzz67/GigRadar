@@ -9,6 +9,7 @@ namespace GigRadarMobile.Models
         public string Icon { get; set; } = string.Empty;
 
         /// <summary>State pilihan lokal (onboarding) — bukan bagian dari API.</summary>
-        [ObservableProperty] private bool _isSelected;
+        [ObservableProperty]
+        public partial bool IsSelected { get; set; }
     }
 }

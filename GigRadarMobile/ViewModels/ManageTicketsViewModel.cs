@@ -15,19 +15,30 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private ObservableCollection<ManagedEventItem> _events = new();
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string _statusMessage = "";
+        [ObservableProperty]
+        public partial ObservableCollection<ManagedEventItem> Events { get; set; } = new();
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "";
 
         // Form tambah/edit tipe tiket
-        [ObservableProperty] private bool _isFormVisible;
-        [ObservableProperty] private string _formTitle = "Tambah Tipe Tiket";
-        [ObservableProperty] private string _formName = "";
-        [ObservableProperty] private string _formDescription = "";
-        [ObservableProperty] private string _formPrice = "";
-        [ObservableProperty] private string _formStock = "";
-        [ObservableProperty] private int _editingTypeId;
-        [ObservableProperty] private ManagedEventItem? editingItem;
+        [ObservableProperty]
+        public partial bool IsFormVisible { get; set; }
+        [ObservableProperty]
+        public partial string FormTitle { get; set; } = "Tambah Tipe Tiket";
+        [ObservableProperty]
+        public partial string FormName { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormDescription { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormPrice { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormStock { get; set; } = "";
+        [ObservableProperty]
+        public partial int EditingTypeId { get; set; }
+        [ObservableProperty]
+        public partial ManagedEventItem? EditingItem { get; set; }
 
         public ManageTicketsViewModel(ApiService api, AuthService auth)
         {
@@ -78,9 +89,9 @@ namespace GigRadarMobile.ViewModels
                 foreach (var t in types)
                     item.Types.Add(t);
             }
-            catch
+            catch (Exception ex)
             {
-                // Biarkan daftar kosong; pengguna bisa coba buka lagi.
+                StatusMessage = $"Gagal memuat tipe tiket untuk \"{item.Event.Name}\": {ex.Message}";
             }
             finally
             {

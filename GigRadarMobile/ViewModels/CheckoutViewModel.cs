@@ -14,22 +14,33 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private GigEvent? _gigEvent;
-        [ObservableProperty] private EventTicketType? _selectedType;
+        [ObservableProperty]
+        public partial GigEvent? GigEvent { get; set; }
+        [ObservableProperty]
+        public partial EventTicketType? SelectedType { get; set; }
 
         // Data diri pembeli
-        [ObservableProperty] private string _fullName;
-        [ObservableProperty] private string _phone = string.Empty;
-        [ObservableProperty] private string _email;
-        [ObservableProperty] private DateTime _birthDate = new(2000, 1, 1);
+        [ObservableProperty]
+        public partial string FullName { get; set; }
+        [ObservableProperty]
+        public partial string Phone { get; set; } = string.Empty;
+        [ObservableProperty]
+        public partial string Email { get; set; }
+        [ObservableProperty]
+        public partial DateTime BirthDate { get; set; } = new(2000, 1, 1);
 
         // Error inline per field (UX guideline #8: error dekat field, bukan hanya alert)
-        [ObservableProperty] private string _fullNameError = "";
-        [ObservableProperty] private string _phoneError = "";
-        [ObservableProperty] private string _emailError = "";
-        [ObservableProperty] private string _birthDateError = "";
+        [ObservableProperty]
+        public partial string FullNameError { get; set; } = "";
+        [ObservableProperty]
+        public partial string PhoneError { get; set; } = "";
+        [ObservableProperty]
+        public partial string EmailError { get; set; } = "";
+        [ObservableProperty]
+        public partial string BirthDateError { get; set; } = "";
 
-        [ObservableProperty] private bool _isProcessing;
+        [ObservableProperty]
+        public partial bool IsProcessing { get; set; }
 
         public const int MinimumAge = CheckoutValidators.MinimumAge;
 
@@ -39,8 +50,8 @@ namespace GigRadarMobile.ViewModels
             _auth = auth;
 
             // Prefill dari akun (bisa diedit pembeli)
-            _fullName = _auth.GetUserName() == "Guest" ? string.Empty : _auth.GetUserName();
-            _email = _auth.GetUserEmail();
+            FullName = _auth.GetUserName() == "Guest" ? string.Empty : _auth.GetUserName();
+            Email = _auth.GetUserEmail();
         }
 
         public string EventName => GigEvent?.Name ?? "";

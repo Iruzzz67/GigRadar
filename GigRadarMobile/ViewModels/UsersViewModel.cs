@@ -16,15 +16,18 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private ObservableCollection<User> _users = new();
+        [ObservableProperty]
+        public partial ObservableCollection<User> Users { get; set; } = new();
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasRoleRequests))]
-        private ObservableCollection<RoleRequestItem> _roleRequests = new();
+        public partial ObservableCollection<RoleRequestItem> RoleRequests { get; set; } = new();
 
         /// <summary>True bila ada permohonan role yang menunggu verifikasi.</summary>
         public bool HasRoleRequests => RoleRequests.Count > 0;
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string _statusMessage = "";
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "";
 
         public UsersViewModel(ApiService api, AuthService auth)
         {

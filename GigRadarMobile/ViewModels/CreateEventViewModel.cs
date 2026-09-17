@@ -26,53 +26,114 @@ namespace GigRadarMobile.ViewModels
         private List<Genre> _genres = new();
         private Venue? _selectedVenue;
 
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _isSaving;
-        [ObservableProperty] private string _statusMessage = "";
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool IsSaving { get; set; }
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "";
 
         // Info event
-        [ObservableProperty] private string _eventName = "";
-        [ObservableProperty] private string _eventDescription = "";
-        [ObservableProperty] private string _posterUrl = "";
-        [ObservableProperty] private string _ticketLink = "";
+        [ObservableProperty]
+        public partial string EventName { get; set; } = "";
+        [ObservableProperty]
+        public partial string EventDescription { get; set; } = "";
+        [ObservableProperty]
+        public partial string PosterUrl { get; set; } = "";
+        [ObservableProperty]
+        public partial string PosterFileName { get; set; } = "";
+        [ObservableProperty]
+        public partial string TicketLink { get; set; } = "";
 
         // Genre (ditampilkan lewat daftar nama agar Picker sederhana)
-        [ObservableProperty] private ObservableCollection<string> _genreNames = new();
-        [ObservableProperty] private string? _selectedGenreName;
+        [ObservableProperty]
+        public partial ObservableCollection<string> GenreNames { get; set; } = new();
+        [ObservableProperty]
+        public partial string? SelectedGenreName { get; set; }
         private int? _selectedGenreId;
 
         // Venue
-        [ObservableProperty] private ObservableCollection<string> _venueNames = new();
-        [ObservableProperty] private string? _selectedVenueName;
+        [ObservableProperty]
+        public partial ObservableCollection<string> VenueNames { get; set; } = new();
+        [ObservableProperty]
+        public partial string? SelectedVenueName { get; set; }
 
         // Tambah venue baru
-        [ObservableProperty] private bool _isAddingVenue;
-        [ObservableProperty] private string _newVenueName = "";
-        [ObservableProperty] private string _newVenueCity = "";
-        [ObservableProperty] private string _newVenueAddress = "";
-        [ObservableProperty] private string _newVenueCapacity = "";
+        [ObservableProperty]
+        public partial bool IsAddingVenue { get; set; }
+        [ObservableProperty]
+        public partial string NewVenueName { get; set; } = "";
+        [ObservableProperty]
+        public partial string NewVenueCity { get; set; } = "";
+        [ObservableProperty]
+        public partial string NewVenueAddress { get; set; } = "";
+        [ObservableProperty]
+        public partial string NewVenueCapacity { get; set; } = "";
 
         // Jadwal
-        [ObservableProperty] private DateTime _startDate = DateTime.Today.AddDays(14);
-        [ObservableProperty] private TimeSpan _startTime = new(19, 0, 0);
-        [ObservableProperty] private DateTime _endDate = DateTime.Today.AddDays(14);
-        [ObservableProperty] private TimeSpan _endTime = new(23, 0, 0);
+        [ObservableProperty]
+        public partial DateTime StartDate { get; set; } = DateTime.Today.AddDays(14);
+        [ObservableProperty]
+        public partial TimeSpan StartTime { get; set; } = new(19, 0, 0);
+        [ObservableProperty]
+        public partial DateTime EndDate { get; set; } = DateTime.Today.AddDays(14);
+        [ObservableProperty]
+        public partial TimeSpan EndTime { get; set; } = new(23, 0, 0);
 
         // Harga, kapasitas, lokasi
-        [ObservableProperty] private string _minPriceText = "";
-        [ObservableProperty] private string _maxPriceText = "";
-        [ObservableProperty] private string _capacityText = "";
-        [ObservableProperty] private string _latText = DefaultLatitude.ToString(CultureInfo.InvariantCulture);
-        [ObservableProperty] private string _lngText = DefaultLongitude.ToString(CultureInfo.InvariantCulture);
+        [ObservableProperty]
+        public partial string MinPriceText { get; set; } = "";
+        [ObservableProperty]
+        public partial string MaxPriceText { get; set; } = "";
+        [ObservableProperty]
+        public partial string CapacityText { get; set; } = "";
+        [ObservableProperty]
+        public partial string LatText { get; set; } = DefaultLatitude.ToString(CultureInfo.InvariantCulture);
+        [ObservableProperty]
+        public partial string LngText { get; set; } = DefaultLongitude.ToString(CultureInfo.InvariantCulture);
 
         public List<string> StatusOptions { get; } = new() { "Published", "Draft" };
-        [ObservableProperty] private string _selectedStatus = "Published";
+        [ObservableProperty]
+        public partial string SelectedStatus { get; set; } = "Published";
 
         public CreateEventViewModel(ApiService api, AuthService auth, LocationService locationService)
         {
             _api = api;
             _auth = auth;
             _locationService = locationService;
+        }
+
+        [RelayCommand]
+        private async Task PickPosterAsync()
+        {
+            var file = await FilePicker.Default.PickAsync(new PickOptions
+            {
+                PickerTitle = "Pilih poster event",
+                FileTypes = FilePickerFileType.Images
+            });
+
+            if (file == null)
+                return;
+
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (extension is not ".jpg" and not ".jpeg" and not ".png")
+            {
+                await Alerts.ShowAsync("Format tidak didukung", "Poster harus berupa foto JPG/JPEG atau PNG.");
+                return;
+            }
+
+            await using var stream = await file.OpenReadAsync();
+            if (stream.Length > 8 * 1024 * 1024)
+            {
+                await Alerts.ShowAsync("File terlalu besar", "Ukuran poster maksimal 8 MB.");
+                return;
+            }
+
+            await using var buffer = new MemoryStream();
+            await stream.CopyToAsync(buffer);
+            var mediaType = extension == ".png" ? "image/png" : "image/jpeg";
+            PosterUrl = $"data:{mediaType};base64,{Convert.ToBase64String(buffer.ToArray())}";
+            PosterFileName = file.FileName;
         }
 
         [RelayCommand]
@@ -286,6 +347,13 @@ namespace GigRadarMobile.ViewModels
         {
             if (string.IsNullOrWhiteSpace(EventName) || EventName.Trim().Length < 3)
                 return "Nama event wajib diisi (minimal 3 karakter).";
+
+            if (string.IsNullOrWhiteSpace(PosterUrl))
+                return "Poster event wajib dipilih dalam format JPG/JPEG atau PNG.";
+
+            if (!PosterUrl.StartsWith("data:image/jpeg;base64,", StringComparison.OrdinalIgnoreCase) &&
+                !PosterUrl.StartsWith("data:image/png;base64,", StringComparison.OrdinalIgnoreCase))
+                return "Poster harus berupa file JPG/JPEG atau PNG, bukan URL.";
 
             if (SelectedVenueName == null)
                 return "Pilih venue dari daftar, atau tambahkan venue baru terlebih dahulu.";

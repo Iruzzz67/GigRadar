@@ -12,12 +12,18 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private ObservableCollection<Ticket> _tickets = new();
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _isRefreshing;
-        [ObservableProperty] private bool _hasError;
-        [ObservableProperty] private string _errorMessage = "";
-        [ObservableProperty] private bool _hasTickets;
+        [ObservableProperty]
+        public partial ObservableCollection<Ticket> Tickets { get; set; } = new();
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool IsRefreshing { get; set; }
+        [ObservableProperty]
+        public partial bool HasError { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial bool HasTickets { get; set; }
 
         public TicketViewModel(ApiService api, AuthService auth)
         {

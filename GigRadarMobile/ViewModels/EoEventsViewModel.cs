@@ -16,10 +16,14 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private EoDashboard? _dashboard;
-        [ObservableProperty] private bool _hasEvents;
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string _statusMessage = "";
+        [ObservableProperty]
+        public partial EoDashboard? Dashboard { get; set; }
+        [ObservableProperty]
+        public partial bool HasEvents { get; set; }
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "";
 
         public EoEventsViewModel(ApiService api, AuthService auth)
         {

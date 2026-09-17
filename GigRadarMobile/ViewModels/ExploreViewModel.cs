@@ -24,36 +24,66 @@ namespace GigRadarMobile.ViewModels
 
         private IDispatcherTimer? _debounce;
 
-        [ObservableProperty] private string _searchText = "";
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string _viewMode = "List"; // List | Grid | Radar
-        [ObservableProperty] private bool _isListView = true;
-        [ObservableProperty] private bool _isGridView;
-        [ObservableProperty] private bool _isRadarView;
-        [ObservableProperty] private string _resultCountLabel = "Mulai cari — atau pilih filter di bawah.";
-        [ObservableProperty] private bool _hasResults;
-        [ObservableProperty] private bool _hasArtists;
-        [ObservableProperty] private bool _hasVenues;
-        [ObservableProperty] private string _emptyMessage = "";
-        [ObservableProperty] private bool _isFiltered;
-        [ObservableProperty] private bool _hasError;
-        [ObservableProperty] private string _errorMessage = "";
-        [ObservableProperty] private string _selectedGenre = "Semua";
-        [ObservableProperty] private string _dateFilter = "Semua";
-        [ObservableProperty] private double _radiusKm = 25;
-        [ObservableProperty] private ObservableCollection<GenreFilterItem> _genreFilters = new();
-        [ObservableProperty] private ObservableCollection<GigEvent> _events = new();
-        [ObservableProperty] private ObservableCollection<Artist> _artists = new();
-        [ObservableProperty] private ObservableCollection<Venue> _venues = new();
-        [ObservableProperty] private RadarDrawable _radar = new();
-        [ObservableProperty] private GigEvent? _selectedEvent;
-        [ObservableProperty] private bool _hasSelection;
-        [ObservableProperty] private string _selectedName = "";
-        [ObservableProperty] private string _selectedMeta = "";
-        [ObservableProperty] private string _selectedDistance = "";
-        [ObservableProperty] private string _selectedPrice = "";
-        [ObservableProperty] private string _selectedDay = "";
-        [ObservableProperty] private string _selectedMonth = "";
+        [ObservableProperty]
+        public partial string SearchText { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial string ViewMode { get; set; } = "List";
+        [ObservableProperty]
+        public partial bool IsListView { get; set; } = true;
+        [ObservableProperty]
+        public partial bool IsGridView { get; set; }
+        [ObservableProperty]
+        public partial bool IsRadarView { get; set; }
+        [ObservableProperty]
+        public partial string ResultCountLabel { get; set; } = "Mulai cari — atau pilih filter di bawah.";
+        [ObservableProperty]
+        public partial bool HasResults { get; set; }
+        [ObservableProperty]
+        public partial bool HasArtists { get; set; }
+        [ObservableProperty]
+        public partial bool HasVenues { get; set; }
+        [ObservableProperty]
+        public partial string EmptyMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsFiltered { get; set; }
+        [ObservableProperty]
+        public partial bool HasError { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedGenre { get; set; } = "Semua";
+        [ObservableProperty]
+        public partial string DateFilter { get; set; } = "Semua";
+        [ObservableProperty]
+        public partial double RadiusKm { get; set; } = 25;
+        [ObservableProperty]
+        public partial ObservableCollection<GenreFilterItem> GenreFilters { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<GigEvent> Events { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<Artist> Artists { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<Venue> Venues { get; set; } = new();
+        [ObservableProperty]
+        public partial RadarDrawable Radar { get; set; } = new();
+        [ObservableProperty]
+        public partial GigEvent? SelectedEvent { get; set; }
+        [ObservableProperty]
+        public partial bool HasSelection { get; set; }
+        [ObservableProperty]
+        public partial string SelectedName { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedMeta { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedDistance { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedPrice { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedDay { get; set; } = "";
+        [ObservableProperty]
+        public partial string SelectedMonth { get; set; } = "";
 
         public ExploreViewModel(ApiService api, AuthService auth)
         {

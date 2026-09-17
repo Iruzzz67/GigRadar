@@ -16,23 +16,33 @@ namespace GigRadarMobile.ViewModels
         private readonly ApiService _api;
         private readonly AuthService _auth;
 
-        [ObservableProperty] private string _userName = "";
-        [ObservableProperty] private string _userEmail = "";
-        [ObservableProperty] private string _userRole = "";
-        [ObservableProperty] private string _userCity = "";
-        [ObservableProperty] private string _userPhotoUrl = "";
-        [ObservableProperty] private bool _isEditing;
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private string _statusMessage = "";
-        [ObservableProperty] private EoDashboard? _dashboard;
-        [ObservableProperty] private bool _hasEvents;
+        [ObservableProperty]
+        public partial string UserName { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserEmail { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserRole { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserCity { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserPhotoUrl { get; set; } = "";
+        [ObservableProperty]
+        public partial bool IsEditing { get; set; }
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial string StatusMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial EoDashboard? Dashboard { get; set; }
+        [ObservableProperty]
+        public partial bool HasEvents { get; set; }
 
         // Verifikasi EO (Bab 15) — card status di dashboard seperti artist
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasVerificationCard))]
         [NotifyPropertyChangedFor(nameof(VerificationLabel))]
         [NotifyPropertyChangedFor(nameof(VerificationColor))]
-        private OrganizerVerificationStatus? _verification;
+        public partial OrganizerVerificationStatus? Verification { get; set; }
 
         public string RoleBadge => UserRole.ToUpperInvariant();
         // Nilai literal = token design system (PrimaryColor / GenreColors.Electronic).

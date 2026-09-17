@@ -19,15 +19,24 @@ namespace GigRadarMobile.ViewModels
         private readonly AuthService _auth;
         private bool _navigating;
 
-        [ObservableProperty] private string _userName = "";
-        [ObservableProperty] private string _userRole = "Artist";
-        [ObservableProperty] private ArtistDashboard? _dashboard;
-        [ObservableProperty] private bool _isLoading;
-        [ObservableProperty] private bool _isRefreshing;
-        [ObservableProperty] private bool _hasError;
-        [ObservableProperty] private string _errorMessage = "";
-        [ObservableProperty] private ObservableCollection<ArtistGig> _upcomingGigs = new();
-        [ObservableProperty] private bool _hasGigs;
+        [ObservableProperty]
+        public partial string UserName { get; set; } = "";
+        [ObservableProperty]
+        public partial string UserRole { get; set; } = "Artist";
+        [ObservableProperty]
+        public partial ArtistDashboard? Dashboard { get; set; }
+        [ObservableProperty]
+        public partial bool IsLoading { get; set; }
+        [ObservableProperty]
+        public partial bool IsRefreshing { get; set; }
+        [ObservableProperty]
+        public partial bool HasError { get; set; }
+        [ObservableProperty]
+        public partial string ErrorMessage { get; set; } = "";
+        [ObservableProperty]
+        public partial ObservableCollection<ArtistGig> UpcomingGigs { get; set; } = new();
+        [ObservableProperty]
+        public partial bool HasGigs { get; set; }
 
         // Verifikasi artist (GIGRADAR_APP_SPEC.md Bab 8) — status dari GET /api/artist/verification/status
         [ObservableProperty]
@@ -35,7 +44,7 @@ namespace GigRadarMobile.ViewModels
         [NotifyPropertyChangedFor(nameof(VerificationColor))]
         [NotifyPropertyChangedFor(nameof(HasVerificationCard))]
         [NotifyPropertyChangedFor(nameof(IsVerifiedBadgeVisible))]
-        private ArtistVerificationStatus? _verification;
+        public partial ArtistVerificationStatus? Verification { get; set; }
 
         /// <summary>True bila kartu verifikasi perlu tampil (belum verified / ada yang perlu ditindak).</summary>
         public bool HasVerificationCard => Verification != null && !Verification.IsVerified;
@@ -44,12 +53,18 @@ namespace GigRadarMobile.ViewModels
         public string VerificationColor => Verification?.StatusColor ?? "#71717A";
 
         // Form edit profil artist
-        [ObservableProperty] private bool _isEditing;
-        [ObservableProperty] private string _formName = "";
-        [ObservableProperty] private string _formGenre = "";
-        [ObservableProperty] private string _formCity = "";
-        [ObservableProperty] private string _formBio = "";
-        [ObservableProperty] private string _formPhotoUrl = "";
+        [ObservableProperty]
+        public partial bool IsEditing { get; set; }
+        [ObservableProperty]
+        public partial string FormName { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormGenre { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormCity { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormBio { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormPhotoUrl { get; set; } = "";
 
         public string Initials => BuildInitials(UserName);
 

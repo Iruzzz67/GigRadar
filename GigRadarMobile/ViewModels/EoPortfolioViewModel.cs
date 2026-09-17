@@ -20,38 +20,60 @@ public partial class EoPortfolioViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasPortfolio))]
     [NotifyPropertyChangedFor(nameof(HasStatusMessage))]
-    private OrganizerProfile? _profile;
+    public partial OrganizerProfile? Profile { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasPortfolio))]
-    private ObservableCollection<PortfolioItem> _portfolio = new();
+    public partial ObservableCollection<PortfolioItem> Portfolio { get; set; } = new();
 
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private string _statusMessage = "";
-    [ObservableProperty] private bool _isVerifiedBadgeVisible;
+    [ObservableProperty]
+    public partial bool IsLoading { get; set; }
+    [ObservableProperty]
+    public partial string StatusMessage { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsVerifiedBadgeVisible { get; set; }
 
     // Form edit profil
-    [ObservableProperty] private bool _isEditing;
-    [ObservableProperty] private string _editOrganizationName = "";
-    [ObservableProperty] private string _editDescription = "";
-    [ObservableProperty] private string _editLocation = "";
-    [ObservableProperty] private string _editContact = "";
-    [ObservableProperty] private string _editWebsiteUrl = "";
-    [ObservableProperty] private string _editSocialLinks = "";
-    [ObservableProperty] private string _editFoundedYear = "";
-    [ObservableProperty] private string _editError = "";
-    [ObservableProperty] private bool _isSaving;
+    [ObservableProperty]
+    public partial bool IsEditing { get; set; }
+    [ObservableProperty]
+    public partial string EditOrganizationName { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditDescription { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditLocation { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditContact { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditWebsiteUrl { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditSocialLinks { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditFoundedYear { get; set; } = "";
+    [ObservableProperty]
+    public partial string EditError { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsSaving { get; set; }
 
     // Form tambah portofolio
-    [ObservableProperty] private bool _isAddPortfolioVisible;
-    [ObservableProperty] private string _formEventName = "";
-    [ObservableProperty] private string _formEventDate = "";
-    [ObservableProperty] private string _formVenue = "";
-    [ObservableProperty] private string _formDescription = "";
-    [ObservableProperty] private string _formPhotosUrl = "";
-    [ObservableProperty] private string _formDocumentationLink = "";
-    [ObservableProperty] private string _formError = "";
-    [ObservableProperty] private bool _isAddingPortfolio;
+    [ObservableProperty]
+    public partial bool IsAddPortfolioVisible { get; set; }
+    [ObservableProperty]
+    public partial string FormEventName { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormEventDate { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormVenue { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormDescription { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormPhotosUrl { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormDocumentationLink { get; set; } = "";
+    [ObservableProperty]
+    public partial string FormError { get; set; } = "";
+    [ObservableProperty]
+    public partial bool IsAddingPortfolio { get; set; }
 
     public bool HasPortfolio => Portfolio.Count > 0;
     public bool HasStatusMessage => !string.IsNullOrWhiteSpace(StatusMessage);
