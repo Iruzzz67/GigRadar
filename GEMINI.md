@@ -7,8 +7,9 @@ This document provides instructions, constraints, and architecture guidelines fo
 ## 🛠️ Technology Stack & Frameworks
 
 *   **Backend:** ASP.NET Core Web API (`net8.0`).
-*   **Database:** SQLite using Entity Framework Core (`Microsoft.EntityFrameworkCore.Sqlite` 8.0.x).
-    *   *Note:* The design document mentions PostgreSQL, but the actual implementation uses SQLite (stored in `GigRadarApi/GigRadar.db`).
+*   **Database:** PostgreSQL using Entity Framework Core (`Npgsql.EntityFrameworkCore.PostgreSQL` 8.0.x).
+    *   *Note:* Skema dikelola via EF Migrations (`db.Database.Migrate()` di `Program.cs`). Connection string disimpan di `dotnet user-secrets` (dev) atau environment variable (prod) — TIDAK di repo.
+*   **Konsep produk:** Semua konsep, design system, dan lampiran teknis ada di `GIGRADAR_APP_SPEC.md` (dokumen tunggal; menggantikan dokumen-dokumen konsep lama).
 *   **Mobile/Desktop App:** .NET MAUI (`net10.0-windows10.0.19041.0`, Android, iOS, macOS).
 *   **MVVM Framework:** `CommunityToolkit.Mvvm` (v8.4.x) utilizing Source Generators (`[ObservableProperty]`, `[RelayCommand]`).
 *   **Authentication:** JWT Bearer authentication on ASP.NET Core, storing session JWT token on mobile via MAUI `Preferences`.
@@ -18,8 +19,8 @@ This document provides instructions, constraints, and architecture guidelines fo
 ## 🏛️ Architecture Conventions
 
 ### 1. Database Schema Bootstrap
-*   Do not use EF Core migrations directly. The database schema is initialized using `context.Database.EnsureCreated()` in `Program.cs`.
-*   Custom schema additions or updates must be added idempotently via `TicketSchemaBootstrap.Ensure(context)`. Always write pure SQL statements in `TicketSchemaBootstrap` with `IF NOT EXISTS` constructs to ensure it doesn't fail on existing databases.
+*   Skema database dimiliki **EF Core Migrations** — dijalankan via `db.Database.Migrate()` di `Program.cs` (jangan kembali ke `EnsureCreated()`).
+*   `TicketSchemaBootstrap.Ensure(context)` masih dipanggil setelah migrate, tetapi hanya untuk seed/idempotent tambahan — bukan penambal skema.
 
 ### 2. Dependency Injection (DI)
 *   **Backend API:** Register controllers, services, and repositories in `GigRadarApi/Program.cs`.
@@ -45,7 +46,7 @@ This document provides instructions, constraints, and architecture guidelines fo
 
 ## 🎨 Styling & Design Tokens
 
-*   Always respect the design system specified in `GIGRADAR_DESIGN_SYSTEM.md`.
+*   Always respect the design system specified in `GIGRADAR_APP_SPEC.md` (Lampiran A — Design System).
 *   **Theme:** Pure dark theme with zinc tones.
 *   **Primary Background:** `#0A0A0B` (Dark Zinc).
 *   **Card / Component Background:** `#18181B`.

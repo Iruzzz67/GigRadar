@@ -6,7 +6,7 @@
        Shell.FlyoutBehavior="Disabled"
        Title="GigRadar Artist">
 
-    <!-- GIGRADAR_ROLE_SYSTEM.md §26 — ArtistShell
+    <!-- GIGRADAR_APP_SPEC.md Bab 55 — ArtistShell
          Dashboard memakai data nyata (GET /api/artist/me/dashboard).
          Tab Music / Posts / Gigs (manajemen konten) menyusul di Phase 3. -->
     <TabBar>

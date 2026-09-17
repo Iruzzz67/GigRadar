@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace GigRadarApi.Models
 {
     /// <summary>
-    /// Profil artist (GIGRADAR_ROLE_SYSTEM.md §6/§8). UserId menghubungkan profil
+    /// Profil artist (GIGRADAR_APP_SPEC.md Bab 6/41). UserId menghubungkan profil
     /// ini ke akun User ber-role Artist — satu user maksimal satu profil artist.
     /// </summary>
     public class Artist

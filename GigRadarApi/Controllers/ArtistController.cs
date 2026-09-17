@@ -7,7 +7,7 @@ using GigRadarApi.Models;
 namespace GigRadarApi.Controllers
 {
     /// <summary>
-    /// API manajemen Artist (GIGRADAR_ROLE_SYSTEM.md §32) — khusus role Artist.
+    /// API manajemen Artist (GIGRADAR_APP_SPEC.md, Lampiran H) — khusus role Artist.
     /// Semua aksi dibatasi ke profil artist milik user yang login (UserId).
     /// </summary>
     [Route("api/[controller]")]

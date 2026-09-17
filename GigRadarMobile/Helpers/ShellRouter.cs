@@ -1,7 +1,7 @@
 namespace GigRadarMobile.Helpers
 {
     /// <summary>
-    /// GIGRADAR_ROLE_SYSTEM.md §24/§39 — routing berbasis role setelah login.
+    /// GIGRADAR_APP_SPEC.md (Bab 55) — routing berbasis role setelah login.
     /// Role berasal dari data yang diverifikasi server (JWT), bukan pilihan UI.
     /// </summary>
     public static class ShellRouter

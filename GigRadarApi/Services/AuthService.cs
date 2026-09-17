@@ -20,7 +20,7 @@ namespace GigRadarApi.Services
         }
 
         /// <summary>
-        /// Registrasi sesuai GIGRADAR_ROLE_SYSTEM.md §25/§51.2.
+        /// Registrasi sesuai GIGRADAR_APP_SPEC.md (Bab 7/13) — permohonan role Artist/EO
         /// Client BOLEH memohon role Artist/EO saat daftar, tetapi permohonan hanya
         /// disimpan sebagai RoleStatus "Pending" — role tetap "User" sampai diverifikasi
         /// admin. Role "Admin" tidak pernah bisa diminta dari client.

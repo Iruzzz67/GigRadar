@@ -6,8 +6,8 @@
        Shell.FlyoutBehavior="Disabled"
        Title="GigRadar Admin">
 
-    <!-- GIGRADAR_ROLE_SYSTEM.md §26 — AdminShell
-         (Artists/EO/Settings menyusul di Phase 5 — lihat dokumen) -->
+    <!-- GIGRADAR_APP_SPEC.md Bab 55/17 — AdminShell
+         (Artists/EO/Settings menyusul di fase lanjut — lihat spec) -->
     <TabBar>
         <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:EoProfilePage}" Route="dashboard"/>
         <ShellContent Title="Events" ContentTemplate="{DataTemplate views:EoEventsPage}" Route="admin-events"/>

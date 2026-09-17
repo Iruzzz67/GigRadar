@@ -9,7 +9,7 @@ using GigRadarMobile.Views;
 namespace GigRadarMobile.ViewModels
 {
     /// <summary>
-    /// Tab "Dashboard" ArtistShell (GIGRADAR_ROLE_SYSTEM.md §7) — statistik karier
+    /// Tab "Dashboard" ArtistShell (GIGRADAR_APP_SPEC.md, Lampiran G.2) — statistik karier
     /// dari GET /api/artist/me/dashboard, gig mendatang (tap → detail event),
     /// dan edit profil artist via PUT /api/artist/me.
     /// </summary>

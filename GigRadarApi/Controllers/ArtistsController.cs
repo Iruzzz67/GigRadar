@@ -6,7 +6,7 @@ using GigRadarApi.Models;
 namespace GigRadarApi.Controllers
 {
     /// <summary>
-    /// API publik Artist (GIGRADAR_ROLE_SYSTEM.md §31) — dipakai User & EO untuk
+    /// API publik Artist (GIGRADAR_APP_SPEC.md Bab 48) — dipakai User & EO untuk
     /// discovery: profil, musik, album, post, journey, dan gigs (lineup event).
     /// </summary>
     [Route("api/[controller]")]

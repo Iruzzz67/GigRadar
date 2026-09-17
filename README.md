@@ -14,7 +14,7 @@ GigRadar terdiri dari **3 komponen utama** yang terintegrasi secara harmonis:
 | **`GigRadarMobile`** | Aplikasi mobile & desktop lintas platform dengan desain dark theme modern. | .NET MAUI (.NET 10) + MVVM | Android, iOS, macOS, Windows |
 | **`GigRadarLauncher`** | Konsol launcher otomatis untuk mempercepat pengembangan lokal. | .NET Console (.NET 8) | Windows |
 
-> **⚠️ Catatan Deviasi:** Dokumen desain menyebut PostgreSQL, namun implementasi backend saat ini menggunakan **SQLite** (`GigRadarApi/GigRadar.db`).
+> **Database:** Backend menggunakan **PostgreSQL** (Npgsql + EF Core Migrations) — sesuai spesifikasi. Konsep produk lengkap ada di [GIGRADAR_APP_SPEC.md](./GIGRADAR_APP_SPEC.md).
 
 ---
 
@@ -37,13 +37,13 @@ GigRadarApi (ASP.NET Core Web API)
         +-- Users (profil, preferensi genre, favorit)
         |
         v
-SQLite (EF Core, file GigRadar.db)
+PostgreSQL (EF Core + Npgsql, migrations)
 
 GigRadarLauncher (console) — menyalakan API di http://localhost:5000 dan membuka Swagger
 ```
 
 ### Karakteristik Teknis:
-- **Database:** SQLite (`GigRadar.db`) dengan Entity Framework Core. Skema dibuat otomatis (`EnsureCreated`) + seed data. Skema baru ditambahkan **idempoten** via `TicketSchemaBootstrap` tanpa menghapus data.
+- **Database:** PostgreSQL dengan Entity Framework Core + Npgsql. Skema dikelola via **EF Migrations** (`db.Database.Migrate()` saat startup) + seed data; connection string via user-secrets/env var (tidak di repo).
 - **Otentikasi:** JWT Bearer dengan password di-hash **BCrypt**.
 - **Role-based Authorization:** `[Authorize(Roles = "EO,Admin")]` + cek kepemilikan event (`CreatedBy`).
 - **CORS:** Dibuka penuh (`AllowAll`) untuk development.
@@ -92,12 +92,8 @@ GigRadar/
 ├── StartGigRadar.bat                # Shortcut Windows → Launcher (API + Swagger)
 ├── StartMobileApp.bat               # Shortcut Windows → Mobile App (Windows Native)
 ├── GEMINI.md                        # Workspace rules untuk AI agents
-├── GIGRADAR_DESIGN_SYSTEM.md        # Design system: token warna, tipografi, komponen
-├── GIGRADAR_MOBILE_APP_NET_MAUI.md  # Visi produk & roadmap lengkap
-├── GIGRADAR_MULTIPLATFORM_FIX.md    # Panduan multi-platform .NET MAUI
-├── GIGRADAR_ROLE_SYSTEM.md          # Detail sistem multi-role & otorisasi
-├── REKAPAN_PROJECT_TERBARU.md       # Rekap komprehensif isi kode terkini
-└── REKAPAN_PROJECT.md               # Rekap versi sebelumnya
+├── GIGRADAR_APP_SPEC.md             # SPEC TUNGGAL: konsep produk + design system + GPS + build (bab 1–84 + lampiran A–K)
+└── docs/ANDROID_PRODUCTION.md       # Checklist produksi Android
 ```
 
 ---
@@ -342,7 +338,7 @@ Aplikasi GigRadar mengusung identitas visual indie yang kuat:
 4. Kontras kuat — dark zinc + aksen signal lime strategis
 5. Motion punya fungsi — tidak ada floating/partikel acak
 
-Lihat [GIGRADAR_DESIGN_SYSTEM.md](./GIGRADAR_DESIGN_SYSTEM.md) untuk detail lengkap.
+Detail lengkap: [GIGRADAR_APP_SPEC.md — Lampiran A (Design System)](./GIGRADAR_APP_SPEC.md).
 
 ---
 
@@ -365,12 +361,9 @@ Lihat [GIGRADAR_DESIGN_SYSTEM.md](./GIGRADAR_DESIGN_SYSTEM.md) untuk detail leng
 
 | Dokumen | Deskripsi |
 | :--- | :--- |
-| [REKAPAN_PROJECT_TERBARU.md](./REKAPAN_PROJECT_TERBARU.md) | Rekap komprehensif isi kode, endpoint, relasi DB, status implementasi |
-| [GIGRADAR_DESIGN_SYSTEM.md](./GIGRADAR_DESIGN_SYSTEM.md) | Design system: token warna, tipografi, komponen, spesifikasi Radar |
-| [GIGRADAR_MOBILE_APP_NET_MAUI.md](./GIGRADAR_MOBILE_APP_NET_MAUI.md) | Visi produk, fungsionalitas, roadmap fitur |
-| [GIGRADAR_MULTIPLATFORM_FIX.md](./GIGRADAR_MULTIPLATFORM_FIX.md) | Panduan arsitektur multi-platform .NET MAUI |
-| [GIGRADAR_ROLE_SYSTEM.md](./GIGRADAR_ROLE_SYSTEM.md) | Detail sistem multi-role & otorisasi |
+| [GIGRADAR_APP_SPEC.md](./GIGRADAR_APP_SPEC.md) | **Spec tunggal** — konsep produk (84 bab) + design system, radar, GPS, build multi-platform, Android APK, PostgreSQL, role experience, status implementasi (Lampiran A–K) |
 | [GEMINI.md](./GEMINI.md) | Workspace rules untuk AI agents |
+| [docs/ANDROID_PRODUCTION.md](./docs/ANDROID_PRODUCTION.md) | Checklist produksi Android (spec: Lampiran E) |
 
 ---
 
@@ -386,7 +379,7 @@ Lihat [GIGRADAR_DESIGN_SYSTEM.md](./GIGRADAR_DESIGN_SYSTEM.md) untuk detail leng
 - **Status event:** Published / Draft / SoldOut / Completed
 - **Dashboard EO/Admin** — statistik, kelola tiket, buat event
 - **Role-based authorization + cek kepemilikan**
-- Bootstrap skema idempoten untuk DB SQLite lama
+- PostgreSQL + EF Migrations (menggantikan SQLite)
 - Tema dark, favorit, profil & edit, validasi QR tiket
 
 ### 🔶 Perlu Disempurnakan
@@ -395,7 +388,7 @@ Lihat [GIGRADAR_DESIGN_SYSTEM.md](./GIGRADAR_DESIGN_SYSTEM.md) untuk detail leng
 - Peta interaktif → masih daftar + link eksternal Google Maps
 - Home belum memakai endpoint rekomendasi/nearby server
 - Audio preview belum memutar lagu sungguhan
-- Register menerima role bebas dari client (risiko keamanan)
+- Pendaftaran role Artist/EO sebagai permohonan yang melewati alur verifikasi (bukan role bebas dari client)
 
 ### ❌ Belum Ada (Fase Lanjut)
 - Payment gateway (Midtrans/Xendit)

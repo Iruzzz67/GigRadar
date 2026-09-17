@@ -10,7 +10,7 @@
     Shell.TabBarUnselectedColor="{StaticResource TextMuted}"
        Title="GigRadar">
 
-    <!-- GIGRADAR_ROLE_SYSTEM.md §26 — UserShell -->
+    <!-- GIGRADAR_APP_SPEC.md Bab 55 — UserShell -->
     <TabBar>
         <ShellContent Title="Discover" Icon="home.png" ContentTemplate="{DataTemplate views:HomePage}" Route="home"/>
         <ShellContent Title="Explore" Icon="search.png" ContentTemplate="{DataTemplate views:ExplorePage}" Route="explore"/>

@@ -6,7 +6,7 @@
        Shell.FlyoutBehavior="Disabled"
        Title="GigRadar EO">
 
-    <!-- GIGRADAR_ROLE_SYSTEM.md §26 — EOShell -->
+    <!-- GIGRADAR_APP_SPEC.md Bab 55 — EOShell -->
     <TabBar>
         <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:EoProfilePage}" Route="dashboard"/>
         <ShellContent Title="Events" ContentTemplate="{DataTemplate views:EoEventsPage}" Route="eo-events"/>
