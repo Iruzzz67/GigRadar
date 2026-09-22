@@ -65,3 +65,15 @@ publish/
 # Database runtime (seed/user data — jangan di-track)
 GigRadarApi/GigRadar.db
 GigRadarApi/GigRadar.db-*
+
+# Runtime logs (start-all / API)
+*.log
+
+# Runtime/test artifacts (jangan di-track)
+seedtest*.db
+seedtest*.db-*
+Screenshot (*.png
+screenshot app.jpeg
+radar_map_screenshot.png
+artifacts/
+GigRadarMobile/artifacts/
