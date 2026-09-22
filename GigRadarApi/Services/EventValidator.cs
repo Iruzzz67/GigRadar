@@ -24,6 +24,14 @@ namespace GigRadarApi.Services
             if (string.IsNullOrWhiteSpace(evt.Name))
                 errors.Add("Nama event wajib diisi");
 
+            if (string.IsNullOrWhiteSpace(evt.PosterUrl))
+                errors.Add("Poster event wajib diunggah");
+            else if (!evt.PosterUrl.StartsWith("data:image/jpeg;base64,", StringComparison.OrdinalIgnoreCase) &&
+                     !evt.PosterUrl.StartsWith("data:image/png;base64,", StringComparison.OrdinalIgnoreCase))
+                errors.Add("Poster harus berupa file JPG/JPEG atau PNG, bukan URL");
+            else if (evt.PosterUrl.Length > 11_200_000)
+                errors.Add("Ukuran poster terlalu besar (maksimal 8 MB)");
+
             if (evt.EndDate < evt.StartDate)
                 errors.Add("EndDate tidak boleh sebelum StartDate");
 

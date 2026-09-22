@@ -20,6 +20,7 @@ public static class TestData
         return new Event
         {
             Name = name,
+            PosterUrl = "data:image/png;base64,AA==",
             Status = status,
             CreatedBy = createdBy,
             Latitude = lat,
