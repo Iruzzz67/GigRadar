@@ -12,7 +12,7 @@ GigRadar terdiri dari **3 komponen utama** yang terintegrasi secara harmonis:
 | :--- | :--- | :--- | :--- |
 | **`GigRadarApi`** | Backend REST API — autentikasi, event, tiket, transaksi, data master. | ASP.NET Core Web API (.NET 8) | `net8.0` (Cross-platform) |
 | **`GigRadarMobile`** | Aplikasi mobile & desktop lintas platform dengan desain dark theme modern. | .NET MAUI (.NET 10) + MVVM | Android, iOS, macOS, Windows |
-| **`GigRadarLauncher`** | Konsol launcher otomatis untuk mempercepat pengembangan lokal. | .NET Console (.NET 8) | Windows |
+| **`GigRadarLauncher`** | Launcher all-in-one: menyalakan PostgreSQL + API + aplikasi desktop dari **satu exe**. | .NET Console (.NET 8) | Windows |
 
 > **Database:** Backend menggunakan **PostgreSQL** (Npgsql + EF Core Migrations) — sesuai spesifikasi. Konsep produk lengkap ada di [GIGRADAR_APP_SPEC.md](./GIGRADAR_APP_SPEC.md).
 
@@ -39,7 +39,7 @@ GigRadarApi (ASP.NET Core Web API)
         v
 PostgreSQL (EF Core + Npgsql, migrations)
 
-GigRadarLauncher (console) — menyalakan API di http://localhost:5000 dan membuka Swagger
+GigRadarLauncher (console, self-contained) — satu exe: PostgreSQL + API + aplikasi desktop
 ```
 
 ### Karakteristik Teknis:
@@ -86,14 +86,24 @@ GigRadar/
 │   │   └── Converter.cs             # Berbagai XAML converter
 │   └── Platforms/                   # Platform-specific (Android, iOS, Windows, Mac)
 │
-├── GigRadarLauncher/                # Launcher utilitas pengembang
-│   └── Program.cs                   # Otomasi menjalankan API + membuka Swagger UI
+├── GigRadarLauncher/                # Launcher all-in-one (menghasilkan GigRadar.exe)
+│   └── Program.cs                   # PostgreSQL + API + aplikasi desktop dalam satu klik
 │
-├── StartGigRadar.bat                # Shortcut Windows → Launcher (API + Swagger)
+├── scripts/
+│   ├── start-all.ps1                # Jalankan dev: PostgreSQL + API + adb reverse
+│   ├── build-release.ps1            # Build paket distribusi (exe all-in-one) + ZIP
+│   └── build-android-release.ps1    # Build APK Android Release
+│
+├── dist/                            # Hasil build-release.ps1 (gitignored)
+│   └── GigRadar/GigRadar.exe        # Paket siap klik
+│
+├── StartGigRadar.bat                # Shortcut Windows → GigRadar.exe (atau dev fallback)
 ├── StartMobileApp.bat               # Shortcut Windows → Mobile App (Windows Native)
 ├── GEMINI.md                        # Workspace rules untuk AI agents
 ├── GIGRADAR_APP_SPEC.md             # SPEC TUNGGAL: konsep produk + design system + GPS + build (bab 1–84 + lampiran A–K)
-└── docs/ANDROID_PRODUCTION.md       # Checklist produksi Android
+└── docs/
+    ├── ANDROID_PRODUCTION.md        # Checklist produksi Android
+    └── DISTRIBUTION.md              # Build & distribusi exe all-in-one
 ```
 
 ---
@@ -265,6 +275,19 @@ GigRadar mengimplementasikan **4 peran pengguna** dengan tingkat akses berbeda:
 ### Langkah-langkah:
 
 #### A. Cara Cepat (Khusus Windows)
+
+**A1 — Paket siap pakai (satu exe, tanpa install .NET)**
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\build-release.ps1
+```
+
+Lalu klik dua kali **`dist\GigRadar\GigRadar.exe`**. Launcher otomatis:
+menyalakan **PostgreSQL** → menjalankan **API** di `http://localhost:5000` →
+membuka **aplikasi desktop**. Hasilnya juga diarsipkan ke `dist\GigRadar-win-x64.zip`
+(siap dibagikan ke komputer lain, ~170 MB). Panduan lengkap: [docs/DISTRIBUTION.md](./docs/DISTRIBUTION.md).
+
+**A2 — Mode pengembangan**
 1. Klik dua kali `StartGigRadar.bat` → menjalankan backend API di `http://localhost:5000` + membuka **Swagger UI**.
 2. Klik dua kali `StartMobileApp.bat` → menjalankan aplikasi mobile dalam versi Windows Desktop.
 
@@ -364,6 +387,7 @@ Detail lengkap: [GIGRADAR_APP_SPEC.md — Lampiran A (Design System)](./GIGRADAR
 | [GIGRADAR_APP_SPEC.md](./GIGRADAR_APP_SPEC.md) | **Spec tunggal** — konsep produk (84 bab) + design system, radar, GPS, build multi-platform, Android APK, PostgreSQL, role experience, status implementasi (Lampiran A–K) |
 | [GEMINI.md](./GEMINI.md) | Workspace rules untuk AI agents |
 | [docs/ANDROID_PRODUCTION.md](./docs/ANDROID_PRODUCTION.md) | Checklist produksi Android (spec: Lampiran E) |
+| [docs/DISTRIBUTION.md](./docs/DISTRIBUTION.md) | Build & distribusi exe all-in-one (`GigRadar.exe`) untuk Windows |
 
 ---
 

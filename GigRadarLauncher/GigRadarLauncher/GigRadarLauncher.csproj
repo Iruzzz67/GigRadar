@@ -1,10 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- Nama exe yang dilihat user di folder distribusi. -->
+    <AssemblyName>GigRadar</AssemblyName>
+    <RootNamespace>GigRadarLauncher</RootNamespace>
+
+    <!--
+      Launcher dipublikasikan self-contained (lihat scripts\build-release.ps1):
+      hasilnya satu file GigRadar.exe yang jalan tanpa install .NET.
+    -->
+    <RuntimeIdentifier Condition="'$(Configuration)' == 'Release' and '$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
 </Project>
