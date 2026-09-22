@@ -72,8 +72,14 @@ GigRadarApi/GigRadar.db-*
 # Runtime/test artifacts (jangan di-track)
 seedtest*.db
 seedtest*.db-*
-Screenshot (*.png
-screenshot app.jpeg
+
+# Screenshot uji manual (jangan di-track)
+Screenshot*.png
+Screenshot*.jpeg
+Screenshot*.jpg
+screenshot*.png
+screenshot*.jpeg
+screenshot*.jpg
 radar_map_screenshot.png
 artifacts/
 GigRadarMobile/artifacts/
