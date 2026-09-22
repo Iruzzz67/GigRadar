@@ -225,9 +225,12 @@
                     <Label Text="{Binding PriceCaption}" Style="{StaticResource Meta}"/>
                     <Label Text="{Binding PriceFromLabel}" Style="{StaticResource Numeric}" FontSize="17"
                            TextColor="{StaticResource TextPrimary}" LineBreakMode="TailTruncation"/>
+                    <Label Text="{Binding TicketHint}" Style="{StaticResource Meta}" FontSize="11"
+                           TextColor="{StaticResource DangerColor}" MaxLines="2" LineBreakMode="WordWrap"
+                           IsVisible="{Binding TicketHint, Converter={StaticResource StringNotEmptyConverter}}"/>
                 </VerticalStackLayout>
                 <Button Grid.Column="1" Text="{Binding BuyButtonText}" Style="{StaticResource BtnBuy}"
-                        WidthRequest="190" IsEnabled="{Binding IsBuyable}"
+                        WidthRequest="190" IsEnabled="{Binding CanBuy}"
                         Command="{Binding BuyTicketCommand}"/>
             </Grid>
         </Border>

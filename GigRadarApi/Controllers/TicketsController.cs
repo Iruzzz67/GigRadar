@@ -30,8 +30,6 @@ namespace GigRadarApi.Controllers
         public async Task<IActionResult> GetEventTicketTypes(int eventId)
         {
             var types = await _ticketService.GetEventTicketTypesAsync(eventId);
-            if (types.Count == 0)
-                return NotFound(new { message = "Event tidak memiliki tipe tiket" });
             return Ok(types);
         }
 

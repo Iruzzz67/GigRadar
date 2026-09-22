@@ -24,8 +24,17 @@
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
-            <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
-                   IsVisible="{Binding HasTypes, Converter={StaticResource InvertedBoolConverter}}"/>
+            <VerticalStackLayout Spacing="12" IsVisible="{Binding HasTypes, Converter={StaticResource InvertedBoolConverter}}">
+                <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label" Binding="{Binding HasLoadError}" Value="False">
+                            <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Button Text="Coba Lagi" Style="{StaticResource BtnOutline}" HeightRequest="44" HorizontalOptions="Start"
+                        Command="{Binding LoadTypesCommand}" IsVisible="{Binding HasLoadError}"/>
+            </VerticalStackLayout>
 
             <!-- Tier list -->
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding TicketTypes}" Spacing="10">
