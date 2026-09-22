@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
              xmlns:models="clr-namespace:GigRadarMobile.Models"
+             xmlns:behaviors="clr-namespace:GigRadarMobile.Behaviors"
              x:Class="GigRadarMobile.Views.EventDetailPage"
              x:DataType="vm:EventDetailViewModel"
              Shell.NavBarIsVisible="False"
@@ -11,21 +12,19 @@
     <Grid RowDefinitions="*,Auto">
 
         <ScrollView Grid.Row="0">
+            <ScrollView.Behaviors>
+                <behaviors:ParallaxBehavior Target="{x:Reference DetailHeroArt}" Factor="0.35"/>
+            </ScrollView.Behaviors>
             <VerticalStackLayout Spacing="0">
 
                 <!-- ===== Hero poster ===== -->
-                <Grid HeightRequest="400">
-                    <Image Source="{Binding GigEvent.PosterUrl, Converter={StaticResource PosterImageConverter}}"
+                <Grid HeightRequest="420">
+                    <Image x:Name="DetailHeroArt"
+                           Source="{Binding GigEvent.PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding GigEvent.Name}}"
                            Aspect="AspectFill"/>
-                    <BoxView>
-                        <BoxView.Background>
-                            <LinearGradientBrush EndPoint="0,1">
-                                <GradientStop Color="#330A0A0B" Offset="0.0"/>
-                                <GradientStop Color="#990A0A0B" Offset="0.45"/>
-                                <GradientStop Color="#FF0A0A0B" Offset="1.0"/>
-                            </LinearGradientBrush>
-                        </BoxView.Background>
-                    </BoxView>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <BoxView HeightRequest="5" VerticalOptions="End"
+                             Color="{Binding GigEvent.GenreName, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
 
                     <!-- Bar aksi atas -->
                     <Grid Padding="16,12" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="10" VerticalOptions="Start">
@@ -53,17 +52,17 @@
                     <!-- Info event di atas scrim -->
                     <VerticalStackLayout Padding="20,0,20,18" Spacing="10" VerticalOptions="End">
                         <HorizontalStackLayout Spacing="8">
-                            <Border IsVisible="{Binding GigEvent.GenreName, Converter={StaticResource StringNotEmptyConverter}}"
-                                    Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
-                                <Label Text="{Binding GigEvent.GenreName}" FontFamily="InterSemiBold" FontSize="11"
-                                       TextColor="{StaticResource TextPrimary}"/>
+                            <Border Style="{StaticResource Pill}"
+                                    IsVisible="{Binding GigEvent.GenreName, Converter={StaticResource StringNotEmptyConverter}}">
+                                <Label Text="{Binding GigEvent.GenreName}" Style="{StaticResource PillText}"/>
                             </Border>
-                            <Border IsVisible="{Binding GigEvent.ShowsStatusBadge}"
-                                    StrokeThickness="0" StrokeShape="RoundRectangle 999"
-                                    BackgroundColor="{Binding GigEvent.StatusColor}" Padding="10,4">
-                                <Label Text="{Binding GigEvent.StatusLabel}" FontFamily="InterSemiBold" FontSize="11"
-                                       TextColor="{StaticResource OnAccent}"/>
+                            <Border Style="{StaticResource Pill}" IsVisible="{Binding GigEvent.ShowsStatusBadge}"
+                                    BackgroundColor="{Binding GigEvent.StatusColor}">
+                                <Label Text="{Binding GigEvent.StatusLabel}" Style="{StaticResource PillTextAccent}"/>
+                            </Border>
+                            <Border Style="{StaticResource Pill}">
+                                <Label Text="{Binding GigEvent.StartDate, Converter={StaticResource RelativeDayConverter}}"
+                                       Style="{StaticResource PillText}"/>
                             </Border>
                         </HorizontalStackLayout>
 
@@ -82,38 +81,55 @@
 
                 <!-- ===== Konten ===== -->
                 <VerticalStackLayout Padding="20,24,20,28" Spacing="28">
+                    <VerticalStackLayout.Behaviors>
+                        <behaviors:EntranceAnimationBehavior FromOffset="20" Duration="380" AnimateScale="False"/>
+                    </VerticalStackLayout.Behaviors>
 
                     <!-- Blok info -->
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="16" ColumnSpacing="16">
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
-                            <Label Text="TANGGAL" Style="{StaticResource Meta}"/>
-                            <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Subheading}"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
-                            <Label Text="JAM" Style="{StaticResource Meta}"/>
-                            <Label Text="{Binding GigEvent.TimeFormatted}" Style="{StaticResource Subheading}"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
-                            <Label Text="VENUE" Style="{StaticResource Meta}"/>
-                            <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
-                            <Label Text="JARAK" Style="{StaticResource Meta}"/>
-                            <Label Text="{Binding DistanceLabel}" Style="{StaticResource Subheading}" TextColor="{StaticResource PrimaryColor}"
-                                   MaxLines="1" LineBreakMode="TailTruncation"/>
-                        </VerticalStackLayout>
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="12">
+                        <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StatTile}">
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="TANGGAL" Style="{StaticResource StatLabel}"/>
+                                <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Subheading}" FontSize="15"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource StatTile}">
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="JAM" Style="{StaticResource StatLabel}"/>
+                                <Label Text="{Binding GigEvent.TimeFormatted}" Style="{StaticResource Subheading}" FontSize="15"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource StatTile}">
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="VENUE" Style="{StaticResource StatLabel}"/>
+                                <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Subheading}" FontSize="15" MaxLines="1" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatTile}">
+                            <VerticalStackLayout Spacing="3">
+                                <Label Text="JARAK" Style="{StaticResource StatLabel}"/>
+                                <Label Text="{Binding DistanceLabel}" Style="{StaticResource Subheading}" FontSize="15"
+                                       TextColor="{StaticResource PrimaryColor}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                        </Border>
                     </Grid>
 
                     <!-- Tentang -->
                     <VerticalStackLayout Spacing="8">
-                        <Label Text="Tentang event" Style="{StaticResource SectionTitle}"/>
+                        <HorizontalStackLayout Spacing="10">
+                            <BoxView Style="{StaticResource SectionBar}"/>
+                            <Label Text="Tentang event" Style="{StaticResource SectionTitleStrong}"/>
+                        </HorizontalStackLayout>
                         <Label Text="{Binding GigEvent.Description}" Style="{StaticResource Body}" LineHeight="1.35"/>
                     </VerticalStackLayout>
 
                     <!-- Lineup -->
                     <VerticalStackLayout Spacing="10">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <Label Text="Lineup" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                            <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                                <BoxView Style="{StaticResource SectionBar}"/>
+                                <Label Text="Lineup" Style="{StaticResource SectionTitleStrong}"/>
+                            </HorizontalStackLayout>
                             <Label Grid.Column="1" Text="{Binding PlaybackStatus}" Style="{StaticResource Meta}"
                                    TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"
                                    IsVisible="{Binding PlaybackStatus, Converter={StaticResource StringNotEmptyConverter}}"/>
@@ -122,25 +138,31 @@
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding GigEvent.EventArtists}" Spacing="2">
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:EventArtist">
-                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12" Padding="0,7">
-                                        <Border Grid.Column="0" WidthRequest="40" HeightRequest="40" StrokeThickness="0"
-                                                StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                                    <Border Style="{StaticResource CardBorder}" Padding="12,10" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                        <Grid Grid.Column="0" WidthRequest="44" HeightRequest="44">
+                                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 999" Padding="0">
+                                                <Image Source="{Binding Artist.PhotoUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Artist.Name}}"
+                                                       Aspect="AspectFill"/>
+                                            </Border>
+                                            <BoxView Color="#990B0A0E" />
                                             <Label Text="{Binding Artist.Initials}" FontFamily="SpaceGroteskBold" FontSize="13"
-                                                   TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                        </Border>
+                                                   TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        </Grid>
                                         <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                             <Label Text="{Binding Artist.Name}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
                                             <Label Text="{Binding Artist.Genre}" Style="{StaticResource Meta}"/>
                                         </VerticalStackLayout>
                                         <Button Grid.Column="2" Text="▶" FontSize="12" Padding="0" WidthRequest="40" HeightRequest="40"
                                                 CornerRadius="999" BackgroundColor="{StaticResource AccentSoft}" TextColor="{StaticResource PrimaryColor}"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=PlayPreviewCommand}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=PlayPreviewCommand, x:DataType={x:Type vm:EventDetailViewModel}}"
                                                 CommandParameter="{Binding Artist}"/>
                                         <Button Grid.Column="3" Text="›" FontSize="20" Padding="0" WidthRequest="40" HeightRequest="40"
                                                 BackgroundColor="Transparent" TextColor="{StaticResource TextMuted}"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=GoToArtistCommand}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EventDetailViewModel}}, Path=GoToArtistCommand, x:DataType={x:Type vm:EventDetailViewModel}}"
                                                 CommandParameter="{Binding Artist}"/>
                                     </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </VerticalStackLayout>
@@ -148,7 +170,10 @@
 
                     <!-- Tiket -->
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Tiket" Style="{StaticResource SectionTitle}"/>
+                        <HorizontalStackLayout Spacing="10">
+                            <BoxView Style="{StaticResource SectionBar}"/>
+                            <Label Text="Tiket" Style="{StaticResource SectionTitleStrong}"/>
+                        </HorizontalStackLayout>
 
                         <!-- Link eksternal -->
                         <Border IsVisible="{Binding GigEvent.HasExternalLink}" Style="{StaticResource CardFlatBorder}" Padding="16">
@@ -166,18 +191,19 @@
                             <BindableLayout.ItemTemplate>
                                 <DataTemplate x:DataType="models:EventTicketType">
                                     <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
-                                            StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="14">
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                            StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="0">
+                                      <Grid ColumnDefinitions="4,*,Auto" ColumnSpacing="12">
+                                        <BoxView Grid.Column="0" Background="{StaticResource SignalGradient}"/>
+                                        <VerticalStackLayout Grid.Column="1" Padding="0,14" Spacing="4">
                                                 <Label Text="{Binding Name}" Style="{StaticResource Subheading}"/>
                                                 <Label Text="{Binding Description}" Style="{StaticResource Body}" FontSize="12"
                                                        MaxLines="2" LineBreakMode="TailTruncation" IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"/>
                                                 <Label Text="{Binding StockLabel}" Style="{StaticResource Meta}" TextColor="{Binding StockColor}"/>
                                             </VerticalStackLayout>
-                                            <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
+                                            <Label Grid.Column="2" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
                                                    FontSize="15" TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"
-                                                   LineBreakMode="TailTruncation"/>
-                                        </Grid>
+                                                   Margin="0,0,14,0" LineBreakMode="TailTruncation"/>
+                                      </Grid>
                                     </Border>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
@@ -195,8 +221,11 @@
 
                     <!-- Venue -->
                     <VerticalStackLayout Spacing="10">
-                        <Label Text="Venue" Style="{StaticResource SectionTitle}"/>
-                        <Border Style="{StaticResource CardFlatBorder}" Padding="16">
+                        <HorizontalStackLayout Spacing="10">
+                            <BoxView Style="{StaticResource SectionBar}"/>
+                            <Label Text="Venue" Style="{StaticResource SectionTitleStrong}"/>
+                        </HorizontalStackLayout>
+                        <Border Style="{StaticResource CardBorder}" Padding="16">
                             <VerticalStackLayout Spacing="8">
                                 <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Subheading}"/>
                                 <Label Text="{Binding GigEvent.Venue.Address}" Style="{StaticResource Body}" FontSize="13"
@@ -237,4 +266,4 @@
 
     </Grid>
 
-</ContentPage>
+</ContentPage>

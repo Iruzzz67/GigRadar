@@ -12,32 +12,39 @@
 
         <!-- ===== Header + filters ===== -->
         <VerticalStackLayout Grid.Row="0" Padding="20,16,20,4" Spacing="14">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <VerticalStackLayout Spacing="2">
-                    <Label Text="RADAR" Style="{StaticResource Eyebrow}"/>
-                    <Label Text="{Binding CityLabel}" Style="{StaticResource PageTitle}"/>
-                </VerticalStackLayout>
-                <Label Grid.Column="1" Text="{Binding CountLabel}" Style="{StaticResource Caption}" VerticalOptions="End"/>
-            </Grid>
+            <Border Style="{StaticResource PageHero}" HeightRequest="140">
+                <Grid>
+                    <Image Source="art_ripple" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                        <Label Text="RADAR / LIVE SIGNAL" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="{Binding CityLabel}" Style="{StaticResource HeroTitle}" FontSize="26"/>
+                        <Label Text="{Binding CountLabel}" Style="{StaticResource Caption}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <!-- Genre chips -->
             <CollectionView ItemsSource="{Binding GenreFilters}" HeightRequest="40"
                             ItemsLayout="HorizontalList" HorizontalScrollBarVisibility="Never">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="vm:GenreFilterItem">
-                        <Button Text="{Binding Name}" Margin="0,0,8,0" Padding="16,8" HeightRequest="38"
-                                CornerRadius="999" FontSize="13" FontFamily="InterMedium"
+                        <Border Margin="0,0,8,0" Padding="16,8" StrokeThickness="1"
+                                StrokeShape="RoundRectangle 999"
                                 BackgroundColor="{StaticResource CardElevatedColor}"
-                                TextColor="{StaticResource TextSecondary}"
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=SelectGenreCommand}"
-                                CommandParameter="{Binding Name}">
-                            <Button.Triggers>
-                                <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                Stroke="{StaticResource BorderColor}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=SelectGenreCommand, x:DataType={x:Type vm:RadarViewModel}}" CommandParameter="{Binding Name}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="{Binding Name}" FontSize="13" FontFamily="InterMedium"
+                                   TextColor="{StaticResource TextSecondary}"/>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
                                     <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
-                                    <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                                    <Setter Property="Stroke" Value="{StaticResource PrimaryColor}"/>
                                 </DataTrigger>
-                            </Button.Triggers>
-                        </Button>
+                            </Border.Triggers>
+                        </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
@@ -98,15 +105,17 @@
                     </Frame>
 
                     <!-- Radar -->
-                    <Border BackgroundColor="{StaticResource SurfaceColor}" Stroke="{StaticResource BorderColor}"
-                            StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="12">
+                    <Border Style="{StaticResource PageHero}" Padding="0">
                         <Grid>
                             <WebView x:Name="MapWebView" HeightRequest="330"
                                      Navigating="OnMapNavigating" />
                             <VerticalStackLayout Padding="14,12" Spacing="2" HorizontalOptions="Start" VerticalOptions="Start" InputTransparent="True">
-                                <Label Text="{Binding CityLabel, StringFormat='RADAR • {0}'}" FontSize="10" FontAttributes="Bold"
-                                       CharacterSpacing="1.4" TextColor="{StaticResource TextMuted}"/>
-                                <Label Text="{Binding RadiusKm, StringFormat='Radius {0:0} km'}" FontSize="10" TextColor="{StaticResource TextMuted}"/>
+                                <Border Style="{StaticResource Pill}">
+                                    <Label Text="{Binding CityLabel, StringFormat='RADAR • {0}'}" Style="{StaticResource PillText}" FontSize="10"/>
+                                </Border>
+                                <Border Style="{StaticResource Pill}" HorizontalOptions="Start">
+                                    <Label Text="{Binding RadiusKm, StringFormat='Radius {0:0} km'}" Style="{StaticResource PillText}" FontSize="10"/>
+                                </Border>
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
@@ -114,9 +123,14 @@
                            Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
 
                     <!-- Preview event terpilih -->
-                    <Border IsVisible="{Binding HasSelection}" BackgroundColor="{StaticResource CardColor}"
-                            Stroke="{StaticResource BorderStrong}" StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16">
+                    <Border IsVisible="{Binding HasSelection}" Style="{StaticResource PosterCard}">
                         <VerticalStackLayout Spacing="12">
+                          <Grid HeightRequest="150">
+                            <Image Source="{Binding SelectedEvent.PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding SelectedName}}"
+                                   Aspect="AspectFill"/>
+                            <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                          </Grid>
+                          <VerticalStackLayout Spacing="12" Padding="0,0,16,16">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                                 <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
                                     <Label Text="{Binding SelectedDay}" Style="{StaticResource Numeric}" FontSize="24" HorizontalTextAlignment="Center"/>
@@ -140,6 +154,7 @@
                                         BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}"
                                         Command="{Binding GoToSelectedCommand}"/>
                             </Grid>
+                          </VerticalStackLayout>
                         </VerticalStackLayout>
                     </Border>
 
@@ -157,15 +172,23 @@
                         <CollectionView ItemsSource="{Binding Events}" SelectionMode="None">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="models:GigEvent">
-                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,10">
+                                    <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,10">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                                         <Grid.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=GoToDetailCommand}" CommandParameter="{Binding .}"/>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=GoToDetailCommand, x:DataType={x:Type vm:RadarViewModel}}" CommandParameter="{Binding .}"/>
                                         </Grid.GestureRecognizers>
-                                        <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
-                                            <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="22" HorizontalTextAlignment="Center"/>
-                                            <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold" CharacterSpacing="1"
-                                                   TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
-                                        </VerticalStackLayout>
+                                        <Grid Grid.Column="0" WidthRequest="52" HeightRequest="52">
+                                            <Image Source="{Binding PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Name}}"
+                                                   Aspect="AspectFill"/>
+                                            <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                                            <BoxView WidthRequest="3" HorizontalOptions="Start"
+                                                     Color="{Binding GenreName, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+                                            <VerticalStackLayout VerticalOptions="Center" Spacing="0">
+                                                <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="18" HorizontalTextAlignment="Center"/>
+                                                <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="8" FontAttributes="Bold" CharacterSpacing="1"
+                                                       TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
+                                            </VerticalStackLayout>
+                                        </Grid>
                                         <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                                             <Label Text="{Binding Name}" Style="{StaticResource Subheading}" LineBreakMode="TailTruncation" MaxLines="1"/>
                                             <Label Text="{Binding VenueName}" Style="{StaticResource Caption}" LineBreakMode="TailTruncation"/>
@@ -176,9 +199,10 @@
                                                    LineBreakMode="TailTruncation" HorizontalTextAlignment="End"/>
                                             <Button Text="Peta" Style="{StaticResource BtnSmall}" Padding="12,4" HeightRequest="30" FontSize="11"
                                                     BackgroundColor="Transparent" TextColor="{StaticResource TextMuted}"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=OpenExternalMapCommand}" CommandParameter="{Binding .}"/>
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:RadarViewModel}}, Path=OpenExternalMapCommand, x:DataType={x:Type vm:RadarViewModel}}" CommandParameter="{Binding .}"/>
                                         </VerticalStackLayout>
                                     </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>

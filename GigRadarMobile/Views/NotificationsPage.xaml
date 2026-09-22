@@ -10,14 +10,21 @@
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="20,18,20,16" RowSpacing="12">
 
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-            <VerticalStackLayout Spacing="4">
-                <Label Text="GIGRADAR" Style="{StaticResource Eyebrow}"/>
-                <Label Text="Notifikasi" Style="{StaticResource PageTitle}"/>
-            </VerticalStackLayout>
-            <Button Grid.Column="1" Text="Tandai dibaca" Style="{StaticResource BtnOutline}" HeightRequest="40"
-                    IsVisible="{Binding HasUnread}" Command="{Binding MarkAllReadCommand}"/>
-        </Grid>
+        <Border Grid.Row="0" Style="{StaticResource PageHero}" HeightRequest="130">
+            <Grid>
+                <Image Source="art_ripple" Aspect="AspectFill"/>
+                <BoxView Background="{StaticResource PosterScrim}"/>
+                <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource SignalGradient}"/>
+                <Grid Padding="16" ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="End">
+                    <VerticalStackLayout Spacing="4" VerticalOptions="End">
+                        <Label Text="GIGRADAR" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="Notifikasi" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="Tandai dibaca" Style="{StaticResource BtnOutline}" HeightRequest="40"
+                            IsVisible="{Binding HasUnread}" Command="{Binding MarkAllReadCommand}"/>
+                </Grid>
+            </Grid>
+        </Border>
 
         <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
@@ -53,7 +60,7 @@
                                 <Button Grid.Column="2" Text="Dibaca" FontSize="10" HeightRequest="30" Padding="8,0"
                                         CornerRadius="8" IsVisible="{Binding IsUnread}"
                                         BackgroundColor="{StaticResource AccentSoft}" TextColor="{StaticResource PrimaryColor}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NotificationsViewModel}}, Path=MarkReadCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NotificationsViewModel}}, Path=MarkReadCommand, x:DataType={x:Type vm:NotificationsViewModel}}"
                                         CommandParameter="{Binding .}"/>
                             </Grid>
                         </Border>

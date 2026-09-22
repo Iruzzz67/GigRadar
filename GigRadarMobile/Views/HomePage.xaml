@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
              xmlns:models="clr-namespace:GigRadarMobile.Models"
+             xmlns:behaviors="clr-namespace:GigRadarMobile.Behaviors"
              x:Class="GigRadarMobile.Views.HomePage"
              x:DataType="vm:HomeViewModel"
              Shell.NavBarIsVisible="False"
@@ -10,22 +11,23 @@
 
     <RefreshView Command="{Binding LoadEventsCommand}" IsRefreshing="{Binding IsRefreshing}">
         <ScrollView>
-            <VerticalStackLayout Padding="20,16,20,28" Spacing="28">
+            <ScrollView.Behaviors>
+                <behaviors:ParallaxBehavior Target="{x:Reference HeroArt}" Factor="0.4"/>
+            </ScrollView.Behaviors>
+            <VerticalStackLayout Padding="20,16,20,32" Spacing="30">
 
                 <!-- ===== Header ===== -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                     <VerticalStackLayout Grid.Column="0" Spacing="6">
                         <Label Text="GIGRADAR" FontFamily="SpaceGroteskBold" FontSize="22" CharacterSpacing="2.5"
                                TextColor="{StaticResource TextPrimary}"/>
-                    <Button Text="{Binding CityLabel, StringFormat='{0} ▾'}" Padding="0" HeightRequest="36"
-                            HorizontalOptions="Start" FontFamily="InterMedium" FontSize="13"
-                            TextColor="{StaticResource TextSecondary}" BackgroundColor="Transparent"
-                            Command="{Binding ChangeCityCommand}"
-                            SemanticProperties.Description="Ubah kota untuk rekomendasi dan radar"/>
+                        <Button Text="{Binding CityLabel, StringFormat='{0} ▾'}" Padding="0" HeightRequest="36"
+                                HorizontalOptions="Start" FontFamily="InterMedium" FontSize="13"
+                                TextColor="{StaticResource TextSecondary}" BackgroundColor="Transparent"
+                                Command="{Binding ChangeCityCommand}"
+                                SemanticProperties.Description="Ubah kota untuk rekomendasi dan radar"/>
                     </VerticalStackLayout>
-                    <Border Grid.Column="1" WidthRequest="44" HeightRequest="44" StrokeThickness="1"
-                            Stroke="{StaticResource BorderStrong}" BackgroundColor="{StaticResource CardColor}"
-                            StrokeShape="RoundRectangle 999" VerticalOptions="Center">
+                    <Border Grid.Column="1" Style="{StaticResource AvatarRing}" VerticalOptions="Center">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding GoToProfileCommand}"/>
                         </Border.GestureRecognizers>
@@ -36,74 +38,69 @@
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="Center"/>
 
-                <!-- ===== Error state (empty ≠ error) ===== -->
-                <Frame IsVisible="{Binding HasError}" BackgroundColor="{StaticResource DangerSoft}"
-                       BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                <!-- ===== Error state (empty != error) ===== -->
+                <Border IsVisible="{Binding HasError}" Style="{StaticResource CardBorder}"
+                        Background="{StaticResource DangerSoft}" Padding="14">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"/>
                         <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
                                 Command="{Binding LoadEventsCommand}"/>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- ===== Hero ===== -->
                 <VerticalStackLayout Spacing="12" IsVisible="{Binding HasFeatured}">
-                    <VerticalStackLayout Spacing="4">
-                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
-                            <BoxView WidthRequest="24" HeightRequest="2" Color="{StaticResource StagePink}" VerticalOptions="Center"/>
-                            <Label Grid.Column="1" Text="{Binding GreetingEyebrow}" Style="{StaticResource StageEyebrow}"/>
-                        </Grid>
-                        <Label Text="Apa yang lagi rame malam ini?"
-                               Style="{StaticResource Display}" FontSize="30" LineHeight="1.05"/>
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <BoxView WidthRequest="24" HeightRequest="2" Color="{StaticResource StagePink}" VerticalOptions="Center"/>
+                        <Label Grid.Column="1" Text="{Binding GreetingEyebrow}" Style="{StaticResource StageEyebrow}"/>
+                    </Grid>
+                    <Label Text="Apa yang lagi rame malam ini?"
+                           Style="{StaticResource HeroTitle}" FontSize="28"/>
 
-                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" HeightRequest="330"
-                            BackgroundColor="{StaticResource CardColor}">
+                    <Border Style="{StaticResource HeroBanner}" HeightRequest="360">
+                        <Border.Behaviors>
+                            <behaviors:EntranceAnimationBehavior FromOffset="22" Duration="380"/>
+                        </Border.Behaviors>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding GoToDetailCommand}" CommandParameter="{Binding FeaturedEvent}"/>
                         </Border.GestureRecognizers>
                         <Grid>
-                            <Image Source="{Binding FeaturedEvent.PosterUrl, Converter={StaticResource PosterImageConverter}}"
+                            <Image x:Name="HeroArt"
+                                   Source="{Binding FeaturedEvent.PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding FeaturedEvent.Name}}"
                                    Aspect="AspectFill"/>
-                            <BoxView>
-                                <BoxView.Background>
-                                    <LinearGradientBrush EndPoint="0,1">
-                                        <GradientStop Color="#000A0A0B" Offset="0.0"/>
-                                        <GradientStop Color="#660A0A0B" Offset="0.5"/>
-                                        <GradientStop Color="#FF0A0A0B" Offset="1.0"/>
-                                    </LinearGradientBrush>
-                                </BoxView.Background>
-                            </BoxView>
+                            <BoxView Background="{StaticResource PosterScrim}"/>
 
-                            <VerticalStackLayout Padding="16" Spacing="10" VerticalOptions="End">
-                                <Label Text="LIVE PICK • GIGRADAR" FontFamily="InterSemiBold" FontSize="10"
-                                       CharacterSpacing="1.4" TextColor="{StaticResource StageAmber}"/>
+                            <!-- Aksen genre di tepi kiri poster -->
+                            <BoxView WidthRequest="5" HorizontalOptions="Start"
+                                     Background="{StaticResource SignalGradient}"/>
+
+                            <VerticalStackLayout Padding="18" Spacing="10" VerticalOptions="End">
+                                <Label Text="LIVE PICK • GIGRADAR" Style="{StaticResource Overline}"
+                                       TextColor="{StaticResource StageAmber}"/>
                                 <HorizontalStackLayout Spacing="8">
-                                    <Border IsVisible="{Binding FeaturedEvent.GenreName, Converter={StaticResource StringNotEmptyConverter}}"
-                                            Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
-                                            StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
-                                        <Label Text="{Binding FeaturedEvent.GenreName}" FontFamily="InterSemiBold" FontSize="11"
-                                               TextColor="{StaticResource TextPrimary}"/>
+                                    <Border Style="{StaticResource Pill}"
+                                            IsVisible="{Binding FeaturedEvent.GenreName, Converter={StaticResource StringNotEmptyConverter}}">
+                                        <Label Text="{Binding FeaturedEvent.GenreName}" Style="{StaticResource PillText}"/>
                                     </Border>
-                                    <Border IsVisible="{Binding FeaturedEvent.ShowsStatusBadge}"
-                                            StrokeThickness="0" StrokeShape="RoundRectangle 999"
-                                            BackgroundColor="{Binding FeaturedEvent.StatusColor}" Padding="10,4">
-                                        <Label Text="{Binding FeaturedEvent.StatusLabel}" FontFamily="InterSemiBold" FontSize="11"
-                                               TextColor="{StaticResource OnAccent}"/>
+                                    <Border Style="{StaticResource Pill}" IsVisible="{Binding FeaturedEvent.ShowsStatusBadge}"
+                                            BackgroundColor="{Binding FeaturedEvent.StatusColor}">
+                                        <Label Text="{Binding FeaturedEvent.StatusLabel}" Style="{StaticResource PillTextAccent}"/>
                                     </Border>
                                 </HorizontalStackLayout>
 
-                                <Label Text="{Binding FeaturedEvent.Name}" Style="{StaticResource Title}" FontSize="24"
+                                <Label Text="{Binding FeaturedEvent.Name}" Style="{StaticResource Title}" FontSize="25"
                                        MaxLines="2" LineBreakMode="TailTruncation"/>
 
-                                <HorizontalStackLayout Spacing="8">
-                                    <Label Text="{Binding FeaturedEvent.VenueName}" Style="{StaticResource Caption}"/>
-                                    <Label Text="•" TextColor="{StaticResource TextMuted}"/>
-                                    <Label Text="{Binding FeaturedEvent.DateFormatted}" Style="{StaticResource Caption}"/>
-                                    <Label Text="•" TextColor="{StaticResource TextMuted}"/>
-                                    <Label Text="{Binding FeaturedEvent.PriceFormatted}" Style="{StaticResource Numeric}" FontSize="13"
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <HorizontalStackLayout Grid.Column="0" Spacing="6">
+                                        <Label Text="{Binding FeaturedEvent.VenueName}" Style="{StaticResource Caption}"/>
+                                        <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                                        <Label Text="{Binding FeaturedEvent.DateFormatted}" Style="{StaticResource Caption}"/>
+                                    </HorizontalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding FeaturedEvent.PriceFormatted}"
+                                           Style="{StaticResource Numeric}" FontSize="13"
                                            TextColor="{StaticResource PrimaryColor}"/>
-                                </HorizontalStackLayout>
+                                </Grid>
                             </VerticalStackLayout>
                         </Grid>
                     </Border>
@@ -112,31 +109,97 @@
                 <!-- ===== Dekat kamu ===== -->
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Text="Dekat kamu" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                        <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                            <BoxView Style="{StaticResource SectionBar}"/>
+                            <Label Text="Dekat kamu" Style="{StaticResource SectionTitleStrong}"/>
+                        </HorizontalStackLayout>
                         <Button Grid.Column="1" Text="Semua" Style="{StaticResource TextLink}"
                                 Command="{Binding GoToRadarCommand}"/>
                     </Grid>
-                    <CollectionView ItemsSource="{Binding NearbyEvents}" HeightRequest="232" ItemsLayout="HorizontalList"
+
+                    <CollectionView ItemsSource="{Binding NearbyEvents}" HeightRequest="268" ItemsLayout="HorizontalList"
                                     HorizontalScrollBarVisibility="Never">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:GigEvent">
-                                <Border WidthRequest="150" Margin="0,0,12,0" StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 14" BackgroundColor="{StaticResource CardColor}">
+                                <Border WidthRequest="172" Margin="0,0,14,0" Style="{StaticResource PosterCard}">
+                                    <Border.Behaviors>
+                                        <behaviors:EntranceAnimationBehavior FromOffset="18"/>
+                                    </Border.Behaviors>
                                     <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToDetailCommand}" CommandParameter="{Binding .}"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToDetailCommand, x:DataType={x:Type vm:HomeViewModel}}" CommandParameter="{Binding .}"/>
                                     </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="8">
-                                        <Image Source="{Binding PosterUrl, Converter={StaticResource PosterImageConverter}}"
-                                               Aspect="AspectFill" HeightRequest="120"/>
-                                        <VerticalStackLayout Padding="10,0,10,12" Spacing="2">
+                                    <Grid RowDefinitions="152,*">
+                                        <Grid Grid.Row="0">
+                                            <Image Source="{Binding PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Name}}"
+                                                   Aspect="AspectFill"/>
+                                            <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                                            <BoxView WidthRequest="4" HorizontalOptions="Start"
+                                                     Color="{Binding GenreName, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+                                            <Border Style="{StaticResource Pill}" HorizontalOptions="Start" VerticalOptions="Start"
+                                                    Margin="10" BackgroundColor="#CC0B0A0E">
+                                                <Label Text="{Binding StartDate, Converter={StaticResource RelativeDayConverter}}"
+                                                       Style="{StaticResource PillText}" FontSize="10"/>
+                                            </Border>
+                                        </Grid>
+                                        <VerticalStackLayout Grid.Row="1" Padding="12,10,12,14" Spacing="4">
                                             <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14"
                                                    MaxLines="1" LineBreakMode="TailTruncation"/>
-                                            <Label Text="{Binding DateFormatted}" Style="{StaticResource Meta}"/>
-                                            <Label Text="{Binding VenueName}" Style="{StaticResource Meta}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding VenueName}" Style="{StaticResource Meta}" MaxLines="1"
+                                                   LineBreakMode="TailTruncation"/>
                                             <Label Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="12"
                                                    TextColor="{StaticResource PrimaryColor}"/>
                                         </VerticalStackLayout>
-                                    </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- ===== Artist untuk kamu ===== -->
+                <VerticalStackLayout Spacing="12">
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Artist yang perlu kamu dengerin" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
+
+                    <CollectionView ItemsSource="{Binding Artists}" HeightRequest="216" ItemsLayout="HorizontalList"
+                                    HorizontalScrollBarVisibility="Never">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Artist">
+                                <Border WidthRequest="144" Margin="0,0,14,0" Style="{StaticResource ArtistCard}">
+                                    <Border.Behaviors>
+                                        <behaviors:EntranceAnimationBehavior FromOffset="18" Delay="60"/>
+                                    </Border.Behaviors>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToArtistCommand, x:DataType={x:Type vm:HomeViewModel}}" CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+                                    <Grid RowDefinitions="132,*">
+                                        <Grid Grid.Row="0">
+                                            <Image Source="{Binding PhotoUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Name}}"
+                                                   Aspect="AspectFill"/>
+                                            <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                                            <Border HorizontalOptions="Start" VerticalOptions="End" Margin="10"
+                                                    WidthRequest="34" HeightRequest="34" StrokeThickness="1.5"
+                                                    Stroke="#66FFFFFF" StrokeShape="RoundRectangle 999"
+                                                    BackgroundColor="#CC0B0A0E">
+                                                <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="12"
+                                                       TextColor="{StaticResource TextPrimary}"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            </Border>
+                                        </Grid>
+                                        <VerticalStackLayout Grid.Row="1" Padding="12,10,12,14" Spacing="5">
+                                            <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14"
+                                                   MaxLines="1" LineBreakMode="TailTruncation"/>
+                                            <HorizontalStackLayout Spacing="6">
+                                                <BoxView WidthRequest="14" HeightRequest="3" CornerRadius="2"
+                                                         VerticalOptions="Center"
+                                                         Color="{Binding Genre, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+                                                <Label Text="{Binding Genre}" Style="{StaticResource Meta}" MaxLines="1"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                    </Grid>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -144,74 +207,69 @@
                 </VerticalStackLayout>
 
                 <!-- ===== Radar teaser ===== -->
-                <Border StrokeThickness="1" Stroke="{StaticResource BorderColor}" StrokeShape="RoundRectangle 16"
-                        BackgroundColor="{StaticResource SurfaceColor}" Padding="14">
-                    <VerticalStackLayout Spacing="8">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                            <VerticalStackLayout Spacing="2">
-                                <Label Text="RADAR / LIVE SIGNAL" Style="{StaticResource Eyebrow}"/>
-                                <Label Text="Gig di sekitar kamu" Style="{StaticResource Subheading}"/>
-                            </VerticalStackLayout>
-                            <Button Grid.Column="1" Text="Buka radar" Style="{StaticResource BtnSmall}"
-                                    BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}"
-                                    VerticalOptions="Center" Command="{Binding GoToRadarCommand}"/>
-                        </Grid>
-                        <GraphicsView Drawable="{Binding TeaserRadar}" HeightRequest="150"/>
-                    </VerticalStackLayout>
+                <Border Style="{StaticResource HeroBanner}" HeightRequest="230">
+                    <Grid>
+                        <Image Source="art_ripple" Aspect="AspectFill" Opacity="0.45"/>
+                        <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                        <VerticalStackLayout Padding="16" Spacing="10" VerticalOptions="End">
+                            <Label Text="RADAR / LIVE SIGNAL" Style="{StaticResource Eyebrow}"/>
+                            <Label Text="Gig di sekitar kamu" Style="{StaticResource Subheading}" FontSize="18"/>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <GraphicsView Grid.Column="0" Drawable="{Binding TeaserRadar}" HeightRequest="120"/>
+                                <Button Grid.Column="1" Text="Buka radar" Style="{StaticResource BtnSmall}"
+                                        BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}"
+                                        VerticalOptions="End" Command="{Binding GoToRadarCommand}"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
                 </Border>
-
-                <!-- ===== Artist untuk kamu ===== -->
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Artist yang perlu kamu dengerin" Style="{StaticResource SectionTitle}"/>
-                    <CollectionView ItemsSource="{Binding Artists}" HeightRequest="196" ItemsLayout="HorizontalList"
-                                    HorizontalScrollBarVisibility="Never">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:Artist">
-                                <Border WidthRequest="132" Margin="0,0,12,0" StrokeThickness="0"
-                                        StrokeShape="RoundRectangle 14" BackgroundColor="{StaticResource CardColor}">
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToArtistCommand}" CommandParameter="{Binding .}"/>
-                                    </Border.GestureRecognizers>
-                                    <VerticalStackLayout Spacing="8">
-                                        <Image Source="{Binding PhotoUrl, Converter={StaticResource PosterImageConverter}}"
-                                               Aspect="AspectFill" HeightRequest="118"/>
-                                        <VerticalStackLayout Padding="10,0,10,12" Spacing="2">
-                                            <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14"
-                                                   MaxLines="1" LineBreakMode="TailTruncation"/>
-                                            <Label Text="{Binding Genre}" Style="{StaticResource Meta}" MaxLines="1" LineBreakMode="TailTruncation"/>
-                                        </VerticalStackLayout>
-                                    </VerticalStackLayout>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
 
                 <!-- ===== Minggu ini ===== -->
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Minggu ini" Style="{StaticResource SectionTitle}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Minggu ini" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
                     <Label Text="Belum ada event akhir pekan ini. Coba geser radius di Radar."
                            Style="{StaticResource Body}" IsVisible="{Binding HasWeekendEvents, Converter={StaticResource InvertedBoolConverter}}"/>
+
                     <CollectionView ItemsSource="{Binding WeekendEvents}" SelectionMode="None">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:GigEvent">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,9">
-                                    <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToDetailCommand}" CommandParameter="{Binding .}"/>
-                                    </Grid.GestureRecognizers>
-                                    <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
-                                        <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="22" HorizontalTextAlignment="Center"/>
-                                        <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold" CharacterSpacing="1"
-                                               TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
-                                    </VerticalStackLayout>
-                                    <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
-                                        <Label Text="{Binding Name}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
-                                        <Label Text="{Binding VenueName}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
-                                        <Label Text="{Binding TimeFormatted}" Style="{StaticResource Meta}"/>
-                                    </VerticalStackLayout>
-                                    <Label Grid.Column="2" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="13"
-                                           TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
-                                </Grid>
+                                <Border Style="{StaticResource CardBorder}" Margin="0,0,0,10" Padding="14">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToDetailCommand, x:DataType={x:Type vm:HomeViewModel}}" CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                        <Grid Grid.Column="0" WidthRequest="52" HeightRequest="52">
+                                            <Image Source="{Binding PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Name}}"
+                                                   Aspect="AspectFill"/>
+                                            <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                                            <VerticalStackLayout VerticalOptions="Center" Spacing="0">
+                                                <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}"
+                                                       FontSize="19" HorizontalTextAlignment="Center"/>
+                                                <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold"
+                                                       CharacterSpacing="1" TextColor="{StaticResource TextSecondary}"
+                                                       HorizontalTextAlignment="Center"/>
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="15"
+                                                   MaxLines="1" LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding VenueName}" Style="{StaticResource Caption}" MaxLines="1"
+                                                   LineBreakMode="TailTruncation"/>
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding TimeFormatted}" Style="{StaticResource Meta}"/>
+                                                <Label Text="{Binding StartDate, Converter={StaticResource RelativeDayConverter}}"
+                                                       Style="{StaticResource Meta}"
+                                                       TextColor="{Binding GenreName, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="2" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
+                                               FontSize="13" TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"
+                                               LineBreakMode="TailTruncation"/>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
@@ -219,16 +277,26 @@
 
                 <!-- ===== Genre ===== -->
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Jelajah genre" Style="{StaticResource SectionTitle}"/>
-                    <Label Text="Pilih genre — Radar langsung disaring untuk kamu."
-                           Style="{StaticResource Body}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Jelajah genre" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Pilih genre — Radar langsung disaring untuk kamu." Style="{StaticResource Body}"/>
+
                     <CollectionView ItemsSource="{Binding GenreChips}" HeightRequest="40"
                                     ItemsLayout="HorizontalList" HorizontalScrollBarVisibility="Never">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="x:String">
-                                <Button Text="{Binding .}" Style="{StaticResource Chip}" Margin="0,0,8,0"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToGenreRadarCommand}"
-                                        CommandParameter="{Binding .}"/>
+                                <Border Margin="0,0,8,0" StrokeThickness="1" StrokeShape="RoundRectangle 999"
+                                        Padding="16,8"
+                                        BackgroundColor="{Binding ., Converter={StaticResource GenreAccentConverter}, ConverterParameter=tint}"
+                                        Stroke="{Binding ., Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=GoToGenreRadarCommand, x:DataType={x:Type vm:HomeViewModel}}" CommandParameter="{Binding .}"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding .}" FontFamily="InterMedium" FontSize="13"
+                                           TextColor="{Binding ., Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>

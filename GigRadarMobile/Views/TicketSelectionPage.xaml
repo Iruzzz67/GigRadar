@@ -12,15 +12,24 @@
         <VerticalStackLayout Padding="20,20,20,28" Spacing="20">
 
             <!-- Event context -->
-            <VerticalStackLayout Spacing="4">
-                <Label Text="PILIH TIKET" Style="{StaticResource Eyebrow}"/>
-                <Label Text="{Binding GigEvent.Name}" Style="{StaticResource PageTitle}" MaxLines="2" LineBreakMode="TailTruncation"/>
-                <HorizontalStackLayout Spacing="6">
-                    <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Caption}"/>
-                    <Label Text="•" TextColor="{StaticResource TextMuted}"/>
-                    <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
+            <Border Style="{StaticResource PageHero}" HeightRequest="200">
+                <Grid>
+                    <Image Source="{Binding GigEvent.PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding GigEvent.Name}}"
+                           Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <BoxView HeightRequest="5" VerticalOptions="End"
+                             Color="{Binding GigEvent.GenreName, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+                    <VerticalStackLayout Padding="16" Spacing="5" VerticalOptions="End">
+                        <Label Text="PILIH TIKET" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="{Binding GigEvent.Name}" Style="{StaticResource HeroTitle}" FontSize="24" MaxLines="2" LineBreakMode="TailTruncation"/>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Caption}"/>
+                            <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                            <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
@@ -40,28 +49,28 @@
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding TicketTypes}" Spacing="10">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="models:EventTicketType">
-                        <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
-                                StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16"
+                        <Border Style="{StaticResource CardBorder}" Padding="0"
                                 Opacity="{Binding IsSoldOut, Converter={StaticResource SoldOutOpacityConverter}}">
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TicketSelectionViewModel}}, Path=SelectTypeCommand}"
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TicketSelectionViewModel}}, Path=SelectTypeCommand, x:DataType={x:Type vm:TicketSelectionViewModel}}"
                                                       CommandParameter="{Binding .}"/>
                             </Border.GestureRecognizers>
-                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
-                                <Border Grid.Column="0" WidthRequest="22" HeightRequest="22" VerticalOptions="Center"
+                            <Grid ColumnDefinitions="5,Auto,*,Auto" ColumnSpacing="14">
+                                <BoxView Grid.Column="0" Background="{StaticResource SignalGradient}"/>
+                                <Border Grid.Column="1" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" Margin="12,0,0,0"
                                         Stroke="{StaticResource BorderStrong}" StrokeThickness="1.5"
                                         StrokeShape="RoundRectangle 999" BackgroundColor="Transparent">
                                     <Border StrokeThickness="0" StrokeShape="RoundRectangle 999" WidthRequest="12" HeightRequest="12"
                                             BackgroundColor="{StaticResource PrimaryColor}" IsVisible="{Binding IsSoldOut, Converter={StaticResource InvertedBoolConverter}}"/>
                                 </Border>
-                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="2" Spacing="3" VerticalOptions="Center" Padding="0,14">
                                     <Label Text="{Binding Name}" Style="{StaticResource Subheading}"/>
                                     <Label Text="{Binding Description}" Style="{StaticResource Body}" FontSize="12"
                                            MaxLines="2" LineBreakMode="TailTruncation"
                                            IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"/>
                                     <Label Text="{Binding StockLabel}" Style="{StaticResource Meta}" TextColor="{Binding StockColor}"/>
                                 </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="2" Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
+                                <VerticalStackLayout Grid.Column="3" Spacing="2" VerticalOptions="Center" HorizontalOptions="End" Margin="0,0,16,0">
                                     <Label Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="15"
                                            TextColor="{StaticResource PrimaryColor}" HorizontalTextAlignment="End"/>
                                     <Label Text="Pilih ›" Style="{StaticResource Meta}" FontSize="11" HorizontalTextAlignment="End"

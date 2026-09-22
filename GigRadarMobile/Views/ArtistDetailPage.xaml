@@ -3,27 +3,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
              xmlns:models="clr-namespace:GigRadarMobile.Models"
+             xmlns:behaviors="clr-namespace:GigRadarMobile.Behaviors"
              x:Class="GigRadarMobile.Views.ArtistDetailPage"
              x:DataType="vm:ArtistDetailViewModel"
              Shell.NavBarIsVisible="False"
              Title="Artist">
 
     <ScrollView>
+        <ScrollView.Behaviors>
+            <behaviors:ParallaxBehavior Target="{x:Reference ArtistHeroArt}" Factor="0.35"/>
+        </ScrollView.Behaviors>
         <VerticalStackLayout Spacing="0">
 
             <!-- ===== Cover hero ===== -->
-            <Grid HeightRequest="380">
-                <Image Source="{Binding HeroImageUrl, Converter={StaticResource PosterImageConverter}}"
+            <Grid HeightRequest="400">
+                <Image x:Name="ArtistHeroArt"
+                       Source="{Binding HeroImageUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Artist.Name}}"
                        Aspect="AspectFill"/>
-                <BoxView>
-                    <BoxView.Background>
-                        <LinearGradientBrush EndPoint="0,1">
-                            <GradientStop Color="#330A0A0B" Offset="0.0"/>
-                            <GradientStop Color="#990A0A0B" Offset="0.45"/>
-                            <GradientStop Color="#FF0A0A0B" Offset="1.0"/>
-                        </LinearGradientBrush>
-                    </BoxView.Background>
-                </BoxView>
+                <BoxView Background="{StaticResource PosterScrim}"/>
+                <BoxView HeightRequest="5" VerticalOptions="End"
+                         Color="{Binding Artist.Genre, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}"/>
+
+                <!-- Avatar artist di atas cover -->
+                <Border WidthRequest="84" HeightRequest="84" StrokeThickness="2" Stroke="{StaticResource BorderStrong}"
+                        StrokeShape="RoundRectangle 999" Padding="0" Margin="20,0,0,18"
+                        HorizontalOptions="Start" VerticalOptions="End">
+                    <Grid>
+                        <Image Source="{Binding HeroImageUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Artist.Name}}"
+                               Aspect="AspectFill"/>
+                        <BoxView Color="#660B0A0E"/>
+                        <Label Text="{Binding Artist.Initials}" FontFamily="SpaceGroteskBold" FontSize="24"
+                               TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Grid>
+                </Border>
 
                 <Button Text="‹" FontSize="24" Padding="0" WidthRequest="44" HeightRequest="44"
                         Margin="16,12" HorizontalOptions="Start" VerticalOptions="Start"
@@ -32,17 +44,13 @@
 
                 <VerticalStackLayout Padding="20,0,20,18" Spacing="10" VerticalOptions="End">
                     <HorizontalStackLayout Spacing="8">
-                        <Border IsVisible="{Binding Artist.Genre, Converter={StaticResource StringNotEmptyConverter}}"
-                                Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
-                                StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
-                            <Label Text="{Binding Artist.Genre}" FontFamily="InterSemiBold" FontSize="11"
-                                   TextColor="{StaticResource TextPrimary}"/>
+                        <Border Style="{StaticResource Pill}"
+                                IsVisible="{Binding Artist.Genre, Converter={StaticResource StringNotEmptyConverter}}">
+                            <Label Text="{Binding Artist.Genre}" Style="{StaticResource PillText}"/>
                         </Border>
-                        <Border IsVisible="{Binding Artist.City, Converter={StaticResource StringNotEmptyConverter}}"
-                                Stroke="{StaticResource BorderStrong}" StrokeThickness="1"
-                                StrokeShape="RoundRectangle 999" BackgroundColor="#CC0A0A0B" Padding="10,4">
-                            <Label Text="{Binding Artist.City}" FontFamily="InterMedium" FontSize="11"
-                                   TextColor="{StaticResource TextSecondary}"/>
+                        <Border Style="{StaticResource Pill}"
+                                IsVisible="{Binding Artist.City, Converter={StaticResource StringNotEmptyConverter}}">
+                            <Label Text="{Binding Artist.City}" Style="{StaticResource PillText}"/>
                         </Border>
                     </HorizontalStackLayout>
 
@@ -56,42 +64,49 @@
 
             <!-- ===== Konten ===== -->
             <VerticalStackLayout Padding="20,24,20,28" Spacing="28">
+                <VerticalStackLayout.Behaviors>
+                    <behaviors:EntranceAnimationBehavior FromOffset="20" Duration="380" AnimateScale="False"/>
+                </VerticalStackLayout.Behaviors>
 
                 <!-- Statistik -->
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
-                    <Border Grid.Column="0" Style="{StaticResource CardFlatBorder}" Padding="12">
+                    <Border Grid.Column="0" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="{Binding Artist.FollowersCount}" Style="{StaticResource Numeric}" FontSize="20"
-                                   HorizontalTextAlignment="Center"/>
-                            <Label Text="pengikut" Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding Artist.FollowersCount}" Style="{StaticResource StatValue}"
+                                   TextColor="{StaticResource PrimaryColor}" HorizontalTextAlignment="Center"/>
+                            <Label Text="PENGIKUT" Style="{StaticResource StatLabel}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                     </Border>
-                    <Border Grid.Column="1" Style="{StaticResource CardFlatBorder}" Padding="12">
+                    <Border Grid.Column="1" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="{Binding Artist.Tracks.Count}" Style="{StaticResource Numeric}" FontSize="20"
-                                   HorizontalTextAlignment="Center"/>
-                            <Label Text="track" Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding Artist.Tracks.Count}" Style="{StaticResource StatValue}" HorizontalTextAlignment="Center"/>
+                            <Label Text="TRACK" Style="{StaticResource StatLabel}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                     </Border>
-                    <Border Grid.Column="2" Style="{StaticResource CardFlatBorder}" Padding="12">
+                    <Border Grid.Column="2" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="{Binding Artist.Albums.Count}" Style="{StaticResource Numeric}" FontSize="20"
-                                   HorizontalTextAlignment="Center"/>
-                            <Label Text="album" Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding Artist.Albums.Count}" Style="{StaticResource StatValue}" HorizontalTextAlignment="Center"/>
+                            <Label Text="ALBUM" Style="{StaticResource StatLabel}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
                     </Border>
                 </Grid>
 
                 <!-- Bio -->
                 <VerticalStackLayout Spacing="8" IsVisible="{Binding Artist.Bio, Converter={StaticResource StringNotEmptyConverter}}">
-                    <Label Text="Tentang" Style="{StaticResource SectionTitle}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Tentang" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
                     <Label Text="{Binding Artist.Bio}" Style="{StaticResource Body}" LineHeight="1.35"/>
                 </VerticalStackLayout>
 
                 <!-- Upcoming gigs -->
                 <VerticalStackLayout Spacing="10" IsVisible="{Binding HasUpcomingGigs}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Text="Gig mendatang" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                        <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                            <BoxView Style="{StaticResource SectionBar}"/>
+                            <Label Text="Gig mendatang" Style="{StaticResource SectionTitleStrong}"/>
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding UpcomingGigs.Count, StringFormat='{0} gig'}"
                                Style="{StaticResource Meta}" VerticalOptions="Center"/>
                     </Grid>
@@ -99,15 +114,21 @@
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding UpcomingGigs}" Spacing="2">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:ArtistGig">
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,9">
+                                <Border Style="{StaticResource CardBorder}" Padding="12" Margin="0,0,0,8">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                                     <Grid.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=GoToGigCommand}" CommandParameter="{Binding .}"/>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=GoToGigCommand, x:DataType={x:Type vm:ArtistDetailViewModel}}" CommandParameter="{Binding .}"/>
                                     </Grid.GestureRecognizers>
-                                    <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
-                                        <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="22" HorizontalTextAlignment="Center"/>
-                                        <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold" CharacterSpacing="1"
-                                               TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
-                                    </VerticalStackLayout>
+                                    <Grid Grid.Column="0" WidthRequest="46" HeightRequest="46">
+                                        <Image Source="{Binding PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Name}}"
+                                               Aspect="AspectFill"/>
+                                        <BoxView Background="{StaticResource PosterScrimSoft}" />
+                                        <VerticalStackLayout VerticalOptions="Center" Spacing="0">
+                                            <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}" FontSize="18" HorizontalTextAlignment="Center"/>
+                                            <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="8" FontAttributes="Bold" CharacterSpacing="1"
+                                                   TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
                                     <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                                         <Label Text="{Binding Name}" Style="{StaticResource Subheading}" MaxLines="2" LineBreakMode="TailTruncation"/>
                                         <Label Text="{Binding LocationLabel}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
@@ -119,6 +140,7 @@
                                         <Label Text="›" FontSize="20" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
                                     </HorizontalStackLayout>
                                 </Grid>
+                                </Border>
                             </DataTemplate>
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
@@ -127,7 +149,10 @@
                 <!-- Tracks -->
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                        <Label Text="Musik" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                        <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                            <BoxView Style="{StaticResource SectionBar}"/>
+                            <Label Text="Musik" Style="{StaticResource SectionTitleStrong}"/>
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding PlaybackStatus}" Style="{StaticResource Meta}"
                                TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center" MaxLines="1" LineBreakMode="TailTruncation"/>
                     </Grid>
@@ -136,10 +161,15 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:AudioTrack">
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="0,7">
-                                    <Border Grid.Column="0" WidthRequest="40" HeightRequest="40" StrokeThickness="0"
-                                            StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource CardElevatedColor}">
-                                        <Label Text="♪" FontFamily="SpaceGroteskMedium" FontSize="16"
-                                               TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    <Border Grid.Column="0" WidthRequest="44" HeightRequest="44" StrokeThickness="1"
+                                            Stroke="{StaticResource BorderColor}" StrokeShape="RoundRectangle 10" Padding="0">
+                                        <Grid>
+                                            <Image Source="{Binding CoverUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Title}}"
+                                                   Aspect="AspectFill"/>
+                                            <BoxView Color="#990B0A0E"/>
+                                            <Label Text="♪" FontFamily="SpaceGroteskMedium" FontSize="16"
+                                                   TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        </Grid>
                                     </Border>
                                     <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
                                         <Label Text="{Binding Title}" Style="{StaticResource Subheading}" MaxLines="1" LineBreakMode="TailTruncation"/>
@@ -147,7 +177,7 @@
                                     </VerticalStackLayout>
                                     <Button Grid.Column="2" Text="▶" FontSize="12" Padding="0" WidthRequest="40" HeightRequest="40"
                                             CornerRadius="999" BackgroundColor="{StaticResource AccentSoft}" TextColor="{StaticResource PrimaryColor}"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=PlayTrackCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=PlayTrackCommand, x:DataType={x:Type vm:ArtistDetailViewModel}}"
                                             CommandParameter="{Binding .}"/>
                                 </Grid>
                             </DataTemplate>
@@ -157,7 +187,10 @@
 
                 <!-- Members -->
                 <VerticalStackLayout Spacing="10" IsVisible="{Binding HasMembers}">
-                    <Label Text="Personel" Style="{StaticResource SectionTitle}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Personel" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Artist.Members}" Spacing="2">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:ArtistMember">
@@ -179,7 +212,10 @@
 
                 <!-- Posts + like & komentar (Bab 10, 32) -->
                 <VerticalStackLayout Spacing="10" IsVisible="{Binding HasPosts}">
-                    <Label Text="Postingan" Style="{StaticResource SectionTitle}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Postingan" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Artist.Posts}" Spacing="10">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:ArtistPost">
@@ -197,12 +233,12 @@
                                             <Button Grid.Column="0" Text="{Binding LikesCount, StringFormat='♥ {0}'}"
                                                     FontSize="12" HeightRequest="34" Padding="12,0" CornerRadius="9"
                                                     BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=ToggleLikeCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=ToggleLikeCommand, x:DataType={x:Type vm:ArtistDetailViewModel}}"
                                                     CommandParameter="{Binding .}"/>
                                             <Button Grid.Column="1" Text="{Binding CommentsCount, StringFormat='💬 {0}'}"
                                                     FontSize="12" HeightRequest="34" Padding="12,0" CornerRadius="9"
                                                     BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=ToggleCommentsCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDetailViewModel}}, Path=ToggleCommentsCommand, x:DataType={x:Type vm:ArtistDetailViewModel}}"
                                                     CommandParameter="{Binding .}"/>
                                         </Grid>
                                     </VerticalStackLayout>

@@ -13,12 +13,19 @@
             <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
 
                 <!-- Header -->
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="EVENT ORGANIZER" Style="{StaticResource Eyebrow}"/>
-                    <Label Text="Portfolio &amp; Profil" Style="{StaticResource PageTitle}"/>
-                    <Label Text="Portofolio event sebelumnya adalah bukti pengalaman untuk verifikasi EO."
-                           Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
-                </VerticalStackLayout>
+                <Border Style="{StaticResource PageHero}" HeightRequest="150">
+                    <Grid>
+                        <Image Source="art_grid" Aspect="AspectFill"/>
+                        <BoxView Background="{StaticResource PosterScrim}"/>
+                        <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource AuroraGradient}"/>
+                        <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                            <Label Text="EVENT ORGANIZER" Style="{StaticResource Overline}" TextColor="{StaticResource StageCyan}"/>
+                            <Label Text="Portfolio &amp; Profil" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                            <Label Text="Portofolio event sebelumnya adalah bukti pengalaman untuk verifikasi EO."
+                                   Style="{StaticResource Body}" FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
                 <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
@@ -185,7 +192,7 @@
                                         <Button Grid.Column="1" Text="Hapus" FontSize="11" HeightRequest="36" Padding="10,0"
                                                 BackgroundColor="{StaticResource DangerSoft}" TextColor="{StaticResource DangerColor}"
                                                 CornerRadius="9"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoPortfolioViewModel}}, Path=DeletePortfolioCommand}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoPortfolioViewModel}}, Path=DeletePortfolioCommand, x:DataType={x:Type vm:EoPortfolioViewModel}}"
                                                 CommandParameter="{Binding .}"/>
                                     </Grid>
                                     <Label Text="{Binding Venue, StringFormat='📍 {0}'}" Style="{StaticResource Caption}"

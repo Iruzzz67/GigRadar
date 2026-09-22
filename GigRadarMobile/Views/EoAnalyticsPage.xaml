@@ -9,11 +9,18 @@
              Title="Analytics">
     <ScrollView>
         <VerticalStackLayout Padding="18,16,18,28" Spacing="16">
-            <VerticalStackLayout Spacing="3">
-                <Label Text="PERFORMANCE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1.5"/>
-                <Label Text="Analytics" Style="{StaticResource PageTitle}"/>
-                <Label Text="Pantau penjualan dan performa seluruh event kamu." Style="{StaticResource PageSubtitle}"/>
-            </VerticalStackLayout>
+            <Border Style="{StaticResource PageHero}" HeightRequest="160">
+                <Grid>
+                    <Image Source="art_aurora" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource SignalGradient}"/>
+                    <VerticalStackLayout Padding="16" Spacing="3" VerticalOptions="End">
+                        <Label Text="PERFORMANCE" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="Analytics" Style="{StaticResource HeroTitle}" FontSize="26"/>
+                        <Label Text="Pantau penjualan dan performa seluruh event kamu." Style="{StaticResource Body}" FontSize="12"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
             <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"

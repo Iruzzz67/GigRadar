@@ -10,11 +10,19 @@
 
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Padding="20,18,20,16" RowSpacing="12">
 
-        <VerticalStackLayout Grid.Row="0" Spacing="4">
-            <Label Text="ADMIN" Style="{StaticResource Eyebrow}"/>
-            <Label Text="Verification Center" Style="{StaticResource PageTitle}"/>                    <Label Text="Pengajuan verifikasi artist &amp; EO — hanya akun terverifikasi yang mendapat badge."
-                           Style="{StaticResource Caption}" TextColor="{StaticResource TextSecondary}"/>
-        </VerticalStackLayout>
+        <Border Grid.Row="0" Style="{StaticResource PageHero}" HeightRequest="140">
+            <Grid>
+                <Image Source="art_aurora" Aspect="AspectFill"/>
+                <BoxView Background="{StaticResource PosterScrim}"/>
+                <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource AuroraGradient}"/>
+                <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                    <Label Text="ADMIN" Style="{StaticResource Overline}" TextColor="{StaticResource StageViolet}"/>
+                    <Label Text="Verification Center" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                    <Label Text="Pengajuan verifikasi artist &amp; EO — hanya akun terverifikasi yang mendapat badge."
+                           Style="{StaticResource Body}" FontSize="12"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
 
         <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
@@ -55,10 +63,10 @@
 
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                             <Button Grid.Column="0" Text="Tolak" Style="{StaticResource BtnOutline}" HeightRequest="42"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=RejectCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=RejectCommand, x:DataType={x:Type vm:VerificationsViewModel}}"
                                                     CommandParameter="{Binding .}"/>
                                             <Button Grid.Column="1" Text="Setujui" Style="{StaticResource BtnPrimary}" HeightRequest="42" WidthRequest="120"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=ApproveCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=ApproveCommand, x:DataType={x:Type vm:VerificationsViewModel}}"
                                                     CommandParameter="{Binding .}"/>
                                         </Grid>
                                     </VerticalStackLayout>
@@ -99,10 +107,10 @@
 
                                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                             <Button Grid.Column="0" Text="Tolak" Style="{StaticResource BtnOutline}" HeightRequest="42"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=RejectEoCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=RejectEoCommand, x:DataType={x:Type vm:VerificationsViewModel}}"
                                                     CommandParameter="{Binding .}"/>
                                             <Button Grid.Column="1" Text="Setujui" Style="{StaticResource BtnPrimary}" HeightRequest="42" WidthRequest="120"
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=ApproveEoCommand}"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:VerificationsViewModel}}, Path=ApproveEoCommand, x:DataType={x:Type vm:VerificationsViewModel}}"
                                                     CommandParameter="{Binding .}"/>
                                         </Grid>
                                     </VerticalStackLayout>

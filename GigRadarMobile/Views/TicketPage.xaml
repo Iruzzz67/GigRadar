@@ -10,10 +10,16 @@
 
     <RefreshView Command="{Binding LoadTicketsCommand}" IsRefreshing="{Binding IsRefreshing}">
         <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20,16,20,20" RowSpacing="8">
-        <VerticalStackLayout Grid.Row="0" Padding="0,0,0,4" Spacing="4">
-            <Label Text="TIKET" Style="{StaticResource Eyebrow}"/>
-            <Label Text="Tiketku" Style="{StaticResource PageTitle}"/>
-        </VerticalStackLayout>
+        <Border Grid.Row="0" Style="{StaticResource PageHero}" HeightRequest="130" Margin="0,0,0,10">
+            <Grid>
+                <Image Source="art_ember" Aspect="AspectFill"/>
+                <BoxView Background="{StaticResource PosterScrim}"/>
+                <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                    <Label Text="TIKET" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                    <Label Text="Tiketku" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
 
         <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20"/>
 
@@ -40,6 +46,8 @@
                     <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
                             StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="0" Margin="0,7">
                         <VerticalStackLayout>
+
+                            <BoxView HeightRequest="4" Background="{StaticResource SignalGradient}"/>
 
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,14">
                                 <VerticalStackLayout Grid.Column="0" Spacing="4">

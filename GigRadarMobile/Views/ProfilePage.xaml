@@ -11,14 +11,20 @@
     <ScrollView>
         <VerticalStackLayout Padding="20,24,20,28" Spacing="16">
 
-            <VerticalStackLayout Spacing="6">
-                <Label Text="PROFILE" Style="{StaticResource Eyebrow}" HorizontalOptions="Center"/>
-            </VerticalStackLayout>
+            <Border Style="{StaticResource HeroBanner}" HeightRequest="180">
+                <Grid>
+                    <Image Source="art_aurora" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <Label Text="PROFILE" Style="{StaticResource Overline}" Margin="16,14,0,0"
+                           TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Start" VerticalOptions="Start"/>
+                </Grid>
+            </Border>
 
             <!-- Identitas -->
             <VerticalStackLayout Spacing="10">
-                <Border WidthRequest="88" HeightRequest="88" HorizontalOptions="Center" StrokeThickness="0"
-                        StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                <Border WidthRequest="88" HeightRequest="88" HorizontalOptions="Center" StrokeThickness="2"
+                        Stroke="{StaticResource BorderStrong}" StrokeShape="RoundRectangle 999"
+                        BackgroundColor="{StaticResource CardElevatedColor}" Margin="0,-44,0,0">
                     <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="30"
                            TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
                 </Border>
@@ -54,7 +60,7 @@
                         <DataTemplate x:DataType="services:FavoriteItem">
                             <Border Style="{StaticResource CardFlatBorder}" Padding="14" Margin="0,0,0,8">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProfileViewModel}}, Path=OpenFavoriteCommand}"
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProfileViewModel}}, Path=OpenFavoriteCommand, x:DataType={x:Type vm:ProfileViewModel}}"
                                                           CommandParameter="{Binding .}"/>
                                 </Border.GestureRecognizers>
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">

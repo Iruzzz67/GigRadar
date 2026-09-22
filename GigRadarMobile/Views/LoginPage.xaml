@@ -8,21 +8,31 @@
              Title="GigRadar">
 
     <ScrollView>
-        <VerticalStackLayout Padding="28,48,28,28" Spacing="24" VerticalOptions="Center">
+        <VerticalStackLayout Padding="28,32,28,28" Spacing="24" VerticalOptions="Center">
 
-            <!-- Brand -->
-            <VerticalStackLayout Spacing="8">
-                <Label Text="GIGRADAR" FontFamily="SpaceGroteskBold" FontSize="30" CharacterSpacing="3"
-                       TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
-                <Label Text="Menghubungkan skena, menemukan suara lokal."
-                       Style="{StaticResource Body}" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
-            </VerticalStackLayout>
+            <!-- Brand hero -->
+            <Border Style="{StaticResource HeroBanner}" HeightRequest="200">
+                <Grid>
+                    <Image Source="art_haze" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <VerticalStackLayout Padding="18" Spacing="6" VerticalOptions="End">
+                        <Label Text="MENGHUBUNGKAN SKENA" Style="{StaticResource Overline}"
+                               TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="GIGRADAR" FontFamily="SpaceGroteskBold" FontSize="34" CharacterSpacing="3"
+                               TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="Menemukan suara lokal, mempertemukan artist &amp; event organizer."
+                               Style="{StaticResource Body}" FontSize="12"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <!-- Form -->
             <Border Style="{StaticResource CardBorder}" Padding="20">
                 <VerticalStackLayout Spacing="14">
 
-                    <Label Style="{StaticResource Title}" FontSize="20">
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                    <Label Style="{StaticResource Title}" FontSize="20" VerticalOptions="Center">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="True">
                                 <Setter Property="Text" Value="Daftar akun baru"/>
@@ -32,6 +42,7 @@
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
+                    </HorizontalStackLayout>
 
                     <Entry Text="{Binding Name}" Placeholder="Nama" IsVisible="{Binding IsRegister}"/>
 

@@ -10,9 +10,17 @@
 
     <Grid RowDefinitions="Auto,*,Auto" Padding="20,24,20,24" RowSpacing="20">
 
-        <VerticalStackLayout Grid.Row="0" Spacing="4">
-            <Label Text="ONBOARDING" Style="{StaticResource Eyebrow}"/>
-            <Label Text="Genre yang kamu dengerin" Style="{StaticResource PageTitle}"/>
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Border Style="{StaticResource PageHero}" HeightRequest="130">
+                <Grid>
+                    <Image Source="art_prism" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                        <Label Text="ONBOARDING" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="Genre yang kamu dengerin" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
             <Label Text="Pilih minimal satu. Ini dipakai buat rekomendasi dan radar kamu."
                    Style="{StaticResource Body}" FontSize="12"/>
             <!-- Counter live: progres pilihan user selalu terlihat -->
@@ -38,16 +46,17 @@
                             BindableLayout.ItemsSource="{Binding Genres}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="models:Genre">
-                            <Border Margin="0,0,10,10" Padding="16,10" StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                            <Border Margin="0,0,10,10" Padding="16,10" StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}"
+                                    Stroke="{StaticResource BorderColor}">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OnboardingViewModel}}, Path=ToggleGenreCommand}"
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OnboardingViewModel}}, Path=ToggleGenreCommand, x:DataType={x:Type vm:OnboardingViewModel}}"
                                                           CommandParameter="{Binding .}"/>
                                 </Border.GestureRecognizers>
                                 <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="6">
                                     <Label Grid.Column="0" Text="{Binding Icon}" FontSize="14" VerticalOptions="Center"/>
                                     <Label Grid.Column="1" Text="{Binding Name}" FontFamily="InterMedium" FontSize="14"
-                                           TextColor="{StaticResource TextSecondary}" VerticalOptions="Center">
+                                           TextColor="{Binding Name, Converter={StaticResource GenreAccentConverter}, ConverterParameter=accent}" VerticalOptions="Center">
                                         <Label.Triggers>
                                             <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
                                                 <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
@@ -58,6 +67,10 @@
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
                                         <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                        <Setter Property="Stroke" Value="{StaticResource PrimaryColor}"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource CardElevatedColor}"/>
                                     </DataTrigger>
                                 </Border.Triggers>
                             </Border>
@@ -72,4 +85,4 @@
 
     </Grid>
 
-</ContentPage>
+</ContentPage>

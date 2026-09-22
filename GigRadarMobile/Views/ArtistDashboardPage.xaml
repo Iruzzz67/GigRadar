@@ -12,25 +12,32 @@
         <ScrollView>
             <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
 
-                <!-- Header -->
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                    <Border Grid.Column="0" WidthRequest="52" HeightRequest="52" StrokeThickness="0"
-                            StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
-                        <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="17"
-                               TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                        <Label Text="ARTIST DASHBOARD" Style="{StaticResource Eyebrow}"/>
-                        <Label Text="{Binding UserName}" Style="{StaticResource SectionTitle}" FontSize="19"
-                               LineBreakMode="TailTruncation"/>
-                        <!-- Badge verified hanya dari status server (Bab 8) -->
-                        <Label Text="✓ Terverifikasi" FontSize="11" FontAttributes="Bold"
-                               TextColor="{StaticResource SuccessColor}"
-                               IsVisible="{Binding IsVerifiedBadgeVisible}"/>
-                    </VerticalStackLayout>
-                    <Label Grid.Column="2" Text="{Binding UserRole}" Style="{StaticResource Meta}"
-                           TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
-                </Grid>
+                <!-- Header hero -->
+                <Border Style="{StaticResource HeroBanner}" HeightRequest="200">
+                    <Grid>
+                        <Image Source="art_aurora" Aspect="AspectFill"/>
+                        <BoxView Background="{StaticResource PosterScrim}"/>
+                        <VerticalStackLayout Padding="18" Spacing="6" VerticalOptions="End">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="ARTIST DASHBOARD" Style="{StaticResource Overline}"
+                                           TextColor="{StaticResource PrimaryColor}"/>
+                                    <Label Text="{Binding UserName}" Style="{StaticResource HeroTitle}" FontSize="24"
+                                           LineBreakMode="TailTruncation"/>
+                                    <Label Text="✓ Terverifikasi" FontSize="11" FontAttributes="Bold"
+                                           TextColor="{StaticResource SuccessColor}"
+                                           IsVisible="{Binding IsVerifiedBadgeVisible}"/>
+                                </VerticalStackLayout>
+                                <Border Grid.Column="1" WidthRequest="52" HeightRequest="52" StrokeThickness="2"
+                                        Stroke="{StaticResource BorderStrong}" StrokeShape="RoundRectangle 999"
+                                        BackgroundColor="#660B0A0E" VerticalOptions="End">
+                                    <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="17"
+                                           TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
@@ -45,8 +52,8 @@
                 </Frame>
 
                 <!-- Hero: profil artist + aksi utama -->
-                <Frame BackgroundColor="{StaticResource AccentSoft}" BorderColor="{StaticResource BorderStrong}"
-                       CornerRadius="18" Padding="18" HasShadow="False">
+                <Border Style="{StaticResource CardBorder}" Background="{StaticResource SurfaceSheenGradient}"
+                        Stroke="{StaticResource BorderStrong}" Padding="18">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="PROFIL KAMU" Style="{StaticResource Eyebrow}"/>
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
@@ -67,11 +74,11 @@
                         <Button Text="Edit profil artist" Style="{StaticResource BtnPrimary}" HeightRequest="44"
                                 Command="{Binding ToggleEditCommand}"/>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Kartu verifikasi (Bab 8) — tampil saat belum verified -->
-                <Frame IsVisible="{Binding HasVerificationCard}" BackgroundColor="{StaticResource CardColor}"
-                       BorderColor="{StaticResource BorderStrong}" CornerRadius="14" Padding="16" HasShadow="False">
+                <Border IsVisible="{Binding HasVerificationCard}" Style="{StaticResource CardBorder}"
+                        Stroke="{StaticResource BorderStrong}" Padding="16">
                     <VerticalStackLayout Spacing="8">
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                             <Border Grid.Column="0" WidthRequest="10" HeightRequest="10" StrokeThickness="0"
@@ -89,43 +96,46 @@
                         <Button Text="Lihat status verifikasi" Style="{StaticResource BtnOutline}" HeightRequest="42"
                                 Command="{Binding GoToVerificationCommand}"/>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
                 <!-- Statistik karier -->
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                    <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}">
+                    <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding FollowersLabel}" Style="{StaticResource Numeric}" FontSize="25"
-                                   FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
-                            <Label Text="Pengikut" Style="{StaticResource Caption}"/>
+                            <Label Text="{Binding FollowersLabel}" Style="{StaticResource StatValue}"
+                                   TextColor="{StaticResource PrimaryColor}"/>
+                            <Label Text="PENGIKUT" Style="{StaticResource StatLabel}"/>
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}">
+                    </Border>
+                    <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding TracksLabel}" Style="{StaticResource Numeric}" FontSize="25"
-                                   FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
-                            <Label Text="Track" Style="{StaticResource Caption}"/>
+                            <Label Text="{Binding TracksLabel}" Style="{StaticResource StatValue}"
+                                   TextColor="{StaticResource StageCyan}"/>
+                            <Label Text="TRACK" Style="{StaticResource StatLabel}"/>
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}">
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding AlbumsLabel}" Style="{StaticResource Numeric}" FontSize="25"
-                                   FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
-                            <Label Text="Album" Style="{StaticResource Caption}"/>
+                            <Label Text="{Binding AlbumsLabel}" Style="{StaticResource StatValue}"
+                                   TextColor="{StaticResource StageAmber}"/>
+                            <Label Text="ALBUM" Style="{StaticResource StatLabel}"/>
                         </VerticalStackLayout>
-                    </Frame>
-                    <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                    </Border>
+                    <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding PostsLabel}" Style="{StaticResource Numeric}" FontSize="25"
-                                   FontAttributes="Bold" TextColor="{StaticResource SuccessColor}"/>
-                            <Label Text="Post" Style="{StaticResource Caption}"/>
+                            <Label Text="{Binding PostsLabel}" Style="{StaticResource StatValue}"
+                                   TextColor="{StaticResource StageViolet}"/>
+                            <Label Text="POST" Style="{StaticResource StatLabel}"/>
                         </VerticalStackLayout>
-                    </Frame>
+                    </Border>
                 </Grid>
 
                 <!-- Gig mendatang -->
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <Label Text="Gig mendatang" Style="{StaticResource SectionTitle}" VerticalOptions="Center"/>
+                    <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Gig mendatang" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
                     <Label Grid.Column="1" Text="{Binding GigsCountLabel}" Style="{StaticResource Meta}"
                            VerticalOptions="Center"/>
                 </Grid>
@@ -138,17 +148,23 @@
                                      IsVisible="{Binding HasGigs}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="models:ArtistGig">
-                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Padding="0,9">
+                            <Border Style="{StaticResource CardBorder}" Padding="10" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
                                 <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDashboardViewModel}}, Path=GoToGigCommand}"
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ArtistDashboardViewModel}}, Path=GoToGigCommand, x:DataType={x:Type vm:ArtistDashboardViewModel}}"
                                                           CommandParameter="{Binding .}"/>
                                 </Grid.GestureRecognizers>
-                                <VerticalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center" WidthRequest="44">
-                                    <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}"
-                                           FontSize="22" HorizontalTextAlignment="Center"/>
-                                    <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="9" FontAttributes="Bold"
-                                           CharacterSpacing="1" TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="Center"/>
-                                </VerticalStackLayout>
+                                <Grid Grid.Column="0" WidthRequest="52" HeightRequest="52">
+                                    <Image Source="{Binding PosterUrl, Converter={StaticResource PosterImageConverter}, ConverterParameter={Binding Name}}"
+                                           Aspect="AspectFill"/>
+                                    <BoxView Background="{StaticResource PosterScrimSoft}"/>
+                                    <VerticalStackLayout VerticalOptions="Center" Spacing="0">
+                                        <Label Text="{Binding StartDate, StringFormat='{0:dd}'}" Style="{StaticResource Numeric}"
+                                               FontSize="18" HorizontalTextAlignment="Center"/>
+                                        <Label Text="{Binding StartDate, StringFormat='{0:MMM}'}" FontSize="8" FontAttributes="Bold"
+                                               CharacterSpacing="1" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
+                                    </VerticalStackLayout>
+                                </Grid>
                                 <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
                                     <Label Text="{Binding Name}" Style="{StaticResource Subheading}" MaxLines="2"
                                            LineBreakMode="TailTruncation"/>
@@ -167,12 +183,13 @@
                                     <Label Text="›" FontSize="20" TextColor="{StaticResource TextMuted}" VerticalOptions="Center"/>
                                 </HorizontalStackLayout>
                             </Grid>
+                            </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>
 
                 <!-- Form edit profil artist -->
-                <Frame Style="{StaticResource Card}" IsVisible="{Binding IsEditing}">
+                <Border Style="{StaticResource CardBorder}" IsVisible="{Binding IsEditing}">
                     <VerticalStackLayout Spacing="10">
                         <Label Text="Edit profil artist" Style="{StaticResource Subheading}"/>
                         <Entry Text="{Binding FormName}" Placeholder="Nama artist"/>
@@ -189,7 +206,7 @@
                                     Command="{Binding SaveProfileCommand}"/>
                         </Grid>
                     </VerticalStackLayout>
-                </Frame>
+                </Border>
 
             </VerticalStackLayout>
         </ScrollView>

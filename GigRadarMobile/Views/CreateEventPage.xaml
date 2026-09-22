@@ -8,11 +8,18 @@
              Title="Buat Event Baru">
     <ScrollView>
         <VerticalStackLayout Padding="18,16,18,30" Spacing="14">
-            <VerticalStackLayout Spacing="3">
-                <Label Text="EVENT SETUP" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1.5"/>
-                <Label Text="Buat event" Style="{StaticResource PageTitle}"/>
-                <Label Text="Isi informasi utama dulu. Detail lainnya bisa kamu lengkapi setelahnya." Style="{StaticResource PageSubtitle}"/>
-            </VerticalStackLayout>
+            <Border Style="{StaticResource PageHero}" HeightRequest="160">
+                <Grid>
+                    <Image Source="art_prism" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource HeroGradient}"/>
+                    <VerticalStackLayout Padding="16" Spacing="3" VerticalOptions="End">
+                        <Label Text="EVENT SETUP" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="Buat event" Style="{StaticResource HeroTitle}" FontSize="26"/>
+                        <Label Text="Isi informasi utama dulu. Detail lainnya bisa kamu lengkapi setelahnya." Style="{StaticResource Body}" FontSize="12"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
             <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" BackgroundColor="#24161A" BorderColor="#4A252D" CornerRadius="14" Padding="14" HasShadow="False">

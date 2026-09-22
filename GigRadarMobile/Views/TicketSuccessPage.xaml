@@ -11,12 +11,18 @@
     <ScrollView>
         <VerticalStackLayout Padding="20,20,20,28" Spacing="20">
 
-            <VerticalStackLayout Spacing="6">
-                <Label Text="PEMBELIAN BERHASIL" Style="{StaticResource Eyebrow}" HorizontalTextAlignment="Center"/>
-                <Label Text="Tiket kamu aman." Style="{StaticResource Title}" HorizontalTextAlignment="Center"/>
-                <Label Text="Tunjukkan barcode ini di pintu masuk venue. Simpan screenshot sebagai cadangan."
-                       Style="{StaticResource Body}" HorizontalTextAlignment="Center" FontSize="12"/>
-            </VerticalStackLayout>
+            <Border Style="{StaticResource HeroBanner}" HeightRequest="160">
+                <Grid>
+                    <Image Source="art_ember" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <VerticalStackLayout Padding="18" Spacing="5" VerticalOptions="End">
+                        <Label Text="PEMBELIAN BERHASIL" Style="{StaticResource Overline}" TextColor="{StaticResource StageAmber}"/>
+                        <Label Text="Tiket kamu aman." Style="{StaticResource HeroTitle}" FontSize="26"/>
+                        <Label Text="Tunjukkan barcode ini di pintu masuk venue. Simpan screenshot sebagai cadangan."
+                               Style="{StaticResource Body}" FontSize="12"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <!-- ===== Digital ticket ===== -->
             <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderStrong}"

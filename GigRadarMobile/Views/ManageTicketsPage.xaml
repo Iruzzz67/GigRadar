@@ -11,12 +11,19 @@
     <ScrollView>
         <VerticalStackLayout Padding="20,20,20,28" Spacing="16">
 
-            <VerticalStackLayout Spacing="4">
-                <Label Text="TICKET TYPES" Style="{StaticResource Eyebrow}"/>
-                <Label Text="Kelola tiket &amp; stok" Style="{StaticResource PageTitle}"/>
-                <Label Text="Pilih event untuk menambah, mengedit, atau menghapus tipe tiket dan stoknya."
-                       Style="{StaticResource PageSubtitle}"/>
-            </VerticalStackLayout>
+            <Border Style="{StaticResource PageHero}" HeightRequest="150">
+                <Grid>
+                    <Image Source="art_ember" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource EmberGradient}"/>
+                    <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                        <Label Text="TICKET TYPES" Style="{StaticResource Overline}" TextColor="{StaticResource StageAmber}"/>
+                        <Label Text="Kelola tiket &amp; stok" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                        <Label Text="Pilih event untuk menambah, mengedit, atau menghapus tipe tiket dan stoknya."
+                               Style="{StaticResource Body}" FontSize="12"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
 
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
             <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
@@ -39,7 +46,7 @@
                                             BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource PrimaryColor}"
                                             CornerRadius="8" HeightRequest="44" Padding="12,0"
                                             SemanticProperties.Description="Buka atau tutup daftar tipe tiket event ini"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ToggleEventCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ToggleEventCommand, x:DataType={x:Type vm:ManageTicketsViewModel}}"
                                             CommandParameter="{Binding .}">
                                         <Button.Triggers>
                                             <DataTrigger TargetType="Button" Binding="{Binding IsExpanded}" Value="False">
@@ -80,12 +87,12 @@
                                                             <Button Text="Edit" FontSize="12" HeightRequest="36" Padding="12,0"
                                                                     BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}"
                                                                     CornerRadius="8"
-                                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=EditTypeCommand}"
+                                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=EditTypeCommand, x:DataType={x:Type vm:ManageTicketsViewModel}}"
                                                                     CommandParameter="{Binding .}"/>
                                                             <Button Text="Hapus" FontSize="12" HeightRequest="36" Padding="12,0"
                                                                     BackgroundColor="{StaticResource DangerSoft}" TextColor="{StaticResource DangerColor}"
                                                                     CornerRadius="8"
-                                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=DeleteTypeCommand}"
+                                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=DeleteTypeCommand, x:DataType={x:Type vm:ManageTicketsViewModel}}"
                                                                     CommandParameter="{Binding .}"/>
                                                         </VerticalStackLayout>
                                                     </Grid>
@@ -95,7 +102,7 @@
                                     </VerticalStackLayout>
 
                                     <Button Text="+ Tambah tipe tiket" Style="{StaticResource BtnOutline}" HeightRequest="42" FontSize="13"
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ShowAddTypeCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=ShowAddTypeCommand, x:DataType={x:Type vm:ManageTicketsViewModel}}"
                                             CommandParameter="{Binding .}"/>
                                 </VerticalStackLayout>
 

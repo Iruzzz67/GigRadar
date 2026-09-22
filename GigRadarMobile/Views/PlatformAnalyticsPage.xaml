@@ -11,12 +11,19 @@
         <ScrollView>
             <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
 
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="ADMIN" Style="{StaticResource Eyebrow}"/>
-                    <Label Text="Statistik Platform" Style="{StaticResource PageTitle}"/>
-                    <Label Text="Ringkasan ekosistem GigRadar — users, konten, dan antrean moderasi."
-                           Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
-                </VerticalStackLayout>
+                <Border Style="{StaticResource PageHero}" HeightRequest="160">
+                    <Grid>
+                        <Image Source="art_prism" Aspect="AspectFill"/>
+                        <BoxView Background="{StaticResource PosterScrim}"/>
+                        <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource HeroGradient}"/>
+                        <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                            <Label Text="ADMIN" Style="{StaticResource Overline}" TextColor="{StaticResource StageViolet}"/>
+                            <Label Text="Statistik Platform" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                            <Label Text="Ringkasan ekosistem GigRadar — users, konten, dan antrean moderasi."
+                                   Style="{StaticResource Body}" FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 

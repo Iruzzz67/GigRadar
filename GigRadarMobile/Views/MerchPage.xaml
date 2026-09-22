@@ -12,14 +12,21 @@
         <ScrollView>
             <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
 
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="ARTIST SHOP" Style="{StaticResource Eyebrow}"/>
-                        <Label Text="Merchandise" Style="{StaticResource PageTitle}"/>
-                    </VerticalStackLayout>
-                    <Button Grid.Column="1" Text="+ Produk" Style="{StaticResource BtnOutline}" HeightRequest="40"
-                            VerticalOptions="End" Command="{Binding ToggleFormCommand}"/>
-                </Grid>
+                <Border Style="{StaticResource PageHero}" HeightRequest="150">
+                    <Grid>
+                        <Image Source="art_noise" Aspect="AspectFill"/>
+                        <BoxView Background="{StaticResource PosterScrim}"/>
+                        <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource EmberGradient}"/>
+                        <Grid Padding="16" ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="End">
+                            <VerticalStackLayout Spacing="4" VerticalOptions="End">
+                                <Label Text="ARTIST SHOP" Style="{StaticResource Overline}" TextColor="{StaticResource StageAmber}"/>
+                                <Label Text="Merchandise" Style="{StaticResource HeroTitle}" FontSize="26"/>
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="+ Produk" Style="{StaticResource BtnOutline}" HeightRequest="40"
+                                    VerticalOptions="End" Command="{Binding ToggleFormCommand}"/>
+                        </Grid>
+                    </Grid>
+                </Border>
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 
@@ -96,7 +103,7 @@
                                         <Button Grid.Column="1" Text="Arsipkan" FontSize="11" HeightRequest="36" Padding="10,0"
                                                 CornerRadius="9" BackgroundColor="{StaticResource DangerSoft}"
                                                 TextColor="{StaticResource DangerColor}"
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MerchViewModel}}, Path=ArchiveCommand}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MerchViewModel}}, Path=ArchiveCommand, x:DataType={x:Type vm:MerchViewModel}}"
                                                 CommandParameter="{Binding .}"/>
                                     </Grid>
                                     <Label Text="{Binding Description}" Style="{StaticResource Caption}" FontSize="12"

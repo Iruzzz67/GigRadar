@@ -11,6 +11,17 @@
     <ScrollView>
         <VerticalStackLayout Padding="20,20,20,28" Spacing="24">
 
+            <Border Style="{StaticResource HeroBanner}" HeightRequest="140">
+                <Grid>
+                    <Image Source="art_ember" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                        <Label Text="CHECKOUT" Style="{StaticResource Overline}" TextColor="{StaticResource StageAmber}"/>
+                        <Label Text="Selesaikan pembelian" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
             <!-- Ringkasan pesanan -->
             <VerticalStackLayout Spacing="10">
                 <Label Text="RINGKASAN PESANAN" Style="{StaticResource Eyebrow}"/>

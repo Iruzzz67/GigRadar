@@ -12,12 +12,19 @@
             <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
 
                 <!-- Header -->
-                <VerticalStackLayout Spacing="4">
-                    <Label Text="EVENT ORGANIZER" Style="{StaticResource Eyebrow}"/>
-                    <Label Text="Verifikasi" Style="{StaticResource PageTitle}"/>
-                    <Label Text="Verifikasi membuat organisasi kamu lebih dipercaya oleh artist dan penonton."
-                           Style="{StaticResource Body}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
-                </VerticalStackLayout>
+                <Border Style="{StaticResource PageHero}" HeightRequest="150">
+                    <Grid>
+                        <Image Source="art_grid" Aspect="AspectFill"/>
+                        <BoxView Background="{StaticResource PosterScrim}"/>
+                        <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource AuroraGradient}"/>
+                        <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                            <Label Text="EVENT ORGANIZER" Style="{StaticResource Overline}" TextColor="{StaticResource StageCyan}"/>
+                            <Label Text="Verifikasi" Style="{StaticResource HeroTitle}" FontSize="26"/>
+                            <Label Text="Verifikasi membuat organisasi kamu lebih dipercaya oleh artist dan penonton."
+                                   Style="{StaticResource Body}" FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
 
                 <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
 

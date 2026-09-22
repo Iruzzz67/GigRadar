@@ -11,10 +11,17 @@
 
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="20,20,20,0" RowSpacing="12">
 
-        <VerticalStackLayout Grid.Row="0" Spacing="4">
-            <Label Text="ADMIN" Style="{StaticResource Eyebrow}"/>
-            <Label Text="Semua pengguna" Style="{StaticResource PageTitle}"/>
-        </VerticalStackLayout>
+        <Border Grid.Row="0" Style="{StaticResource PageHero}" HeightRequest="130">
+            <Grid>
+                <Image Source="art_aurora" Aspect="AspectFill"/>
+                <BoxView Background="{StaticResource PosterScrim}"/>
+                <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource AuroraGradient}"/>
+                <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                    <Label Text="ADMIN" Style="{StaticResource Overline}" TextColor="{StaticResource StageViolet}"/>
+                    <Label Text="Semua pengguna" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
 
         <ActivityIndicator Grid.Row="1" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
         <Label Grid.Row="2" Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
@@ -34,9 +41,9 @@
                                     <Label Text="{Binding UserEmail}" Style="{StaticResource Caption}" FontSize="12"/>
                                     <Label Text="{Binding RequestedRoleDisplay}" Style="{StaticResource Meta}" TextColor="{StaticResource WarningColor}"/>
                                 </VerticalStackLayout>                                <Button Grid.Column="1" Text="Tolak" Style="{StaticResource Chip}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=RejectCommand}" CommandParameter="{Binding .}"/>
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=RejectCommand, x:DataType={x:Type vm:UsersViewModel}}" CommandParameter="{Binding .}"/>
                                 <Button Grid.Column="2" Text="Setujui" Style="{StaticResource Chip}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=ApproveCommand}" CommandParameter="{Binding .}"/>
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=ApproveCommand, x:DataType={x:Type vm:UsersViewModel}}" CommandParameter="{Binding .}"/>
                             </Grid>
                         </Border>
                     </DataTemplate>
