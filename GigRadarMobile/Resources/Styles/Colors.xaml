@@ -30,10 +30,85 @@
     <Color x:Key="AccentSoft">#1B260D</Color>
     <Color x:Key="OnAccent">#0A0A0B</Color>
 
-    <!-- Stage accents: digunakan sebagai aksen sekunder, bukan dekorasi berlebihan. -->
+    <!-- Aksen sekunder (cyan) — untuk filter/aksi pendukung agar tidak
+         semua kontrol memakai lime yang sama. -->
+    <Color x:Key="SecondaryColor">#22D3EE</Color>
+    <Color x:Key="SecondarySoft">#0E2830</Color>
+
+    <!--
+      Stage accents ("neon night stage") — keluarga warna panggung.
+      Dipakai bergantian per genre/role agar tiap section punya identitas,
+      tanpa mengorbankan hierarki: tetap aksen, bukan latar dominan.
+    -->
     <Color x:Key="StagePink">#FF4D8D</Color>
     <Color x:Key="StageAmber">#F6C453</Color>
+    <Color x:Key="StageViolet">#8B5CF6</Color>
+    <Color x:Key="StageCyan">#22D3EE</Color>
+    <Color x:Key="StageEmber">#FB7185</Color>
     <Color x:Key="StageSoft">#2C1725</Color>
+
+    <!-- Tint gelap satu tingkat dari tiap accent — untuk chip/badge/ikon lembut. -->
+    <Color x:Key="PinkSoft">#2E1424</Color>
+    <Color x:Key="AmberSoft">#2B2110</Color>
+    <Color x:Key="VioletSoft">#1E1735</Color>
+    <Color x:Key="CyanSoft">#0E2830</Color>
+
+    <!-- ============================================================
+         Gradient brushes — dipakai untuk hero, poster scrim, dan tile.
+         Sengaja sedikit supaya tidak jadi pelangi; tiap section pilih satu.
+         ============================================================ -->
+
+    <!-- Hero lime→violet: identitas utama GigRadar (discovery, CTA besar). -->
+    <LinearGradientBrush x:Key="HeroGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#A3FF12" Offset="0.0"/>
+        <GradientStop Color="#7DE2B0" Offset="0.45"/>
+        <GradientStop Color="#8B5CF6" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <!-- Aurora violet→cyan: area artist/kreatif. -->
+    <LinearGradientBrush x:Key="AuroraGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#8B5CF6" Offset="0.0"/>
+        <GradientStop Color="#22D3EE" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <!-- Ember pink→amber: event/tiket (energi panggung). -->
+    <LinearGradientBrush x:Key="EmberGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FF4D8D" Offset="0.0"/>
+        <GradientStop Color="#F6C453" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <!-- Stage lime→cyan: radar/signal. -->
+    <LinearGradientBrush x:Key="SignalGradient" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#A3FF12" Offset="0.0"/>
+        <GradientStop Color="#22D3EE" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <!-- Chip lunak untuk latar ikon/avatar (bukan teks). -->
+    <LinearGradientBrush x:Key="SurfaceSheenGradient" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#241F2E" Offset="0.0"/>
+        <GradientStop Color="#191622" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <!--
+      Scrim poster: dipasang di atas artwork/foto supaya judul & meta tetap
+      terbaca (WCAG) apapun gambarnya. Beberapa tingkat kekuatan.
+    -->
+    <LinearGradientBrush x:Key="PosterScrim" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#00000000" Offset="0.0"/>
+        <GradientStop Color="#99000000" Offset="0.55"/>
+        <GradientStop Color="#F20B0A0E" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PosterScrimSoft" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#00000000" Offset="0.0"/>
+        <GradientStop Color="#73000000" Offset="0.6"/>
+        <GradientStop Color="#D90B0A0E" Offset="1.0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="PosterScrimTop" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#B3000000" Offset="0.0"/>
+        <GradientStop Color="#00000000" Offset="0.5"/>
+    </LinearGradientBrush>
 
     <!-- Semantic -->
     <Color x:Key="SuccessColor">#22C55E</Color>

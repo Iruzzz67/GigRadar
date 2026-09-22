@@ -4,28 +4,18 @@ namespace GigRadarMobile.Helpers;
 
 /// <summary>
 /// Mengubah url poster/foto (string) menjadi ImageSource.
-/// Kalau url dari API kosong (belum ada foto diupload EO), jatuh ke placeholder
-/// lokal supaya card/poster tidak pernah tampil kosong/blank.
+///
+/// Bila url dari API kosong (foto belum diunggah), jatuh ke salah satu artwork
+/// default yang dipilih deterministik dari <c>ConverterParameter</c> — biasanya
+/// nama artist/event — sehingga tidak ada kartu yang tampil blank dan tiap
+/// entitas tetap punya visual yang berbeda. Lihat <see cref="BandArt"/>.
 /// </summary>
 public class PosterImageConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var url = value as string;
-        if (!string.IsNullOrWhiteSpace(url) && url.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase))
-        {
-            var comma = url.IndexOf(',');
-            if (comma > 0)
-            {
-                var bytes = System.Convert.FromBase64String(url[(comma + 1)..]);
-                return ImageSource.FromStream(() => new MemoryStream(bytes));
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(url) && Uri.TryCreate(url, UriKind.Absolute, out var uri))
-            return ImageSource.FromUri(uri);
-
-        return ImageSource.FromFile("poster_placeholder");
+        var key = parameter as string;
+        return BandArt.Resolve(value as string, key);
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

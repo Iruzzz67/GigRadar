@@ -17,6 +17,15 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
+		<!--
+		  Kompilasi binding yang memakai Source eksplisit (mis. RelativeSource
+		  AncestorType di dalam DataTemplate). Tanpa ini XamlC melewati binding
+		  tersebut dan memunculkan XC0025 untuk setiap item template — sekaligus
+		  kehilangan pengecekan tipe saat build dan sedikit overhead refleksi di
+		  runtime. Semua template sudah punya x:DataType.
+		-->
+		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+
 		<!-- Display name -->
 		<ApplicationTitle>GigRadar</ApplicationTitle>
 

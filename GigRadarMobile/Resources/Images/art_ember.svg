@@ -1,0 +1,30 @@
+<svg viewBox="0 0 800 800" width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2A0D1C"/>
+      <stop offset="0.55" stop-color="#3A1A10"/>
+      <stop offset="1" stop-color="#0B0A0E"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.62" r="0.5">
+      <stop offset="0" stop-color="#F6C453" stop-opacity="0.95"/>
+      <stop offset="0.4" stop-color="#FF4D8D" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FF4D8D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF4D8D"/>
+      <stop offset="1" stop-color="#F6C453"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <rect width="800" height="800" fill="url(#sun)"/>
+  <circle cx="400" cy="500" r="190" fill="none" stroke="url(#band)" stroke-width="3" opacity="0.65"/>
+  <circle cx="400" cy="500" r="140" fill="none" stroke="url(#band)" stroke-width="2" opacity="0.45"/>
+  <circle cx="400" cy="500" r="92" fill="url(#band)" opacity="0.92"/>
+  <g opacity="0.5">
+    <rect x="0" y="500" width="800" height="6" fill="#0B0A0E"/>
+    <rect x="0" y="540" width="800" height="9" fill="#0B0A0E"/>
+    <rect x="0" y="590" width="800" height="13" fill="#0B0A0E"/>
+    <rect x="0" y="650" width="800" height="18" fill="#0B0A0E"/>
+  </g>
+  <rect x="0" y="700" width="800" height="100" fill="#0B0A0E"/>
+</svg>
