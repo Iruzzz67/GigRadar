@@ -4003,6 +4003,7 @@ Phase 4        : ML recommendation, multi-city expansion, advanced personalizati
 - **CRUD event lengkap** dengan `CreatedBy` dari JWT; status Published/Draft/SoldOut/Completed; blokir pembelian non-Published.
 - **Dashboard & profil EO/Admin**: statistik, kelola tipe tiket, buat event, tandai habis/selesai, hapus event.
 - **Role-based authorization + cek kepemilikan** (EO hanya event sendiri; selain itu 403).
+- **Gate verifikasi organizer**: aksi tulis event & tiket (create/update/status/delete) hanya untuk EO dengan `Organizer.IsVerified` (policy `VerifiedOrganizer`, §53/§54); 403 berisi `{ message, code }` yang bisa ditindaklanjuti klien.
 - **Validasi QR tiket** (`POST /api/tickets/validate`, EO/Admin).
 - Radar native (`GraphicsView` + `RadarDrawable`), Explore search/filter List/Grid/Radar,
   design system token diterapkan (Lampiran A).

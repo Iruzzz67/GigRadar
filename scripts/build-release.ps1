@@ -109,6 +109,7 @@ if (-not (Test-Path $ConfigPath)) {
         _comment             = "Ubah connectionString sesuai PostgreSQL di komputer tujuan."
         connectionString     = "Host=localhost;Port=5432;Database=gigradar;Username=postgres;Password=postgres"
         postgresServiceName  = ""
+        jwtSecret            = ""
         openSwagger          = $false
     }
     $Config | ConvertTo-Json | Set-Content -Path $ConfigPath -Encoding UTF8
@@ -120,7 +121,10 @@ if (-not (Test-Path $ConfigPath)) {
 # ------------------------------------------------------------
 # 5. Rapikan + ringkasan
 # ------------------------------------------------------------
-Remove-Item (Join-Path $OutDir "*.pdb") -Force -ErrorAction SilentlyContinue
+# Symbol debug tidak dipakai di paket distribusi — dan jangan bocorkan sumber.
+Get-ChildItem $OutDir -Recurse -Include *.pdb -File | Remove-Item -Force -ErrorAction SilentlyContinue
+# web.config hanya untuk hosting IIS; paket portable memakai exe langsung.
+Remove-Item (Join-Path $ApiOut "web.config") -Force -ErrorAction SilentlyContinue
 
 Step "Ringkasan"
 $launcherExe = Join-Path $OutDir "GigRadar.exe"
