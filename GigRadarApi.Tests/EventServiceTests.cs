@@ -94,16 +94,25 @@ public class EventServiceTests : IDisposable
         Assert.Equal("Malam Ini", ev.Name);
     }
 
+    /// <summary>
+    /// Seed relatif ke batas akhir pekan (bukan Today+N) supaya tidak bergantung pada
+    /// hari saat test dijalankan — API memakai rentang "hari ini s/d akhir pekan"
+    /// (README: GET /api/events/weekend = "Event sampai akhir pekan").
+    /// </summary>
     [Fact]
-    public async Task GetWeekendEvents_WithinSevenDaysOnly()
+    public async Task GetWeekendEvents_OnlyUpToWeekendEnd()
     {
-        await SeedEventAsync(TestData.MakeEvent(name: "Dalam Seminggu", start: DateTime.Today.AddDays(3)));
-        await SeedEventAsync(TestData.MakeEvent(name: "Luar Seminggu", start: DateTime.Today.AddDays(10)));
+        var today = DateTime.Today;
+        var weekendEnd = today.AddDays(7 - (int)today.DayOfWeek);
+
+        await SeedEventAsync(TestData.MakeEvent(name: "Sampai Akhir Pekan", start: weekendEnd));
+        await SeedEventAsync(TestData.MakeEvent(name: "Lewat Akhir Pekan", start: weekendEnd.AddDays(3)));
+        await SeedEventAsync(TestData.MakeEvent(name: "Sudah Lewat", start: today.AddDays(-2)));
 
         var result = await _service.GetWeekendEventsAsync();
 
         var ev = Assert.Single(result);
-        Assert.Equal("Dalam Seminggu", ev.Name);
+        Assert.Equal("Sampai Akhir Pekan", ev.Name);
     }
 
     // ── Update: ownership ────────────────────────────────
@@ -295,5 +304,97 @@ public class EventServiceTests : IDisposable
         var eoEv = Assert.Single(eoView);
         Assert.Equal("Milik EO", eoEv.Name);
         Assert.Equal(2, adminView.Count);
+    }
+
+    // ── View & simpan: sinyal popularitas (§11) ──────────
+
+    private Task<int> SavesCountAsync(int eventId) =>
+        _context.Events.Where(e => e.EventId == eventId).Select(e => e.SavesCount).FirstAsync();
+
+    [Fact]
+    public async Task GetEventDetail_RecordsOneViewPerCall()
+    {
+        var seeded = await SeedEventAsync();
+        Assert.Equal(0, seeded.ViewsCount);
+
+        var detail = await _service.GetEventDetailAsync(seeded.EventId);
+        Assert.NotNull(detail);
+        Assert.Equal(1, detail!.ViewsCount);
+
+        await _service.GetEventDetailAsync(seeded.EventId);
+        var stored = await _context.Events.AsNoTracking().FirstAsync(e => e.EventId == seeded.EventId);
+        Assert.Equal(2, stored.ViewsCount);
+    }
+
+    [Fact]
+    public async Task GetEventById_DoesNotRecordView()
+    {
+        // Pemakaian internal (update/validasi) tidak boleh menggelembungkan angka view.
+        var seeded = await SeedEventAsync();
+
+        await _service.GetEventByIdAsync(seeded.EventId);
+
+        var stored = await _context.Events.AsNoTracking().FirstAsync(e => e.EventId == seeded.EventId);
+        Assert.Equal(0, stored.ViewsCount);
+    }
+
+    [Fact]
+    public async Task GetEventDetail_MissingEvent_ReturnsNull()
+    {
+        Assert.Null(await _service.GetEventDetailAsync(9999));
+    }
+
+    [Fact]
+    public async Task ToggleSave_AddsThenRemovesFavoriteAndKeepsSavesCountInSync()
+    {
+        var seeded = await SeedEventAsync();
+
+        var (saved, error) = await _service.ToggleSaveAsync(seeded.EventId, userId: 10);
+
+        Assert.True(saved);
+        Assert.Null(error);
+        Assert.Equal(1, await SavesCountAsync(seeded.EventId));
+        Assert.True(await _context.Favorites.AnyAsync(f => f.UserId == 10 && f.EventId == seeded.EventId));
+
+        var (savedAgain, _) = await _service.ToggleSaveAsync(seeded.EventId, userId: 10);
+
+        Assert.False(savedAgain);
+        Assert.Equal(0, await SavesCountAsync(seeded.EventId));
+        Assert.False(await _context.Favorites.AnyAsync(f => f.UserId == 10 && f.EventId == seeded.EventId));
+    }
+
+    [Fact]
+    public async Task ToggleSave_CountsEachUserSeparately()
+    {
+        var seeded = await SeedEventAsync();
+
+        await _service.ToggleSaveAsync(seeded.EventId, userId: 10);
+        await _service.ToggleSaveAsync(seeded.EventId, userId: 11);
+
+        Assert.Equal(2, await SavesCountAsync(seeded.EventId));
+    }
+
+    [Fact]
+    public async Task ToggleSave_NeverGoesNegative()
+    {
+        // Data lama bisa punya favorit tanpa SavesCount yang cocok — angka tidak boleh negatif.
+        var seeded = await SeedEventAsync();
+        _context.Favorites.Add(new Favorite { UserId = 10, EventId = seeded.EventId });
+        await _context.SaveChangesAsync();
+        _context.ChangeTracker.Clear();
+
+        var (saved, _) = await _service.ToggleSaveAsync(seeded.EventId, userId: 10);
+
+        Assert.False(saved);
+        Assert.Equal(0, await SavesCountAsync(seeded.EventId));
+    }
+
+    [Fact]
+    public async Task ToggleSave_MissingEvent_ReturnsError()
+    {
+        var (saved, error) = await _service.ToggleSaveAsync(9999, userId: 10);
+
+        Assert.False(saved);
+        Assert.Equal("Event tidak ditemukan", error);
     }
 }

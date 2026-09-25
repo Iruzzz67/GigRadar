@@ -1,6 +1,8 @@
+using GigRadarApi.Controllers;
 using GigRadarApi.Data;
 using GigRadarApi.Models;
 using GigRadarApi.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using Xunit;
@@ -53,6 +55,34 @@ public class ArtistVerificationTests : IDisposable
     };
 
     // ── Submit ───────────────────────────────────────────
+
+    [Fact]
+    public async Task GetArtist_IncludesSpotifyUrl()
+    {
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+
+        await using var context = new AppDbContext(options);
+        var artist = new Artist
+        {
+            Name = "Band Murphy Radio",
+            SpotifyUrl = "https://open.spotify.com/artist/2DDfSj2dukX0wA8Xe0pk1N?si=W5wcGBhASvuWT78I75xOcQ",
+            Genre = "Indie Rock",
+            City = "Jakarta"
+        };
+        context.Artists.Add(artist);
+        await context.SaveChangesAsync();
+
+        var controller = new ArtistsController(context);
+        var result = await controller.GetArtist(artist.ArtistId);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var payload = ok.Value!;
+        var spotifyUrl = payload.GetType().GetProperty("SpotifyUrl")?.GetValue(payload)?.ToString();
+
+        Assert.Equal("https://open.spotify.com/artist/2DDfSj2dukX0wA8Xe0pk1N?si=W5wcGBhASvuWT78I75xOcQ", spotifyUrl);
+    }
 
     [Fact]
     public async Task Submit_ValidRequest_CreatesPendingAndUpdatesArtist()
