@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using GigRadarMobile.Helpers;
 using GigRadarMobile.Models;
 using GigRadarMobile.Services;
+using GigRadarMobile.Views;
 
 namespace GigRadarMobile.ViewModels
 {
@@ -219,6 +220,42 @@ namespace GigRadarMobile.ViewModels
                     await LoadTypesAsync(item);
 
                 await Alerts.ShowAsync("Berhasil", message);
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        // ── Check-in & peserta (§14) ──────────────────────
+
+        /// <summary>Buka halaman pemindai QR untuk event yang dipilih.</summary>
+        [RelayCommand]
+        private async Task OpenCheckInAsync(ManagedEventItem? item)
+        {
+            if (item == null) return;
+
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(CheckInPage),
+                    new Dictionary<string, object> { { "Event", item.Event } });
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        /// <summary>Buka daftar peserta event yang dipilih.</summary>
+        [RelayCommand]
+        private async Task OpenAttendeesAsync(ManagedEventItem? item)
+        {
+            if (item == null) return;
+
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(AttendeesPage),
+                    new Dictionary<string, object> { { "Event", item.Event } });
             }
             catch (Exception ex)
             {

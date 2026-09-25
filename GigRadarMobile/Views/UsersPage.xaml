@@ -9,7 +9,7 @@
              BackgroundColor="{StaticResource BackgroundColor}"
              Title="Users">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="20,20,20,0" RowSpacing="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*" Padding="20,20,20,0" RowSpacing="12">
 
         <Border Grid.Row="0" Style="{StaticResource PageHero}" HeightRequest="130">
             <Grid>
@@ -28,8 +28,37 @@
                IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
                HorizontalTextAlignment="Center"/>
 
+        <!-- Aksi Admin: buat akun (§4.4) + kelola data master genre -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="8">
+            <Button Grid.Column="0" Text="Buat akun" Style="{StaticResource BtnPrimary}" HeightRequest="46"
+                    Command="{Binding ShowCreateFormCommand}"/>
+            <Button Grid.Column="1" Text="Kelola genre" Style="{StaticResource BtnDark}" HeightRequest="46"
+                    Command="{Binding GoToGenresCommand}"/>
+        </Grid>
+
+        <!-- Form buat/ubah akun -->
+        <Border Grid.Row="4" Style="{StaticResource CardBorder}" IsVisible="{Binding IsFormVisible}">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="{Binding FormTitle}" Style="{StaticResource Subheading}"
+                       TextColor="{StaticResource PrimaryColor}"/>
+                <Entry Text="{Binding FormName}" Placeholder="Nama"/>
+                <Entry Text="{Binding FormEmail}" Placeholder="Email" Keyboard="Email"/>
+                <Entry Text="{Binding FormPassword}" Placeholder="Password" IsPassword="True"/>
+                <Label Text="{Binding PasswordHint}" Style="{StaticResource Meta}"/>
+                <Picker ItemsSource="{Binding RoleOptions}" SelectedItem="{Binding FormRole}"
+                        Title="Role"/>
+                <Entry Text="{Binding FormCity}" Placeholder="Kota"/>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="Batal" Style="{StaticResource BtnOutline}" HeightRequest="46"
+                            Command="{Binding CancelFormCommand}"/>
+                    <Button Grid.Column="1" Text="Simpan" Style="{StaticResource BtnPrimary}" HeightRequest="46"
+                            Command="{Binding SaveAccountCommand}"/>
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
         <!-- Permohonan role menunggu verifikasi (§25) -->
-        <VerticalStackLayout Grid.Row="3" Spacing="8" IsVisible="{Binding HasRoleRequests}">
+        <VerticalStackLayout Grid.Row="5" Spacing="8" IsVisible="{Binding HasRoleRequests}">
             <Label Text="PERMINTAAN PERAN MENUNGGU VERIFIKASI" Style="{StaticResource Eyebrow}" TextColor="{StaticResource WarningColor}"/>
             <CollectionView ItemsSource="{Binding RoleRequests}" SelectionMode="None">
                 <CollectionView.ItemTemplate>
@@ -51,27 +80,46 @@
             </CollectionView>
         </VerticalStackLayout>
 
-        <!-- Daftar seluruh user -->
-        <CollectionView Grid.Row="4" ItemsSource="{Binding Users}" SelectionMode="None">
+        <!-- Daftar seluruh user + aksi CRUD/suspend -->
+        <CollectionView Grid.Row="6" ItemsSource="{Binding Users}" SelectionMode="None">
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:User">
                     <Border Style="{StaticResource CardBorder}" Padding="14" Margin="0,0,0,8">
-                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                            <Border Grid.Column="0" WidthRequest="44" HeightRequest="44" StrokeThickness="0"
+                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="10">
+                            <Border Grid.Row="0" Grid.Column="0" WidthRequest="44" HeightRequest="44" StrokeThickness="0"
                                     StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
                                 <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="14"
                                        TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
                             </Border>
-                            <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2" VerticalOptions="Center">
                                 <Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="15"
                                        MaxLines="1" LineBreakMode="TailTruncation"/>
                                 <Label Text="{Binding Email}" Style="{StaticResource Caption}" FontSize="12"
                                        MaxLines="1" LineBreakMode="TailTruncation"/>
                                 <Label Text="{Binding City}" Style="{StaticResource Meta}"/>
+                                <Label Text="{Binding RoleStatusDisplay}" Style="{StaticResource Meta}" FontSize="10"
+                                       TextColor="{StaticResource WarningColor}"/>
                             </VerticalStackLayout>
-                            <Label Grid.Column="2" Text="{Binding RoleDisplay}" Style="{StaticResource Meta}" FontSize="11"
+                            <Label Grid.Row="0" Grid.Column="2" Text="{Binding RoleDisplay}" Style="{StaticResource Meta}" FontSize="11"
                                    FontFamily="InterSemiBold" TextColor="{Binding RoleColor}"
                                    VerticalOptions="Center" HorizontalTextAlignment="End"/>
+
+                            <!-- Aksi admin: ubah, nonaktifkan/aktifkan, hapus (§23) -->
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Spacing="8">
+                                <Button Text="Ubah" Style="{StaticResource Chip}"
+                                        SemanticProperties.Description="Ubah data akun ini"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=EditAccountCommand, x:DataType={x:Type vm:UsersViewModel}}"
+                                        CommandParameter="{Binding .}"/>
+                                <Button Text="{Binding SuspendActionLabel}" Style="{StaticResource Chip}"
+                                        SemanticProperties.Description="Nonaktifkan atau aktifkan kembali akun ini"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=ToggleSuspendCommand, x:DataType={x:Type vm:UsersViewModel}}"
+                                        CommandParameter="{Binding .}"/>
+                                <Button Text="Hapus" FontSize="11" HeightRequest="34" Padding="12,0" CornerRadius="9"
+                                        BackgroundColor="{StaticResource AccentSoft}" TextColor="{StaticResource DangerColor}"
+                                        SemanticProperties.Description="Hapus akun ini"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:UsersViewModel}}, Path=DeleteAccountCommand, x:DataType={x:Type vm:UsersViewModel}}"
+                                        CommandParameter="{Binding .}"/>
+                            </HorizontalStackLayout>
                         </Grid>
                     </Border>
                 </DataTemplate>

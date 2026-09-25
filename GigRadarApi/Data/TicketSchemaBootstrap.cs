@@ -29,6 +29,7 @@ public static class TicketSchemaBootstrap
             SeedEoUserIfMissing(conn);
             SeedArtistDemo(conn);
             NormalizeVerificationStatus(conn);
+            EnsureDemoOrganizerVerified(db);
         }
         finally
         {
@@ -113,6 +114,52 @@ public static class TicketSchemaBootstrap
 
         // Event demo milik EO (hanya bila masih dipegang Admin seed, agar tidak menimpa kepemilikan yang sudah diubah).
         Execute(conn, $"UPDATE \"Events\" SET \"CreatedBy\" = {eoId} WHERE \"EventId\" = 1 AND \"CreatedBy\" = 1;");
+    }
+
+    /// <summary>
+    /// Gate verifikasi organizer (Bab 15) memblokir EO yang belum lolos review Admin
+    /// dari membuat/mengubah event dan mengelola tiket. Supaya akun demo EO tetap bisa
+    /// mencoba alur EO, profil organizer-nya dibuat sekali (idempoten) dan ditandai
+    /// sudah diverifikasi Admin — database yang EO-nya sudah punya profil tidak disentuh.
+    /// </summary>
+    private static void EnsureDemoOrganizerVerified(AppDbContext db)
+    {
+        const string demoEoEmail = "eo@gigradar.com";
+        var eoUserId = db.Users.Where(u => u.Email == demoEoEmail)
+            .Select(u => (int?)u.UserId).FirstOrDefault();
+        if (eoUserId == null) return;
+        if (db.Organizers.Any(o => o.UserId == eoUserId)) return;
+
+        var organizer = new Models.Organizer
+        {
+            UserId = eoUserId,
+            OrganizationName = "GigRadar Demo Promotor",
+            Description = "Akun demo EO — promotor gig lokal Jakarta.",
+            Location = "Jakarta",
+            Contact = "081234567890",
+            FoundedYear = 2019,
+            VerificationStatus = "VERIFIED",
+            IsVerified = true,
+            CreatedAt = DateTime.UtcNow
+        };
+        db.Organizers.Add(organizer);
+        db.SaveChanges();
+
+        // Jejak audit keputusan Admin (Bab 15) agar EO demo konsisten dengan alur verifikasi.
+        db.OrganizerVerifications.Add(new Models.OrganizerVerification
+        {
+            OrganizerId = organizer.OrganizerId,
+            OrganizationName = organizer.OrganizationName,
+            Description = organizer.Description,
+            Location = organizer.Location,
+            Contact = organizer.Contact,
+            PortfolioSummary = "",
+            Status = "VERIFIED",
+            SubmittedAt = DateTime.UtcNow,
+            ReviewedAt = DateTime.UtcNow,
+            ReviewedByUserId = 1 // Admin seed
+        });
+        db.SaveChanges();
     }
 
     /// <summary>

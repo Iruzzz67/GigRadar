@@ -16,15 +16,18 @@ namespace GigRadarApi.Controllers
         private readonly AuthService _authService;
         private readonly ArtistVerificationService _artistVerificationService;
         private readonly OrganizerVerificationService _organizerVerificationService;
+        private readonly EventService _eventService;
 
         public UsersController(AppDbContext context, AuthService authService,
             ArtistVerificationService artistVerificationService,
-            OrganizerVerificationService organizerVerificationService)
+            OrganizerVerificationService organizerVerificationService,
+            EventService eventService)
         {
             _context = context;
             _authService = authService;
             _artistVerificationService = artistVerificationService;
             _organizerVerificationService = organizerVerificationService;
+            _eventService = eventService;
         }
 
         /// <summary>
@@ -40,6 +43,130 @@ namespace GigRadarApi.Controllers
                 .Select(u => new { u.UserId, u.Name, u.Email, u.Role, u.RoleStatus, u.City, u.PhotoUrl, u.CreatedAt })
                 .ToListAsync();
             return Ok(users);
+        }
+
+        /// <summary>Data tiga komunitas untuk panel analisis Admin.</summary>
+        [HttpGet("communities")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetCommunities()
+        {
+            var users = await _context.Users
+                .Where(u => u.Role == "User")
+                .OrderByDescending(u => u.CreatedAt)
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.Name,
+                    u.Email,
+                    u.City,
+                    u.PhotoUrl,
+                    u.CreatedAt
+                })
+                .ToListAsync();
+
+            var artists = await _context.Artists
+                .OrderBy(a => a.Name)
+                .Select(a => new
+                {
+                    a.ArtistId,
+                    a.Name,
+                    a.Genre,
+                    a.City,
+                    a.PhotoUrl,
+                    a.IsVerified,
+                    AccountEmail = a.User != null ? a.User.Email : string.Empty
+                })
+                .ToListAsync();
+
+            var eos = await _context.Organizers
+                .Include(o => o.User)
+                .OrderBy(o => o.OrganizationName)
+                .Select(o => new
+                {
+                    o.OrganizerId,
+                    Name = o.OrganizationName,
+                    o.Location,
+                    o.LogoUrl,
+                    o.IsVerified,
+                    AccountEmail = o.User != null ? o.User.Email : string.Empty
+                })
+                .ToListAsync();
+
+            return Ok(new { users, artists, eos });
+        }
+
+        // ── Admin: CRUD akun (§4.4, §19, §23) ────────────
+
+        /// <summary>Admin membuat akun baru (User/Artist/EO/Admin).</summary>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountRequest? request)
+        {
+            if (request == null)
+                return BadRequest(new { message = "Body akun wajib dikirim" });
+
+            var (success, message, user) = await _authService.CreateAccountAsync(
+                request.Name ?? "", request.Email ?? "", request.Password ?? "",
+                request.Role ?? "", request.City ?? "");
+
+            if (!success) return BadRequest(new { message });
+
+            return StatusCode(201, new
+            {
+                message,
+                user = new { user!.UserId, user.Name, user.Email, user.Role, user.RoleStatus, user.City }
+            });
+        }
+
+        /// <summary>Admin memperbarui akun. Field null/kosong = nilai lama dipertahankan.</summary>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccountRequest? request)
+        {
+            if (request == null)
+                return BadRequest(new { message = "Body akun wajib dikirim" });
+
+            var (success, message) = await _authService.UpdateAccountAsync(
+                id, request.Name, request.Email, request.Password, request.Role, request.City);
+
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message, id });
+        }
+
+        /// <summary>Admin menonaktifkan akun — akun & datanya tetap ada, hanya login yang ditolak.</summary>
+        [HttpPost("{id}/suspend")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SuspendAccount(int id)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _authService.SetAccountSuspendedAsync(id, suspended: true, adminId);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message, id, suspended = true });
+        }
+
+        /// <summary>Admin mengaktifkan kembali akun yang dinonaktifkan.</summary>
+        [HttpPost("{id}/unsuspend")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UnsuspendAccount(int id)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _authService.SetAccountSuspendedAsync(id, suspended: false, adminId);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message, id, suspended = false });
+        }
+
+        /// <summary>
+        /// Admin menghapus akun. Operasi destruktif (§23) — UI wajib menampilkan dialog
+        /// konfirmasi sebelum memanggil endpoint ini.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteAccount(int id)
+        {
+            var adminId = int.Parse(User.FindFirst("UserId")!.Value);
+            var (success, message) = await _authService.DeleteAccountAsync(id, adminId);
+            if (!success) return BadRequest(new { message });
+            return Ok(new { message, id });
         }
 
         [HttpGet("me")]
@@ -211,22 +338,24 @@ namespace GigRadarApi.Controllers
             return Ok(new { message = "Preferences updated" });
         }
 
+        /// <summary>
+        /// Toggle simpan/lepas event dari daftar tersimpan user. Logikanya ada di
+        /// EventService karena sekaligus menjaga Event.SavesCount tetap sinkron (§11).
+        /// </summary>
         [HttpPost("favorites/{eventId}")]
         public async Task<IActionResult> ToggleFavorite(int eventId)
         {
             var userId = int.Parse(User.FindFirst("UserId")!.Value);
-            var existing = await _context.Favorites.FirstOrDefaultAsync(f => f.UserId == userId && f.EventId == eventId);
+            var (saved, error) = await _eventService.ToggleSaveAsync(eventId, userId);
 
-            if (existing != null)
+            if (error != null)
+                return NotFound(new { message = error, saved = false });
+
+            return Ok(new
             {
-                _context.Favorites.Remove(existing);
-                await _context.SaveChangesAsync();
-                return Ok(new { message = "Removed from favorites", saved = false });
-            }
-
-            _context.Favorites.Add(new Favorite { UserId = userId, EventId = eventId });
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Added to favorites", saved = true });
+                message = saved ? "Added to favorites" : "Removed from favorites",
+                saved
+            });
         }
 
         [HttpGet("favorites")]
@@ -302,6 +431,25 @@ namespace GigRadarApi.Controllers
         public string? Name { get; set; }
         public string? City { get; set; }
         public string? PhotoUrl { get; set; }
+    }
+
+    public class CreateAccountRequest
+    {
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
+        public string? Role { get; set; }
+        public string? City { get; set; }
+    }
+
+    public class UpdateAccountRequest
+    {
+        public string? Name { get; set; }
+        public string? Email { get; set; }
+        /// <summary>Kosongkan bila password tidak ingin diubah.</summary>
+        public string? Password { get; set; }
+        public string? Role { get; set; }
+        public string? City { get; set; }
     }
 
     public class RejectVerificationRequest

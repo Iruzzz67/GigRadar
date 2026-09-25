@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.CheckInPage"
+             x:DataType="vm:CheckInViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Check-in">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+
+            <!-- Event yang sedang di-check-in + progres -->
+            <Border Style="{StaticResource HeroBanner}" HeightRequest="150">
+                <Grid>
+                    <Image Source="art_ember" Aspect="AspectFill"/>
+                    <BoxView Background="{StaticResource PosterScrim}"/>
+                    <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource SignalGradient}"/>
+                    <VerticalStackLayout Padding="16" Spacing="4" VerticalOptions="End">
+                        <Label Text="CHECK-IN" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="{Binding EventName}" Style="{StaticResource HeroTitle}" FontSize="22"
+                               MaxLines="1" LineBreakMode="TailTruncation"/>
+                        <Label Text="{Binding EventMeta}" Style="{StaticResource Meta}"/>
+                        <Label Text="{Binding ProgressLabel}" Style="{StaticResource Subheading}" FontSize="14"
+                               TextColor="{StaticResource PrimaryColor}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" FontSize="12"
+                   TextColor="{StaticResource DangerColor}" IsVisible="{Binding HasError}"/>
+
+            <!-- Kamera pemindai: diisi QrScannerView dari code-behind -->
+            <Border Style="{StaticResource CardBorder}" Padding="0">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="0">
+                    <ContentView x:Name="ScannerHost" Grid.Row="0" HeightRequest="260"/>
+
+                    <Grid Grid.Row="1" Padding="12" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Label Grid.Column="0" Style="{StaticResource Meta}" VerticalOptions="Center"
+                               Text="Arahkan kamera ke QR tiket peserta."/>
+                        <Button x:Name="TorchButton" Grid.Column="1" Text="Senter" Style="{StaticResource Chip}"
+                                Clicked="OnTorchClicked"
+                                SemanticProperties.Description="Nyalakan atau matikan lampu kamera"/>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Hasil check-in terakhir -->
+            <Border Style="{StaticResource CardBorder}" Padding="14" IsVisible="{Binding HasLastResult}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding LastStatus, StringFormat='HASIL: {0}'}" Style="{StaticResource Eyebrow}"
+                           TextColor="{Binding LastStatusColor}"/>
+                    <Label Text="{Binding LastMessage}" Style="{StaticResource Body}" FontSize="14"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Fallback: input kode manual (juga dipakai di platform tanpa kamera) -->
+            <Border Style="{StaticResource CardFlatBorder}" Padding="14">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="INPUT KODE MANUAL" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Kode tiket tertera di bawah QR milik peserta — pakai ini bila QR tidak terbaca."
+                           Style="{StaticResource Meta}"/>
+                    <Entry Text="{Binding ManualCode}" Placeholder="Tempel kode tiket"
+                           IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"/>
+                    <Button Text="Check-in kode ini" Style="{StaticResource BtnPrimary}" HeightRequest="46"
+                            Command="{Binding SubmitManualCommand}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Riwayat check-in sesi ini -->
+            <Label Text="BARU SAJA CHECK-IN" Style="{StaticResource Eyebrow}" IsVisible="{Binding HasCheckIns}"/>
+
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding RecentCheckIns}" Spacing="6">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CheckInLogItem">
+                        <Border Style="{StaticResource CardFlatBorder}" Padding="12">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                <Label Grid.Column="0" Text="✓" FontSize="14" VerticalOptions="Center"
+                                       TextColor="{StaticResource PrimaryColor}"/>
+                                <Label Grid.Column="1" Text="{Binding BuyerName}" Style="{StaticResource Subheading}"
+                                       FontSize="14" MaxLines="1" LineBreakMode="TailTruncation" VerticalOptions="Center"/>
+                                <Label Grid.Column="2" Text="{Binding TimeLabel}" Style="{StaticResource Meta}"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Button Text="Lihat daftar peserta" Style="{StaticResource BtnOutline}" HeightRequest="46"
+                    Command="{Binding OpenAttendeesCommand}"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

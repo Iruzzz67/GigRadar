@@ -68,10 +68,11 @@
                                        VerticalOptions="Center" HorizontalTextAlignment="End"/>
                             </Grid>
 
-                            <!-- Barcode -->
+                            <!-- QR asli — dipindai petugas di pintu masuk (§14) -->
                             <VerticalStackLayout Padding="16,10" Spacing="6" BackgroundColor="White">
-                                <GraphicsView HeightRequest="56" HorizontalOptions="Fill"
-                                              Drawable="{Binding QRCode, Converter={StaticResource BarcodeDrawableConverter}}"/>
+                                <Image Source="{Binding QrImage}" HeightRequest="200" WidthRequest="200"
+                                       Aspect="AspectFit" HorizontalOptions="Center"
+                                       SemanticProperties.Description="QR tiket untuk dipindai di pintu masuk"/>
                                 <Label Text="{Binding QrDisplay}" FontFamily="SpaceGroteskMedium" FontSize="9" TextColor="#666666"
                                        HorizontalTextAlignment="Center"/>
                             </VerticalStackLayout>

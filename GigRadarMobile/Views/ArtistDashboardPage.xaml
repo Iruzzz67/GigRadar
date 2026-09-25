@@ -199,6 +199,8 @@
                                 AutoSize="TextChanges"/>
                         <Entry Text="{Binding FormPhotoUrl}" Placeholder="URL foto profil (opsional)"
                                 Keyboard="Url"/>
+                        <Entry Text="{Binding FormSpotifyUrl}" Placeholder="https://open.spotify.com/artist/..."
+                                Keyboard="Url"/>
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                             <Button Grid.Column="0" Text="Batal" Style="{StaticResource BtnDark}" HeightRequest="44"
                                     Command="{Binding ToggleEditCommand}"/>

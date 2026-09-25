@@ -16,6 +16,13 @@ namespace GigRadarMobile.Models
         public DateTime PurchasedAt { get; set; }
         public GigEvent? Event { get; set; }
 
+        /// <summary>
+        /// Gambar QR asli untuk dipindai petugas di pintu masuk (§14). Diisi setelah
+        /// tiket dimuat (lihat QrImageFactory); null berarti QR gagal dibuat dan
+        /// petugas memakai kode teks di bawahnya.
+        /// </summary>
+        public ImageSource? QrImage { get; set; }
+
         public string PriceFormatted => $"Rp {Price:N0}";
         public string EventName => Event?.Name ?? "Unknown Event";
         public string EventDate => Event?.DateFormatted ?? "";

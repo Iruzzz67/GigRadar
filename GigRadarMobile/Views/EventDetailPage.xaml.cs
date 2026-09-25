@@ -9,4 +9,12 @@ public partial class EventDetailPage : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        // Menyegarkan data sekaligus mencatat view di server (§11).
+        (BindingContext as EventDetailViewModel)?.RefreshCommand.Execute(null);
+    }
 }

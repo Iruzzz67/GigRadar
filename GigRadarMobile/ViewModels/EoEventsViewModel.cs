@@ -57,6 +57,10 @@ namespace GigRadarMobile.ViewModels
         {
             try
             {
+                // Server hanya melayani EO terverifikasi (§53/§54) — cek lebih awal
+                // agar EO belum terverifikasi langsung diarahkan ke verifikasi.
+                if (!await OrganizerGate.CanManageEventsAsync(_api, _auth)) return;
+
                 await Shell.Current.GoToAsync(nameof(CreateEventPage));
             }
             catch (Exception ex)

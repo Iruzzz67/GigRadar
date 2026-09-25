@@ -20,6 +20,7 @@ namespace GigRadarApi.Models
         public string Genre { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string SocialLinks { get; set; } = string.Empty;
+        public string SpotifyUrl { get; set; } = string.Empty;
 
         // Verifikasi artist (GIGRADAR_APP_SPEC.md Bab 8):
         // NOT_SUBMITTED | PENDING | VERIFIED | REJECTED — hanya diubah oleh Admin

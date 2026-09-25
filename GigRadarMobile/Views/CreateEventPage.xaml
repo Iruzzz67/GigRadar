@@ -50,11 +50,18 @@
                             <Label Text="Venue akan otomatis dipilih untuk event ini." FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                             <Entry Text="{Binding NewVenueName}" Placeholder="Nama venue *" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                             <Entry Text="{Binding NewVenueCity}" Placeholder="Kota" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
-                            <Entry Text="{Binding NewVenueAddress}" Placeholder="Alamat" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            <Entry Text="{Binding NewVenueAddress}" Placeholder="Alamat lengkap venue *" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
                             <Entry Text="{Binding NewVenueCapacity}" Placeholder="Kapasitas (opsional)" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            <Label Text="Titik lokasi venue" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <Entry Grid.Column="0" Text="{Binding NewVenueLatText}" Placeholder="Latitude" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                                <Entry Grid.Column="1" Text="{Binding NewVenueLngText}" Placeholder="Longitude" Keyboard="Numeric" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                            </Grid>
+                            <Button Text="📍 Gunakan lokasi perangkat" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="40" Command="{Binding UseCurrentLocationCommand}"/>
                             <Button Text="Simpan venue" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding SaveVenueCommand}"/>
                         </VerticalStackLayout>
                     </Frame>
+                    <Label Text="{Binding SelectedVenueAddress}" IsVisible="{Binding SelectedVenueAddress, Converter={StaticResource StringNotEmptyConverter}}" FontSize="12" TextColor="{StaticResource TextSecondary}" LineBreakMode="WordWrap"/>
                 </VerticalStackLayout>
             </Frame>
 

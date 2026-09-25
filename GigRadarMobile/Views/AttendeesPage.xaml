@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.AttendeesPage"
+             x:DataType="vm:AttendeesViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Peserta">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="20,18,20,16" RowSpacing="12">
+
+        <Border Grid.Row="0" Style="{StaticResource PageHero}" HeightRequest="150">
+            <Grid>
+                <Image Source="art_prism" Aspect="AspectFill"/>
+                <BoxView Background="{StaticResource PosterScrim}"/>
+                <BoxView WidthRequest="5" HorizontalOptions="Start" Background="{StaticResource SignalGradient}"/>
+                <Grid Padding="16" ColumnDefinitions="*,Auto" ColumnSpacing="10" VerticalOptions="End">
+                    <VerticalStackLayout Spacing="4" VerticalOptions="End">
+                        <Label Text="PESERTA" Style="{StaticResource Overline}" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Text="{Binding EventName}" Style="{StaticResource HeroTitle}" FontSize="22"
+                               MaxLines="1" LineBreakMode="TailTruncation"/>
+                        <Label Text="{Binding EventMeta}" Style="{StaticResource Meta}"/>
+                        <Label Text="{Binding SummaryLabel}" Style="{StaticResource Meta}"
+                               TextColor="{StaticResource PrimaryColor}"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Column="1" Text="Check-in" Style="{StaticResource BtnOutline}" HeightRequest="40"
+                            Command="{Binding OpenCheckInCommand}"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Entry Grid.Row="1" Text="{Binding SearchText}" Placeholder="Cari nama peserta atau tipe tiket"/>
+
+        <ActivityIndicator Grid.Row="2" IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+        <!-- Error state: gagal memuat ≠ tidak ada peserta -->
+        <Frame Grid.Row="3" IsVisible="{Binding HasError}" BackgroundColor="{StaticResource CardColor}"
+               BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="16" HasShadow="False">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="{Binding ErrorMessage}" Style="{StaticResource Body}" FontSize="13"
+                       TextColor="{StaticResource DangerColor}"/>
+                <Button Text="Coba lagi" Style="{StaticResource BtnOutline}" HeightRequest="42"
+                        HorizontalOptions="Start" Command="{Binding LoadCommand}"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <RefreshView Grid.Row="4" Command="{Binding LoadCommand}" IsRefreshing="{Binding IsRefreshing}">
+            <ScrollView>
+                <VerticalStackLayout Spacing="8">
+
+                    <Frame IsVisible="{Binding ShowEmptyState}" BackgroundColor="{StaticResource CardColor}"
+                           BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="16" HasShadow="False">
+                        <Label Text="{Binding EmptyMessage}" Style="{StaticResource Body}" FontSize="13"
+                               TextColor="{StaticResource TextSecondary}"/>
+                    </Frame>
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Attendees}" Spacing="6">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:EventAttendee">
+                                <Border Style="{StaticResource CardBorder}" Padding="12">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border Grid.Column="0" WidthRequest="42" HeightRequest="42" StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 999"
+                                                BackgroundColor="{StaticResource CardElevatedColor}">
+                                            <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="14"
+                                                   TextColor="{StaticResource PrimaryColor}"
+                                                   HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding BuyerName}" Style="{StaticResource Subheading}" FontSize="15"
+                                                   MaxLines="1" LineBreakMode="TailTruncation"/>
+                                            <Label Text="{Binding TicketType}" Style="{StaticResource Caption}" FontSize="12"
+                                                   TextColor="{StaticResource TextSecondary}"/>
+                                            <Label Text="{Binding PurchasedLabel}" Style="{StaticResource Meta}" FontSize="10"
+                                                   TextColor="{StaticResource TextMuted}"/>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="End"
+                                                             VerticalOptions="Center">
+                                            <Label Text="{Binding StatusLabel}" Style="{StaticResource Meta}" FontSize="11"
+                                                   FontFamily="InterSemiBold" TextColor="{Binding StatusColor}"
+                                                   HorizontalTextAlignment="End"/>
+                                            <Label Text="{Binding PriceFormatted}" Style="{StaticResource Meta}" FontSize="11"
+                                                   TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="End"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+    </Grid>
+
+</ContentPage>

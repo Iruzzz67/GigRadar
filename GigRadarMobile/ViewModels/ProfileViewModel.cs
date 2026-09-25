@@ -92,6 +92,23 @@ namespace GigRadarMobile.ViewModels
             IsEditing = !IsEditing;
         }
 
+        /// <summary>
+        /// Artist yang diikuti (§10) — dibuka lewat push route dari Profile supaya bottom
+        /// nav tetap 6 tab (Following bukan tujuan utama seperti Discover/Explore).
+        /// </summary>
+        [RelayCommand]
+        private async Task GoToFollowingAsync()
+        {
+            try
+            {
+                await Shell.Current.GoToAsync(nameof(FollowingPage));
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
         [RelayCommand]
         private async Task GoToEoProfileAsync()
         {

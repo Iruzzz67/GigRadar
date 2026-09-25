@@ -27,6 +27,28 @@ public partial class PlatformAnalyticsViewModel : ObservableObject
     [ObservableProperty]
     public partial bool HasData { get; set; }
 
+    [ObservableProperty]
+    public partial CommunityDirectory? Communities { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasCommunities { get; set; }
+
+    [ObservableProperty]
+    public partial string SelectedCommunity { get; set; } = "Users";
+
+    public bool IsUsersSelected => SelectedCommunity == "Users";
+    public bool IsArtistsSelected => SelectedCommunity == "Artists";
+    public bool IsEosSelected => SelectedCommunity == "EO";
+    public string SelectedCommunityLabel => SelectedCommunity == "EO" ? "Event Organizer" : SelectedCommunity;
+
+    partial void OnSelectedCommunityChanged(string value)
+    {
+        OnPropertyChanged(nameof(IsUsersSelected));
+        OnPropertyChanged(nameof(IsArtistsSelected));
+        OnPropertyChanged(nameof(IsEosSelected));
+        OnPropertyChanged(nameof(SelectedCommunityLabel));
+    }
+
     public PlatformAnalyticsViewModel(ApiService api, AuthService auth)
     {
         _api = api;
@@ -43,6 +65,8 @@ public partial class PlatformAnalyticsViewModel : ObservableObject
             _api.SetAuthToken(_auth.GetToken());
 
             Stats = await _api.GetPlatformAnalyticsAsync();
+            Communities = await _api.GetCommunityDirectoryAsync();
+            HasCommunities = Communities != null;
             HasData = Stats != null;
         }
         catch (Exception ex)
@@ -53,5 +77,12 @@ public partial class PlatformAnalyticsViewModel : ObservableObject
         {
             IsLoading = false;
         }
+    }
+
+    [RelayCommand]
+    private void SelectCommunity(string? community)
+    {
+        if (!string.IsNullOrWhiteSpace(community))
+            SelectedCommunity = community;
     }
 }

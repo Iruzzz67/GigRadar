@@ -12,7 +12,6 @@
             <helpers:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
             <helpers:StringNotEmptyConverter x:Key="StringNotEmptyConverter"/>
             <helpers:IsZeroConverter x:Key="IsZeroConverter"/>
-            <helpers:BarcodeDrawableConverter x:Key="BarcodeDrawableConverter"/>
             <helpers:PosterImageConverter x:Key="PosterImageConverter"/>
             <helpers:GenreAccentConverter x:Key="GenreAccentConverter"/>
             <helpers:RelativeDayConverter x:Key="RelativeDayConverter"/>

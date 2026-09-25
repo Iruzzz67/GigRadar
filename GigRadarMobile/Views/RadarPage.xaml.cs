@@ -6,6 +6,7 @@ namespace GigRadarMobile.Views;
 
 public partial class RadarPage : ContentPage
 {
+    private const string MapboxAccessToken = "REDACTED_MAPBOX_TOKEN";
     private readonly RadarViewModel _viewModel;
 
     public RadarPage(RadarViewModel viewModel)
@@ -73,7 +74,7 @@ public partial class RadarPage : ContentPage
                                 const radiusKm = __RADIUS__;
                                 const events = __EVENTS__;
                                 const map = L.map('map', { zoomControl: true, attributionControl: true }).setView(center, radiusKm <= 10 ? 12 : radiusKm <= 25 ? 11 : 10);
-                                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, subdomains: 'abcd', attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> &copy; <a href=\"https://carto.com/attributions\">CARTO</a>' }).addTo(map);
+                                L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/512/{z}/{x}/{y}@2x?access_token=__MAPBOX_TOKEN__', { maxZoom: 19, tileSize: 512, zoomOffset: -1, attribution: '&copy; <a href=\"https://www.mapbox.com/about/maps/\">Mapbox</a> &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>' }).addTo(map);
                                 L.marker(center, { icon: L.divIcon({ className: 'user-marker', iconSize: [14, 14], iconAnchor: [7, 7] }) }).addTo(map).bindTooltip('Lokasi kamu');
                                 L.circle(center, { radius: radiusKm * 1000, color: '#a3ff12', weight: 1, fillColor: '#a3ff12', fillOpacity: .06 }).addTo(map);
                                 events.forEach(eventItem => {
@@ -91,6 +92,7 @@ public partial class RadarPage : ContentPage
                         .Replace("__LAT__", _viewModel.CenterLat.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         .Replace("__LNG__", _viewModel.CenterLng.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         .Replace("__RADIUS__", _viewModel.RadiusKm.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                        .Replace("__MAPBOX_TOKEN__", MapboxAccessToken)
                         .Replace("__EVENTS__", markerJson);
         }
 

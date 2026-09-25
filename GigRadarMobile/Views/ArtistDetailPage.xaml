@@ -42,6 +42,21 @@
                         CornerRadius="999" BackgroundColor="#CC1A1A1F" TextColor="{StaticResource TextPrimary}"
                         Command="{Binding GoBackCommand}"/>
 
+                <!-- Follow / berhenti mengikuti artist (§10) — state dari server -->
+                <Button Text="{Binding FollowButtonText}" FontSize="13" FontFamily="InterSemiBold"
+                        Padding="16,0" HeightRequest="40" Margin="16,12"
+                        HorizontalOptions="End" VerticalOptions="Start" CornerRadius="999"
+                        BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}"
+                        IsEnabled="{Binding IsFollowBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        Command="{Binding ToggleFollowCommand}">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsFollowing}" Value="True">
+                            <Setter Property="BackgroundColor" Value="#CC1A1A1F"/>
+                            <Setter Property="TextColor" Value="{StaticResource PrimaryColor}"/>
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
                 <VerticalStackLayout Padding="20,0,20,18" Spacing="10" VerticalOptions="End">
                     <HorizontalStackLayout Spacing="8">
                         <Border Style="{StaticResource Pill}"
@@ -72,7 +87,7 @@
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                     <Border Grid.Column="0" Style="{StaticResource StatTile}">
                         <VerticalStackLayout Spacing="2">
-                            <Label Text="{Binding Artist.FollowersCount}" Style="{StaticResource StatValue}"
+                            <Label Text="{Binding FollowersCount}" Style="{StaticResource StatValue}"
                                    TextColor="{StaticResource PrimaryColor}" HorizontalTextAlignment="Center"/>
                             <Label Text="PENGIKUT" Style="{StaticResource StatLabel}" HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
@@ -295,7 +310,82 @@
                     </VerticalStackLayout>
                 </Border>
 
+                <!-- Community (Weverse-like Fan Posts) -->
+                <VerticalStackLayout Spacing="16">
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Community" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,12">
+                        <Entry Grid.Column="0" Text="{Binding NewCommunityPost}" Placeholder="Beri dukungan ke artist..."/>
+                        <Button Grid.Column="1" Text="Kirim" Style="{StaticResource BtnPrimary}" WidthRequest="80"
+                                Command="{Binding CreateCommunityPostCommand}"/>
+                    </Grid>
+                    <Label Text="Jadilah yang pertama mendukung artist ini!" Style="{StaticResource Meta}"
+                           IsVisible="{Binding HasCommunityPosts, Converter={StaticResource InvertedBoolConverter}}"
+                           Margin="0,8,0,0" HorizontalOptions="Center"/>
+                    <CollectionView ItemsSource="{Binding CommunityPosts}" Margin="0,8,0,0" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:CommunityPost">
+                                <Border Style="{StaticResource EventCardStyle}" Padding="16" Margin="0,0,0,12">
+                                    <VerticalStackLayout Spacing="12">
+                                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                                            <Border WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 999" BackgroundColor="#1A1A1F">
+                                                <Label Text="U" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" VerticalOptions="Center" FontFamily="SpaceGroteskBold"/>
+                                            </Border>
+                                            <VerticalStackLayout Spacing="2">
+                                                <Label Text="{Binding UserName}" FontFamily="InterSemiBold" FontSize="14" TextColor="{StaticResource TextPrimary}"/>
+                                                <Label Text="{Binding CreatedAt, StringFormat='{0:MMM dd}'}" Style="{StaticResource Meta}"/>
+                                            </VerticalStackLayout>
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding Content}" FontSize="14" TextColor="{StaticResource TextSecondary}" LineHeight="1.5"/>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <!-- Shop (Merchandise) -->
+                <VerticalStackLayout Spacing="16">
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Shop" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Belum ada produk saat ini." Style="{StaticResource Meta}"
+                           IsVisible="{Binding HasMerchandises, Converter={StaticResource InvertedBoolConverter}}"
+                           Margin="0,8,0,0" HorizontalOptions="Center"/>
+                    <CollectionView ItemsSource="{Binding Merchandises}" Margin="0,8,0,0" SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Horizontal" Span="1" HorizontalItemSpacing="12"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:MerchItem">
+                                <Border Style="{StaticResource EventCardStyle}" WidthRequest="160" Padding="0" StrokeThickness="1">
+                                    <VerticalStackLayout Spacing="0">
+                                        <Grid HeightRequest="120" BackgroundColor="#1A1A1F">
+                                            <Image Source="{Binding ImageUrl}" Aspect="AspectFill" IsVisible="{Binding HasPurchaseLink}"/>
+                                        </Grid>
+                                        <VerticalStackLayout Padding="12" Spacing="4">
+                                            <Label Text="{Binding Name}" FontFamily="InterSemiBold" FontSize="14" TextColor="{StaticResource TextPrimary}" LineBreakMode="TailTruncation" MaxLines="2"/>
+                                            <Label Text="{Binding Price, StringFormat='Rp {0:N0}'}" FontFamily="InterBold" FontSize="13" TextColor="{StaticResource PrimaryColor}"/>
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
                 <!-- Social links -->
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding Artist.HasSpotify}">
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Style="{StaticResource SectionBar}"/>
+                        <Label Text="Spotify" Style="{StaticResource SectionTitleStrong}"/>
+                    </HorizontalStackLayout>
+                    <Button Text="Dengarkan di Spotify" Style="{StaticResource BtnPrimary}" HeightRequest="44"
+                            Command="{Binding OpenSpotifyCommand}"/>
+                </VerticalStackLayout>
+
                 <Label Text="{Binding Artist.SocialLinks}" Style="{StaticResource Meta}"
                        MaxLines="1" LineBreakMode="TailTruncation"
                        IsVisible="{Binding Artist.SocialLinks, Converter={StaticResource StringNotEmptyConverter}}"/>

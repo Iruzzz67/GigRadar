@@ -1,4 +1,3 @@
-using GigRadarMobile.Helpers;
 using GigRadarMobile.ViewModels;
 
 namespace GigRadarMobile.Views;
@@ -9,22 +8,7 @@ public partial class TicketSuccessPage : ContentPage
     {
         InitializeComponent();
         BindingContext = viewModel;
-        viewModel.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(TicketSuccessViewModel.QRCode))
-                UpdateBarcode();
-        };
     }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        UpdateBarcode();
-    }
-
-    private void UpdateBarcode()
-    {
-        if (BindingContext is TicketSuccessViewModel vm)
-            BarcodeView.Drawable = new TicketBarcodeDrawable { Code = vm.QRCode };
-    }
+    // QR tiket dibuat di TicketSuccessViewModel (QrImageFactory) dan di-bind langsung
+    // lewat XAML — tidak ada lagi barcode yang digambar manual di code-behind.
 }

@@ -84,10 +84,11 @@
                         </Grid>
                     </VerticalStackLayout>
 
-                    <!-- Barcode -->
+                    <!-- QR asli — dipindai petugas di pintu masuk (§14) -->
                     <VerticalStackLayout Padding="20,14,20,18" Spacing="8" BackgroundColor="White">
-                        <GraphicsView x:Name="BarcodeView" HeightRequest="90" WidthRequest="280"
-                                      HorizontalOptions="Center"/>
+                        <Image Source="{Binding QrImage}" HeightRequest="230" WidthRequest="230"
+                               Aspect="AspectFit" HorizontalOptions="Center"
+                               SemanticProperties.Description="QR tiket untuk dipindai di pintu masuk"/>
                         <Label Text="{Binding QRCode}" FontFamily="SpaceGroteskMedium" FontSize="11" TextColor="#333333"
                                HorizontalTextAlignment="Center" LineBreakMode="MiddleTruncation"/>
                     </VerticalStackLayout>

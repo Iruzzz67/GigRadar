@@ -23,10 +23,15 @@ namespace GigRadarApi.Controllers
             return Ok(events);
         }
 
+        /// <summary>
+        /// Detail event. Endpoint ini juga mencatat satu view (popularity signal untuk
+        /// rekomendasi §11) — karena itu perubahan status/ketersediaan tiket dihitung
+        /// dari permintaan ini.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEvent(int id)
         {
-            var evt = await _eventService.GetEventByIdAsync(id);
+            var evt = await _eventService.GetEventDetailAsync(id);
             if (evt == null) return NotFound(new { message = "Event tidak ditemukan" });
             return Ok(evt);
         }
@@ -82,7 +87,7 @@ namespace GigRadarApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> CreateEvent([FromBody] Event evt)
         {
             var validation = ValidateEvent(evt);
@@ -99,7 +104,7 @@ namespace GigRadarApi.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> UpdateEvent(int id, [FromBody] Event evt)
         {
             var validation = ValidateEvent(evt);
@@ -119,7 +124,7 @@ namespace GigRadarApi.Controllers
 
         /// <summary>Ubah status event: Published / Draft / SoldOut / Completed.</summary>
         [HttpPut("{id}/status")]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> ChangeEventStatus(int id, [FromBody] ChangeEventStatusRequest request)
         {
             var userId = int.Parse(User.FindFirst("UserId")!.Value);
@@ -137,7 +142,7 @@ namespace GigRadarApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
             var userId = int.Parse(User.FindFirst("UserId")!.Value);

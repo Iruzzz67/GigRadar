@@ -206,13 +206,31 @@ class Program
         var fromConfig = _config.PostgresServiceName;
         if (!string.IsNullOrWhiteSpace(fromConfig)) return fromConfig;
 
-        // PowerShell satu kali: paling kompatibel tanpa package tambahan.
+        // 1) PowerShell: paling mudah dibaca, tetapi bisa diblokir kebijakan (ExecutionPolicy/GPO).
         var (code, output) = RunCapture("powershell.exe",
             "-NoProfile -Command \"(Get-Service | Where-Object { $_.Name -like 'postgresql*' } | Select-Object -First 1).Name\"");
         if (code == 0)
         {
             var name = output.Trim();
             if (!string.IsNullOrEmpty(name)) return name;
+        }
+
+        // 2) Cadangan sc.exe: bawaan Windows dan selalu tersedia meski PowerShell dimatikan.
+        return FindPostgresServiceViaSc();
+    }
+
+    /// <summary>Deteksi service PostgreSQL lewat sc.exe (tanpa PowerShell).</summary>
+    static string? FindPostgresServiceViaSc()
+    {
+        var (code, output) = RunCapture("sc.exe", "query state= all");
+        if (code != 0) return null;
+
+        foreach (var line in output.Split('\n'))
+        {
+            var text = line.Trim();
+            if (!text.StartsWith("SERVICE_NAME:", StringComparison.OrdinalIgnoreCase)) continue;
+            var name = text["SERVICE_NAME:".Length..].Trim();
+            if (name.StartsWith("postgresql", StringComparison.OrdinalIgnoreCase)) return name;
         }
         return null;
     }
@@ -221,7 +239,11 @@ class Program
     {
         var (code, output) = RunCapture("powershell.exe",
             $"-NoProfile -Command \"(Get-Service -Name '{name}' -ErrorAction SilentlyContinue).Status\"");
-        return code == 0 && output.Trim().StartsWith("Running", StringComparison.OrdinalIgnoreCase);
+        if (code == 0 && output.Trim().StartsWith("Running", StringComparison.OrdinalIgnoreCase)) return true;
+
+        // Cadangan sc.exe — "STATE : 4   RUNNING".
+        var (scCode, scOutput) = RunCapture("sc.exe", $"query \"{name}\"");
+        return scCode == 0 && scOutput.Contains("RUNNING", StringComparison.OrdinalIgnoreCase);
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -270,6 +292,10 @@ class Program
         // Koneksi DB: dev memakai user-secrets, distribusi memakai config di sini.
         if (!string.IsNullOrWhiteSpace(_config.ConnectionString))
             psi.EnvironmentVariables["ConnectionStrings__DefaultConnection"] = _config.ConnectionString;
+        // Kunci JWT: setiap instalasi sebaiknya punya kunci sendiri. Bila tidak diisi,
+        // API memakai nilai bawaan dari appsettings.json (cocok untuk demo, tidak untuk produksi).
+        if (!string.IsNullOrWhiteSpace(_config.JwtSecret))
+            psi.EnvironmentVariables["JwtSettings__SecretKey"] = _config.JwtSecret;
 
         try
         {
@@ -470,6 +496,7 @@ class Program
 /// {
 ///   "connectionString": "Host=localhost;Port=5432;Database=gigradar;Username=postgres;Password=postgres",
 ///   "postgresServiceName": "postgresql-x64-16",
+///   "jwtSecret": "",
 ///   "openSwagger": false
 /// }
 /// </summary>
@@ -477,6 +504,13 @@ class LauncherConfig
 {
     public string ConnectionString { get; set; } = "";
     public string PostgresServiceName { get; set; } = "";
+
+    /// <summary>
+    /// Kunci penandatangan JWT untuk instalasi ini. Kosongkan untuk memakai nilai
+    /// bawaan appsettings.json (hanya untuk demo). Isi agar tiap instalasi unik.
+    /// </summary>
+    public string JwtSecret { get; set; } = "";
+
     public bool OpenSwagger { get; set; }
 
     public static LauncherConfig Load(string exeDir)

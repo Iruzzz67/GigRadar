@@ -65,6 +65,8 @@ namespace GigRadarMobile.ViewModels
         public partial string FormBio { get; set; } = "";
         [ObservableProperty]
         public partial string FormPhotoUrl { get; set; } = "";
+        [ObservableProperty]
+        public partial string FormSpotifyUrl { get; set; } = "";
 
         public string Initials => BuildInitials(UserName);
 
@@ -153,6 +155,7 @@ namespace GigRadarMobile.ViewModels
                 FormCity = Dashboard?.City ?? "";
                 FormBio = "";
                 FormPhotoUrl = Dashboard?.PhotoUrl ?? "";
+                FormSpotifyUrl = string.IsNullOrWhiteSpace(_auth.GetUserName()) ? "" : (Dashboard?.SpotifyUrl ?? "");
             }
         }
 
@@ -174,7 +177,7 @@ namespace GigRadarMobile.ViewModels
                 var (success, message) = await _api.UpdateMyArtistProfileAsync(
                     FormName.Trim(),
                     string.IsNullOrWhiteSpace(FormBio) ? null : FormBio,
-                    FormGenre, FormCity, FormPhotoUrl, null, null);
+                    FormGenre, FormCity, FormPhotoUrl, null, null, string.IsNullOrWhiteSpace(FormSpotifyUrl) ? null : FormSpotifyUrl.Trim());
 
                 if (!success)
                 {

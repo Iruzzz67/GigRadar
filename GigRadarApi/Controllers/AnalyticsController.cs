@@ -106,7 +106,7 @@ namespace GigRadarApi.Controllers
         {
             var stats = new PlatformAnalytics
             {
-                TotalUsers = await context.Users.CountAsync(),
+                TotalUsers = await context.Users.CountAsync(u => u.Role == "User"),
                 TotalArtists = await context.Artists.CountAsync(),
                 TotalEos = await context.Organizers.CountAsync(),
                 TotalEvents = await context.Events.CountAsync(),

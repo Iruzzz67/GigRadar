@@ -58,8 +58,21 @@ namespace GigRadarApi.Services
                 return (null, $"Maaf, kamu belum memenuhi syarat umur minimal {MinimumAge} tahun untuk membeli tiket ini");
 
             // ── Simpan tiket & kurangi stok ───────────────
-            type.Stock -= 1;
+            // Stok dikurangi lewat UPDATE atomik ("Stock = Stock - 1 WHERE Stock > 0"),
+            // bukan dengan menimpa nilai yang sudah dibaca di atas. Tanpa ini, dua
+            // pembelian bersamaan pada stok terakhir bisa lolos berdua (oversell — §24).
+            // Ticket + pengurangan stok dibungkus satu transaksi agar stok tidak
+            // berkurang saat penyimpanan tiket justru gagal.
+            await using var transaction = await _context.Database.BeginTransactionAsync();
 
+            var stockTaken = await _context.EventTicketTypes
+                .Where(t => t.EventTicketTypeId == ticketTypeId && t.EventId == eventId && t.Stock > 0)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(t => t.Stock, t => t.Stock - 1));
+
+            if (stockTaken == 0)
+                return (null, "Tiket sudah habis (sold out)");
+
+            // Harga & nama tipe selalu dari server — body request tidak boleh menentukan harga.
             var ticket = new Ticket
             {
                 EventId = eventId,
@@ -77,6 +90,7 @@ namespace GigRadarApi.Services
 
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             var saved = await _context.Tickets
                 .Include(t => t.Event)
@@ -212,14 +226,78 @@ namespace GigRadarApi.Services
                 .FirstOrDefaultAsync(t => t.TicketId == ticketId);
         }
 
-        public async Task<bool> ValidateTicketAsync(string qrCode)
+        /// <summary>
+        /// Check-in tiket lewat QR (GIGRADAR_APP_SPEC.md Bab 14). Validasi dilakukan
+        /// di server, bukan dengan mempercayai hasil scan client:
+        ///   1. EO/Admin harus mengelola event yang sedang di-check-in (§24 — EO hanya
+        ///      boleh mengurus event miliknya, jadi tiket EO lain tidak bisa "dibakar").
+        ///   2. QR harus terdaftar pada event tersebut — token event lain ditolak tanpa
+        ///      membocorkan detailnya.
+        ///   3. Hanya tiket berstatus Active yang boleh berubah menjadi Used, sehingga
+        ///      tiket yang sudah dipakai tidak bisa dipakai dua kali.
+        /// </summary>
+        public async Task<(Ticket? Ticket, string? Error, bool Forbidden)> CheckInTicketAsync(
+            string qrCode, int eventId, int userId, string role)
         {
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.QRCode == qrCode && t.Status == "Active");
-            if (ticket == null) return false;
+            var code = qrCode?.Trim() ?? string.Empty;
+            if (code.Length == 0)
+                return (null, "QR tiket wajib diisi", false);
+
+            if (eventId <= 0)
+                return (null, "Event check-in wajib dipilih", false);
+
+            if (!await CanManageEventAsync(eventId, userId, role))
+                return (null, "Kamu tidak memiliki akses untuk event ini", true);
+
+            var ticket = await _context.Tickets
+                .Include(t => t.Event)
+                .ThenInclude(e => e!.Venue)
+                .FirstOrDefaultAsync(t => t.QRCode == code && t.EventId == eventId);
+
+            if (ticket == null)
+                return (null, "Tiket tidak dikenali untuk event ini", false);
+
+            if (ticket.Status == "Used")
+                return (null, "Tiket ini sudah pernah dipakai", false);
+
+            if (ticket.Status != "Active")
+                return (null, $"Tiket tidak berstatus aktif (status: {ticket.Status})", false);
 
             ticket.Status = "Used";
             await _context.SaveChangesAsync();
-            return true;
+
+            return (ticket, null, false);
+        }
+
+        /// <summary>
+        /// Daftar peserta (seluruh tiket) sebuah event untuk EO pemiliknya / Admin (§14, §30).
+        /// Kepemilikan event diperiksa lebih dulu (§24) — EO lain hanya dapat pesan 403.
+        /// Entitas Ticket dikembalikan apa adanya; controller yang menyusun respons
+        /// sehingga data kontak pembeli tidak ikut terkirim.
+        /// </summary>
+        public async Task<(List<Ticket>? Attendees, string? Error, bool Forbidden)> GetEventAttendeesAsync(
+            int eventId, int userId, string role)
+        {
+            if (eventId <= 0)
+                return (null, "Event tidak ditemukan", false);
+
+            if (!await CanManageEventAsync(eventId, userId, role))
+                return (null, "Kamu tidak memiliki akses untuk event ini", true);
+
+            var attendees = await _context.Tickets
+                .Where(t => t.EventId == eventId)
+                .OrderByDescending(t => t.PurchasedAt)
+                .ToListAsync();
+
+            return (attendees, null, false);
+        }
+
+        /// <summary>Ringkasan kehadiran event untuk halaman check-in ("Checked In 127 / 500").</summary>
+        public async Task<(int CheckedIn, int Total)> GetCheckInCountsAsync(int eventId)
+        {
+            var total = await _context.Tickets.CountAsync(t => t.EventId == eventId);
+            var checkedIn = await _context.Tickets.CountAsync(t => t.EventId == eventId && t.Status == "Used");
+            return (checkedIn, total);
         }
 
         private static bool IsValidEmail(string email)

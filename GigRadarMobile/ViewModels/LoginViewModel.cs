@@ -90,9 +90,17 @@ namespace GigRadarMobile.ViewModels
 
                     var requestedRole = SelectedRole == "User" ? null : SelectedRole;
                     var (success, message, token, user) = await _api.RegisterAsync(Name, Email, Password, requestedRole);
-                    if (!success || token == null)
+                    if (!success)
                     {
                         await Alerts.ShowAsync("Error", message);
+                        return;
+                    }
+
+                    if (requestedRole != null && token == null)
+                    {
+                        await Alerts.ShowAsync("Menunggu verifikasi", message +
+                            " Kamu belum dapat masuk ke aplikasi sampai Admin menyetujui akunmu.");
+                        IsRegister = false;
                         return;
                     }
 

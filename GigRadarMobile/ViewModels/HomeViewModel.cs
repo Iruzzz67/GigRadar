@@ -137,8 +137,10 @@ namespace GigRadarMobile.ViewModels
                 TonightEvents = new ObservableCollection<GigEvent>(
                     visibleEvents.Where(e => e.StartDate.Date == DateTime.Today));
 
+                // Rentang "hari ini s/d akhir pekan" — sama dengan GET /api/events/weekend.
+                var weekendEnd = DateTime.Today.AddDays(7 - (int)DateTime.Today.DayOfWeek);
                 var weekend = visibleEvents
-                    .Where(e => e.StartDate >= DateTime.Today && e.StartDate <= DateTime.Today.AddDays(7))
+                    .Where(e => e.StartDate >= DateTime.Today && e.StartDate <= weekendEnd)
                     .OrderBy(e => e.StartDate)
                     .ToList();
                 WeekendEvents = new ObservableCollection<GigEvent>(weekend);
@@ -151,7 +153,7 @@ namespace GigRadarMobile.ViewModels
                 // Artist + genre chips (gagal diam-diam — bukan konten utama).
                 try
                 {
-                    var artistsTask = _api.GetArtistsAsync();
+                    var artistsTask = _api.GetRecommendedArtistsAsync();
                     var genresTask = _api.GetGenresAsync();
                     await Task.WhenAll(artistsTask, genresTask);
 

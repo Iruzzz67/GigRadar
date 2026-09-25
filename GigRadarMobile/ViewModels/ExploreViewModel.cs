@@ -57,6 +57,8 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty]
         public partial string DateFilter { get; set; } = "Semua";
         [ObservableProperty]
+        public partial string PriceFilter { get; set; } = "Semua";
+        [ObservableProperty]
         public partial double RadiusKm { get; set; } = 25;
         [ObservableProperty]
         public partial ObservableCollection<GenreFilterItem> GenreFilters { get; set; } = new();
@@ -211,9 +213,19 @@ namespace GigRadarMobile.ViewModels
         [RelayCommand]
         private void SelectDate(string? date)
         {
-            if (date is "Semua" or "Malam ini" or "Akhir pekan")
+            if (EventFilter.IsValidDateOption(date))
             {
-                DateFilter = date;
+                DateFilter = date!;
+                ApplyFilters();
+            }
+        }
+
+        [RelayCommand]
+        private void SelectPrice(string? price)
+        {
+            if (EventFilter.IsValidPriceOption(price))
+            {
+                PriceFilter = price!;
                 ApplyFilters();
             }
         }
@@ -235,6 +247,7 @@ namespace GigRadarMobile.ViewModels
             SearchText = "";
             SelectedGenre = "Semua";
             DateFilter = "Semua";
+            PriceFilter = "Semua";
             _debounce?.Stop();
             ApplyFilters();
         }
@@ -264,15 +277,9 @@ namespace GigRadarMobile.ViewModels
                     string.Equals(e.GenreName, genre, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (DateFilter == "Malam ini")
-            {
-                filtered = filtered.Where(e => e.StartDate.Date == DateTime.Today);
-            }
-            else if (DateFilter == "Akhir pekan")
-            {
-                filtered = filtered.Where(e =>
-                    e.StartDate >= DateTime.Today && e.StartDate <= DateTime.Today.AddDays(7));
-            }
+            // Aturan tanggal & harga hidup di Helpers/EventFilter agar bisa diuji tanpa UI.
+            filtered = filtered.Where(e => EventFilter.MatchesDate(e, DateFilter));
+            filtered = filtered.Where(e => EventFilter.MatchesPrice(e, PriceFilter));
 
             // Radius (km) — hitung jarak sekaligus untuk sorting.
             var withDistance = filtered
@@ -305,7 +312,8 @@ namespace GigRadarMobile.ViewModels
 
             HasArtists = Artists.Count > 0;
             HasVenues = Venues.Count > 0;
-            IsFiltered = !string.IsNullOrEmpty(query) || genre != null || DateFilter != "Semua";
+            IsFiltered = !string.IsNullOrEmpty(query) || genre != null
+                || DateFilter != "Semua" || PriceFilter != "Semua";
 
             HasResults = Events.Count > 0 || HasArtists || HasVenues;
 

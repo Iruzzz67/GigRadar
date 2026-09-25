@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using GigRadarMobile.Helpers;
 using GigRadarMobile.Models;
 
 namespace GigRadarMobile.ViewModels
@@ -9,6 +10,10 @@ namespace GigRadarMobile.ViewModels
     {
         [ObservableProperty]
         public partial Ticket? Ticket { get; set; }
+
+        /// <summary>QR asli yang bisa dipindai petugas (§14).</summary>
+        [ObservableProperty]
+        public partial ImageSource? QrImage { get; set; }
 
         public string EventName => Ticket?.EventName ?? "";
         public string EventDate => Ticket?.EventDate ?? "";
@@ -27,6 +32,13 @@ namespace GigRadarMobile.ViewModels
             OnPropertyChanged(nameof(PriceFormatted));
             OnPropertyChanged(nameof(BuyerName));
             OnPropertyChanged(nameof(QRCode));
+
+            _ = LoadQrAsync();
+        }
+
+        private async Task LoadQrAsync()
+        {
+            QrImage = await QrImageFactory.CreateAsync(Ticket?.QRCode);
         }
 
         [RelayCommand]

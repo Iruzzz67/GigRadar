@@ -4,6 +4,7 @@ using GigRadarMobile.ViewModels;
 using GigRadarMobile.Views;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
+using ZXing.Net.Maui.Controls;
 
 // Force XamlC di semua konfigurasi (termasuk Debug): tanpa ini XAML di-parsing
 // saat runtime dan error seperti property yang tidak ada (mis. Padding di Entry)
@@ -20,6 +21,9 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            // ZXing: QR generator (semua platform) + kamera scanner check-in EO
+            // (Android/iOS/MacCatalyst — di Windows view scanner jadi input manual).
+            .UseBarcodeReader()
             .ConfigureFonts(fonts =>
             {
                 // Display: Space Grotesk. Body: Inter.
@@ -67,6 +71,10 @@ public static class MauiProgram
         builder.Services.AddTransient<ReportsViewModel>();
         builder.Services.AddTransient<PlatformAnalyticsViewModel>();
         builder.Services.AddTransient<VerificationsViewModel>();
+        builder.Services.AddTransient<FollowingViewModel>();
+        builder.Services.AddTransient<CheckInViewModel>();
+        builder.Services.AddTransient<AttendeesViewModel>();
+        builder.Services.AddTransient<AdminGenresViewModel>();
 
         // Pages
         builder.Services.AddTransient<LoginPage>();
@@ -97,6 +105,10 @@ public static class MauiProgram
         builder.Services.AddTransient<ReportsPage>();
         builder.Services.AddTransient<PlatformAnalyticsPage>();
         builder.Services.AddTransient<VerificationsPage>();
+        builder.Services.AddTransient<FollowingPage>();
+        builder.Services.AddTransient<CheckInPage>();
+        builder.Services.AddTransient<AttendeesPage>();
+        builder.Services.AddTransient<GenresPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

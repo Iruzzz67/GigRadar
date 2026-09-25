@@ -20,6 +20,8 @@ namespace GigRadarMobile.Models
         public string Genre { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string SocialLinks { get; set; } = string.Empty;
+        public string SpotifyUrl { get; set; } = string.Empty;
+        public bool HasSpotify => !string.IsNullOrWhiteSpace(SpotifyUrl);
         public int FollowersCount { get; set; }
         public int TracksCount { get; set; }
         public List<ArtistMember> Members { get; set; } = new();
@@ -40,6 +42,8 @@ namespace GigRadarMobile.Models
         public string Genre { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string SocialLinks { get; set; } = string.Empty;
+        public string SpotifyUrl { get; set; } = string.Empty;
+        public bool HasSpotify => !string.IsNullOrWhiteSpace(SpotifyUrl);
         public int FollowersCount { get; set; }
         public int TracksCount { get; set; }
         public int AlbumsCount { get; set; }
@@ -127,6 +131,8 @@ namespace GigRadarMobile.Models
         public string CoverUrl { get; set; } = string.Empty;
         public string Genre { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
+        public string SpotifyUrl { get; set; } = string.Empty;
+        public bool HasSpotify => !string.IsNullOrWhiteSpace(SpotifyUrl);
         public int FollowersCount { get; set; }
         public int TracksCount { get; set; }
         public int AlbumsCount { get; set; }

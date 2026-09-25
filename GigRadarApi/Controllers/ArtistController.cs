@@ -103,6 +103,7 @@ namespace GigRadarApi.Controllers
                 artist.Genre,
                 artist.City,
                 artist.SocialLinks,
+                artist.SpotifyUrl,
                 followersCount = await _context.Follows.CountAsync(f => f.ArtistId == artist.ArtistId),
                 tracksCount = await _context.AudioTracks.CountAsync(t => t.ArtistId == artist.ArtistId),
                 albumsCount = await _context.ArtistAlbums.CountAsync(al => al.ArtistId == artist.ArtistId),
@@ -123,6 +124,7 @@ namespace GigRadarApi.Controllers
             artist.Genre = request.Genre ?? artist.Genre;
             artist.City = request.City ?? artist.City;
             artist.SocialLinks = request.SocialLinks ?? artist.SocialLinks;
+            artist.SpotifyUrl = request.SpotifyUrl ?? artist.SpotifyUrl;
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Profil artist diperbarui", artistId = artist.ArtistId });
@@ -162,6 +164,7 @@ namespace GigRadarApi.Controllers
                 artist.CoverUrl,
                 artist.Genre,
                 artist.City,
+                artist.SpotifyUrl,
                 followersCount,
                 tracksCount,
                 albumsCount,
@@ -443,6 +446,7 @@ namespace GigRadarApi.Controllers
         public string? Genre { get; set; }
         public string? City { get; set; }
         public string? SocialLinks { get; set; }
+        public string? SpotifyUrl { get; set; }
     }
 
     public class TrackRequest

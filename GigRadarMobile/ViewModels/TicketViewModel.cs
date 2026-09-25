@@ -43,6 +43,13 @@ namespace GigRadarMobile.ViewModels
             {
                 _api.SetAuthToken(_auth.GetToken());
                 var tickets = await _api.GetMyTicketsAsync();
+
+                // QR asli per tiket supaya bisa dipindai petugas saat check-in (§14).
+                // Dibuat berurutan (bukan paralel) karena encoder gambar platform tidak
+                // dirancang untuk dipakai bersamaan.
+                foreach (var ticket in tickets)
+                    ticket.QrImage = await QrImageFactory.CreateAsync(ticket.QRCode);
+
                 Tickets = new ObservableCollection<Ticket>(tickets);
                 HasTickets = tickets.Count > 0;
             }

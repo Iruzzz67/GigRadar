@@ -1,8 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using GigRadarApi.Authorization;
 using GigRadarApi.Data;
 using GigRadarApi.Services;
 
@@ -45,11 +48,20 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+// Otorisasi + gate anti-penipuan event (§53/§54): aksi tulis event/tiket EO
+// hanya untuk organizer yang sudah diverifikasi Admin.
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("VerifiedOrganizer", policy =>
+        policy.Requirements.Add(new VerifiedOrganizerRequirement()));
+});
+builder.Services.AddScoped<IAuthorizationHandler, VerifiedOrganizerHandler>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, ApiAuthorizationResultHandler>();
 
 // Services
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EventService>();
+builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<ArtistVerificationService>();
@@ -98,6 +110,23 @@ if (!EF.IsDesignTime)
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Database.Migrate();
         TicketSchemaBootstrap.Ensure(db);
+        PendingVerificationBootstrap.Ensure(db);
+
+        // Password default akun demo hanya boleh berlaku di Development (§24).
+        // Dijalankan SETELAH bootstrap di atas karena bootstrap itu yang membuat
+        // akun demo eo/artist pada database yang belum memilikinya.
+        var rotatedSeedAccounts = SeedAccountHardening.Ensure(
+            db,
+            app.Environment.IsDevelopment(),
+            Environment.GetEnvironmentVariable(SeedAccountHardening.PasswordOverrideVariable));
+
+        foreach (var email in rotatedSeedAccounts)
+        {
+            app.Logger.LogWarning(
+                "Akun demo {Email} memakai password default — password telah diacak otomatis. " +
+                "Reset password akun ini sebelum dipakai (atau set env var {Variable} untuk memilih password sendiri).",
+                email, SeedAccountHardening.PasswordOverrideVariable);
+        }
     }
 }
 

@@ -188,7 +188,7 @@ public class OrganizerVerificationService(AppDbContext context, NotificationServ
         int verificationId, int adminUserId, bool approve, string? reason)
     {
         var verification = await context.OrganizerVerifications
-            .Include(v => v.Organizer)
+            .Include(v => v.Organizer).ThenInclude(o => o!.User)
             .FirstOrDefaultAsync(v => v.VerificationId == verificationId);
 
         if (verification == null)
@@ -225,6 +225,26 @@ public class OrganizerVerificationService(AppDbContext context, NotificationServ
         // Status profil mengikuti keputusan terakhir (server-controlled, Bab 15).
         verification.Organizer.VerificationStatus = verification.Status;
         verification.Organizer.IsVerified = approve;
+
+        if (verification.Organizer.UserId is int organizerUserId)
+        {
+            var user = verification.Organizer.User;
+            if (user != null)
+            {
+                user.Role = approve ? "EO" : "User";
+                user.RoleStatus = approve ? "Approved" : "Rejected";
+            }
+
+            var roleRequest = await context.RoleRequests
+                .Where(r => r.UserId == organizerUserId && r.RequestedRole == "EO" && r.Status == "Pending")
+                .FirstOrDefaultAsync();
+            if (roleRequest != null)
+            {
+                roleRequest.Status = approve ? "Approved" : "Rejected";
+                roleRequest.ReviewedByAdminId = adminUserId;
+                roleRequest.ReviewedAt = DateTime.UtcNow;
+            }
+        }
 
         await context.SaveChangesAsync();
         var msg = approve

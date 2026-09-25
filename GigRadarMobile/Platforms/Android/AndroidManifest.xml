@@ -3,12 +3,15 @@
 	<!-- gigradarCleartext disetel dari csproj: true hanya untuk Debug (API lokal
 	     via adb reverse/localhost). Release = false, wajib HTTPS. -->
 	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:supportsRtl="true" android:usesCleartextTraffic="${gigradarCleartext}" />
-	<!-- Peta memakai tile CARTO via WebView (tidak butuh Google Maps API key).
-	     Kalau kelak butuh Maps SDK native, key WAJIB disimpan sebagai secret
-	     (dotnet user-secrets / CI variable), bukan di-commit ke manifest. -->
+	<!-- Peta memakai tile Mapbox via WebView. Access token public dibatasi
+	     oleh konfigurasi aplikasi Mapbox; jangan menaruh secret token di sini. -->
 	<!-- INTERNET + NETWORK_STATE: komunikasi API (wajib). -->
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<!-- CAMERA: memindai QR tiket pada halaman check-in EO (§14). -->
+	<uses-permission android:name="android.permission.CAMERA" />
+	<!-- Kamera bukan syarat: EO bisa memasukkan kode tiket secara manual. -->
+	<uses-feature android:name="android.hardware.camera" android:required="false" />
 </manifest>

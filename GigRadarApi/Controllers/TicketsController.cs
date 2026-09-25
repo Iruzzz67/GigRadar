@@ -26,6 +26,40 @@ namespace GigRadarApi.Controllers
             return Ok(tickets);
         }
 
+        /// <summary>
+        /// Daftar peserta event (EO/Admin pemiliknya). Data kontak pembeli sengaja tidak
+        /// dikirim — halaman peserta hanya butuh nama, tipe tiket, dan status kehadiran.
+        /// </summary>
+        [HttpGet("event/{eventId}/attendees")]
+        [Authorize(Roles = "EO,Admin")]
+        public async Task<IActionResult> GetEventAttendees(int eventId)
+        {
+            var (attendees, error, forbidden) = await _ticketService.GetEventAttendeesAsync(
+                eventId, GetUserId(), GetRole());
+
+            if (forbidden)
+                return StatusCode(403, new { message = error });
+            if (attendees == null)
+                return NotFound(new { message = error });
+
+            return Ok(new
+            {
+                eventId,
+                total = attendees.Count,
+                checkedIn = attendees.Count(t => t.Status == "Used"),
+                active = attendees.Count(t => t.Status == "Active"),
+                attendees = attendees.Select(t => new
+                {
+                    t.TicketId,
+                    t.TicketType,
+                    t.BuyerName,
+                    t.Price,
+                    t.Status,
+                    t.PurchasedAt
+                })
+            });
+        }
+
         [HttpGet("event/{eventId}/types")]
         public async Task<IActionResult> GetEventTicketTypes(int eventId)
         {
@@ -36,7 +70,7 @@ namespace GigRadarApi.Controllers
         // ── Kelola tipe tiket (halaman admin/EO) ─────────
 
         [HttpPost("event/{eventId}/types")]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> AddTicketType(int eventId, [FromBody] EventTicketType type)
         {
             var (created, error) = await _ticketService.AddTicketTypeAsync(
@@ -49,7 +83,7 @@ namespace GigRadarApi.Controllers
         }
 
         [HttpPut("types/{typeId}")]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> UpdateTicketType(int typeId, [FromBody] EventTicketType type)
         {
             var (updated, error) = await _ticketService.UpdateTicketTypeAsync(
@@ -62,7 +96,7 @@ namespace GigRadarApi.Controllers
         }
 
         [HttpDelete("types/{typeId}")]
-        [Authorize(Roles = "EO,Admin")]
+        [Authorize(Roles = "EO,Admin", Policy = "VerifiedOrganizer")]
         public async Task<IActionResult> DeleteTicketType(int typeId)
         {
             var (deleted, error) = await _ticketService.DeleteTicketTypeAsync(
@@ -105,12 +139,44 @@ namespace GigRadarApi.Controllers
             return Ok(new { message = "Tiket berhasil dibeli", ticket });
         }
 
+        /// <summary>
+        /// Check-in tiket via QR (Bab 14). Tiket harus milik event yang dikelola EO/Admin
+        /// yang men-scan — bukan sekadar "tiket valid mana pun" (§24). Respons menyertakan
+        /// ringkasan kehadiran supaya halaman check-in bisa menampilkan progres.
+        /// </summary>
         [HttpPost("validate")]
         [Authorize(Roles = "EO,Admin")]
         public async Task<IActionResult> ValidateTicket([FromBody] ValidateTicketRequest request)
         {
-            var valid = await _ticketService.ValidateTicketAsync(request.QRCode);
-            return Ok(new { valid, message = valid ? "Tiket valid" : "Tiket tidak valid" });
+            if (request == null)
+                return BadRequest(new { valid = false, message = "Body check-in wajib dikirim" });
+
+            var (ticket, error, forbidden) = await _ticketService.CheckInTicketAsync(
+                request.QRCode, request.EventId, GetUserId(), GetRole());
+
+            if (forbidden)
+                return StatusCode(403, new { valid = false, message = error });
+
+            var (checkedIn, total) = await _ticketService.GetCheckInCountsAsync(request.EventId);
+
+            if (ticket == null)
+                return Ok(new { valid = false, message = error, checkedIn, total });
+
+            return Ok(new
+            {
+                valid = true,
+                message = $"Check-in berhasil: {ticket.BuyerName} ({ticket.TicketType})",
+                checkedIn,
+                total,
+                ticket = new
+                {
+                    ticket.TicketId,
+                    ticket.TicketType,
+                    ticket.BuyerName,
+                    ticket.Status,
+                    ticket.PurchasedAt
+                }
+            });
         }
     }
 
@@ -127,5 +193,8 @@ namespace GigRadarApi.Controllers
     public class ValidateTicketRequest
     {
         public string QRCode { get; set; } = string.Empty;
+
+        /// <summary>Event yang sedang di-check-in — dipakai untuk memvalidasi kepemilikan oleh EO (§24).</summary>
+        public int EventId { get; set; }
     }
 }

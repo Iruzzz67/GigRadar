@@ -37,6 +37,54 @@ namespace GigRadarApi.Services
                 .FirstOrDefaultAsync(e => e.EventId == id);
         }
 
+        /// <summary>
+        /// Detail event untuk halaman detail (GET /api/events/{id}) sekaligus mencatat
+        /// satu view — <see cref="Event.ViewsCount"/> adalah sinyal popularitas yang
+        /// dipakai <see cref="GetRecommendedEventsAsync"/> (§11).
+        ///
+        /// Sengaja dipisah dari <see cref="GetEventByIdAsync"/>: pemakaian internal
+        /// (create/update/validasi/delete) tidak boleh menggelembungkan angka view.
+        /// </summary>
+        public async Task<Event?> GetEventDetailAsync(int id)
+        {
+            var evt = await GetEventByIdAsync(id);
+            if (evt == null) return null;
+
+            evt.ViewsCount += 1;
+            await _context.SaveChangesAsync();
+
+            return evt;
+        }
+
+        /// <summary>
+        /// Simpan/lepaskan event dari daftar tersimpan user (toggle favorit) sekaligus
+        /// menjaga <see cref="Event.SavesCount"/> tetap sinkron — sinyal interaksi
+        /// untuk rekomendasi (§11). Mengembalikan state akhir (true = tersimpan).
+        /// </summary>
+        public async Task<(bool Saved, string? Error)> ToggleSaveAsync(int eventId, int userId)
+        {
+            var evt = await _context.Events.FirstOrDefaultAsync(e => e.EventId == eventId);
+            if (evt == null)
+                return (false, "Event tidak ditemukan");
+
+            var existing = await _context.Favorites
+                .FirstOrDefaultAsync(f => f.UserId == userId && f.EventId == eventId);
+
+            if (existing != null)
+            {
+                _context.Favorites.Remove(existing);
+                // Pengaman: angka tidak boleh negatif walau data lama tidak konsisten.
+                evt.SavesCount = Math.Max(0, evt.SavesCount - 1);
+                await _context.SaveChangesAsync();
+                return (false, null);
+            }
+
+            _context.Favorites.Add(new Favorite { UserId = userId, EventId = eventId });
+            evt.SavesCount += 1;
+            await _context.SaveChangesAsync();
+            return (true, null);
+        }
+
         public async Task<List<Event>> GetNearbyEventsAsync(double lat, double lng, double radiusKm = 50)
         {
             var events = await _context.Events

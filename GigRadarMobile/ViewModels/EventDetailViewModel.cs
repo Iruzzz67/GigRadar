@@ -165,6 +165,26 @@ namespace GigRadarMobile.ViewModels
             OnPropertyChanged(nameof(CanBuy));
         }
 
+        /// <summary>
+        /// Muat ulang event dari server saat halaman dibuka. Dua manfaat: view tercatat
+        /// di server (sinyal popularitas untuk rekomendasi §11) dan status/stok tiket
+        /// selalu segar. Bila gagal (offline), data yang sudah tampil tetap dipakai.
+        /// </summary>
+        [RelayCommand]
+        private async Task RefreshAsync()
+        {
+            if (GigEvent == null) return;
+
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var fresh = await _api.GetEventAsync(GigEvent.EventId);
+                if (fresh != null)
+                    GigEvent = fresh;
+            }
+            catch { /* data dari halaman sebelumnya tetap dipakai */ }
+        }
+
         [RelayCommand]
         private async Task PlayPreviewAsync(Artist? artist)
         {

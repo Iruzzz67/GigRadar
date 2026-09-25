@@ -160,7 +160,10 @@ namespace GigRadarMobile.Services
         public async Task<(bool Success, string Message, string? Token, User? User)> RegisterAsync(string name, string email, string password, string? requestedRole = null)
         {
             var result = await PostAsync<RegisterResponse>("/api/auth/register", new { name, email, password, requestedRole });
-            if (result?.Token == null) return (false, result?.Message ?? "Register failed", null, null);
+            if (result == null || (result.Token == null && !result.Pending))
+                return (false, result?.Message ?? "Register failed", null, null);
+            if (result.Pending)
+                return (true, result.Message, null, result.User);
             SetAuthToken(result.Token);
             return (true, result.Message, result.Token, result.User);
         }
@@ -243,11 +246,11 @@ namespace GigRadarMobile.Services
 
         public async Task<(bool Success, string Message)> UpdateMyArtistProfileAsync(
             string? name, string? bio, string? genre, string? city,
-            string? photoUrl, string? coverUrl, string? socialLinks)
+            string? photoUrl, string? coverUrl, string? socialLinks, string? spotifyUrl)
         {
             var response = await _http.PutAsJsonAsync("/api/artist/me", new
             {
-                name, bio, genre, city, photoUrl, coverUrl, socialLinks
+                name, bio, genre, city, photoUrl, coverUrl, socialLinks, spotifyUrl
             }, _jsonOptions);
             return await ParseResultAsync(response);
         }
@@ -376,7 +379,13 @@ namespace GigRadarMobile.Services
             return await ParseResultAsync(response);
         }
 
-        // ── Follow artist (§30) ───────────────────────────
+        // ── Follow artist (§10/§30) ───────────────────────
+
+        /// <summary>Artist yang diikuti user login — bahan halaman Following.</summary>
+        public async Task<List<FollowedArtist>> GetFollowsAsync()
+        {
+            return await GetAsync<List<FollowedArtist>>("/api/users/follows") ?? new();
+        }
 
         public async Task<(bool Success, string Message)> FollowArtistAsync(int artistId)
         {
@@ -400,6 +409,25 @@ namespace GigRadarMobile.Services
         public async Task<List<EventTicketType>> GetEventTicketTypesAsync(int eventId)
         {
             return await GetAsync<List<EventTicketType>>($"/api/tickets/event/{eventId}/types") ?? new();
+        }
+
+        /// <summary>
+        /// Daftar peserta + ringkasan kehadiran sebuah event (EO/Admin pemiliknya, §14/§30).
+        /// Dipakai halaman Peserta sekaligus sebagai sumber angka counter check-in.
+        /// </summary>
+        public async Task<EventAttendeesReport?> GetEventAttendeesAsync(int eventId)
+        {
+            return await GetAsync<EventAttendeesReport>($"/api/tickets/event/{eventId}/attendees");
+        }
+
+        /// <summary>
+        /// Check-in tiket lewat QR untuk event tertentu (§14). Server memvalidasi bahwa
+        /// event itu memang milik EO/Admin yang memindai, jadi eventId wajib dikirim.
+        /// Respons penolakan (403) tetap dikembalikan sebagai hasil, bukan exception.
+        /// </summary>
+        public async Task<TicketCheckInResult?> CheckInTicketAsync(int eventId, string qrCode)
+        {
+            return await PostAsync<TicketCheckInResult>("/api/tickets/validate", new { eventId, qrCode });
         }
 
         /// <summary>
@@ -497,6 +525,44 @@ namespace GigRadarMobile.Services
         public async Task<List<User>> GetUsersAsync()
         {
             return await GetAsync<List<User>>("/api/users") ?? new();
+        }
+
+        public async Task<CommunityDirectory?> GetCommunityDirectoryAsync()
+        {
+            return await GetAsync<CommunityDirectory>("/api/users/communities");
+        }
+
+        // ── Admin: CRUD akun (§4.4/§23) ───────────────────
+
+        public async Task<(bool Success, string Message)> CreateAccountAsync(
+            string name, string email, string password, string role, string city)
+        {
+            var response = await _http.PostAsJsonAsync("/api/users",
+                new { name, email, password, role, city }, _jsonOptions);
+            return await ParseResultAsync(response);
+        }
+
+        /// <summary>Password boleh null/kosong — server mempertahankan password lama.</summary>
+        public async Task<(bool Success, string Message)> UpdateAccountAsync(
+            int userId, string? name, string? email, string? password, string? role, string? city)
+        {
+            var response = await _http.PutAsJsonAsync($"/api/users/{userId}",
+                new { name, email, password, role, city }, _jsonOptions);
+            return await ParseResultAsync(response);
+        }
+
+        public async Task<(bool Success, string Message)> DeleteAccountAsync(int userId)
+        {
+            var response = await _http.DeleteAsync($"/api/users/{userId}");
+            return await ParseResultAsync(response);
+        }
+
+        /// <summary>Nonaktifkan / aktifkan kembali akun (tidak menghapus datanya).</summary>
+        public async Task<(bool Success, string Message)> SetAccountSuspendedAsync(int userId, bool suspended)
+        {
+            var action = suspended ? "suspend" : "unsuspend";
+            var response = await _http.PostAsJsonAsync($"/api/users/{userId}/{action}", new { }, _jsonOptions);
+            return await ParseResultAsync(response);
         }
 
         public async Task<User?> UpdateProfileAsync(string? name, string? city, string? photoUrl = null)
@@ -895,6 +961,26 @@ namespace GigRadarMobile.Services
             return await GetAsync<List<Genre>>("/api/genres") ?? new();
         }
 
+        // ── Admin: CRUD genre (§4.4) ──────────────────────
+
+        public async Task<(bool Success, string Message)> CreateGenreAsync(string name, string icon)
+        {
+            var response = await _http.PostAsJsonAsync("/api/genres", new { name, icon }, _jsonOptions);
+            return await ParseResultAsync(response);
+        }
+
+        public async Task<(bool Success, string Message)> UpdateGenreAsync(int genreId, string name, string icon)
+        {
+            var response = await _http.PutAsJsonAsync($"/api/genres/{genreId}", new { name, icon }, _jsonOptions);
+            return await ParseResultAsync(response);
+        }
+
+        public async Task<(bool Success, string Message)> DeleteGenreAsync(int genreId)
+        {
+            var response = await _http.DeleteAsync($"/api/genres/{genreId}");
+            return await ParseResultAsync(response);
+        }
+
         // ── Venues ────────────────────────────────────────
 
         /// <summary>Daftar venue — dipakai form pembuatan event (pemilihan tempat).</summary>
@@ -905,14 +991,17 @@ namespace GigRadarMobile.Services
 
         /// <summary>Tambah venue baru (EO/Admin) untuk event di tempat yang belum terdaftar.</summary>
         public async Task<(bool Success, string Message, Venue? Venue)> CreateVenueAsync(
-            string name, string city, string address, int capacity)
+            string name, string city, string address, int capacity,
+            double latitude, double longitude)
         {
             var response = await _http.PostAsJsonAsync("/api/venues", new
             {
                 name,
                 city,
                 address,
-                capacity
+                capacity,
+                latitude,
+                longitude
             }, _jsonOptions);
 
             var json = await response.Content.ReadAsStringAsync();
@@ -949,6 +1038,30 @@ namespace GigRadarMobile.Services
         {
             var envelope = await PostAsync<FavoriteToggleEnvelope>($"/api/users/favorites/{eventId}", new { });
             return envelope?.Saved ?? false;
+        }
+
+        // -- Feed & Community --
+        public async Task<List<Artist>> GetRecommendedArtistsAsync()
+        {
+            return await GetAsync<List<Artist>>("/api/feed/recommended-artists") ?? new();
+        }
+
+        public async Task<List<CommunityPost>> GetCommunityPostsAsync(int artistId)
+        {
+            return await GetAsync<List<CommunityPost>>($"/api/community/artists/{artistId}/posts") ?? new();
+        }
+
+        public async Task<(bool Success, string Message)> CreateCommunityPostAsync(int artistId, string content, string imageUrl)
+        {
+            var response = await _http.PostAsJsonAsync($"/api/community/artists/{artistId}/posts", new { content, imageUrl }, _jsonOptions);
+            return await ParseResultAsync(response);
+        }
+
+        // -- Shop --
+        public async Task<List<MerchItem>> GetArtistMerchandiseAsync(int artistId)
+        {
+            // Route publik dari MerchandiseController: GET /api/artists/{artistId}/merchandise
+            return await GetAsync<List<MerchItem>>($"/api/artists/{artistId}/merchandise") ?? new();
         }
 
         private class FavoriteToggleEnvelope
@@ -997,6 +1110,7 @@ namespace GigRadarMobile.Services
         {
             public string Message { get; set; } = "";
             public string Token { get; set; } = "";
+            public bool Pending { get; set; }
             public User? User { get; set; }
         }
 

@@ -32,6 +32,7 @@ namespace GigRadarApi.Controllers
             {
                 message,
                 token,
+                pending = token == null,
                 user = new { user!.UserId, user.Name, user.Email, user.Role, user.RoleStatus }
             });
         }

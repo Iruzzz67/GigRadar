@@ -84,6 +84,22 @@
                             </DataTrigger>
                         </Button.Triggers>
                     </Button>
+                    <Button Text="Besok" Style="{StaticResource Chip}" Command="{Binding SelectDateCommand}" CommandParameter="Besok">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding DateFilter}" Value="Besok">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="Minggu ini" Style="{StaticResource Chip}" Command="{Binding SelectDateCommand}" CommandParameter="Minggu ini">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding DateFilter}" Value="Minggu ini">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
                     <Button Text="Akhir pekan" Style="{StaticResource Chip}" Command="{Binding SelectDateCommand}" CommandParameter="Akhir pekan">
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding DateFilter}" Value="Akhir pekan">
@@ -113,6 +129,44 @@
                         <Button.Triggers>
                             <DataTrigger TargetType="Button" Binding="{Binding RadiusKm}" Value="50">
                                 <Setter Property="BackgroundColor" Value="{StaticResource SecondaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- Harga -->
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8">
+                    <Button Text="Semua harga" Style="{StaticResource Chip}" Command="{Binding SelectPriceCommand}" CommandParameter="Semua">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding PriceFilter}" Value="Semua">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="Gratis" Style="{StaticResource Chip}" Command="{Binding SelectPriceCommand}" CommandParameter="Gratis">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding PriceFilter}" Value="Gratis">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="&lt;50rb" Style="{StaticResource Chip}" Command="{Binding SelectPriceCommand}" CommandParameter="&lt;50rb">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding PriceFilter}" Value="&lt;50rb">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <Button Text="&lt;100rb" Style="{StaticResource Chip}" Command="{Binding SelectPriceCommand}" CommandParameter="&lt;100rb">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding PriceFilter}" Value="&lt;100rb">
+                                <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
                                 <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
                             </DataTrigger>
                         </Button.Triggers>

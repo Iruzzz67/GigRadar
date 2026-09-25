@@ -6,8 +6,14 @@ namespace GigRadarMobile.Models
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = "User";
-        /// <summary>Status permohonan role: None / Pending / Approved.</summary>
+        /// <summary>Status akun: None (aktif) / Pending / Approved / Suspended (§23).</summary>
         public string RoleStatus { get; set; } = "None";
+
+        /// <summary>True bila akun dinonaktifkan Admin — hanya login yang ditolak.</summary>
+        public bool IsSuspended => RoleStatus == "Suspended";
+
+        /// <summary>Label tombol aksi nonaktifkan/aktifkan.</summary>
+        public string SuspendActionLabel => IsSuspended ? "Aktifkan" : "Nonaktifkan";
         public string City { get; set; } = string.Empty;
         public string Initials => BuildInitials(Name);
 
@@ -31,11 +37,12 @@ namespace GigRadarMobile.Models
             _ => "User"
         };
 
-        /// <summary>Label status permohonan role untuk tampilan.</summary>
+        /// <summary>Label status akun untuk tampilan.</summary>
         public string RoleStatusDisplay => RoleStatus switch
         {
             "Pending" => "⏳ Menunggu verifikasi",
             "Approved" => "✓ Terverifikasi",
+            "Suspended" => "⛔ Dinonaktifkan",
             _ => string.Empty
         };
 

@@ -71,7 +71,7 @@ public class ArtistVerificationService(AppDbContext context, NotificationService
         int verificationId, int adminUserId, bool approve, string? reason)
     {
         var verification = await context.ArtistVerifications
-            .Include(v => v.Artist)
+            .Include(v => v.Artist).ThenInclude(a => a!.User)
             .FirstOrDefaultAsync(v => v.VerificationId == verificationId);
 
         if (verification == null)
@@ -109,6 +109,26 @@ public class ArtistVerificationService(AppDbContext context, NotificationService
         // Status profil mengikuti keputusan terakhir (server-controlled, Bab 8).
         verification.Artist.VerificationStatus = verification.Status;
         verification.Artist.IsVerified = approve;
+
+        if (verification.Artist.UserId is int artistUserId)
+        {
+            var user = verification.Artist.User;
+            if (user != null)
+            {
+                user.Role = approve ? "Artist" : "User";
+                user.RoleStatus = approve ? "Approved" : "Rejected";
+            }
+
+            var roleRequest = await context.RoleRequests
+                .Where(r => r.UserId == artistUserId && r.RequestedRole == "Artist" && r.Status == "Pending")
+                .FirstOrDefaultAsync();
+            if (roleRequest != null)
+            {
+                roleRequest.Status = approve ? "Approved" : "Rejected";
+                roleRequest.ReviewedByAdminId = adminUserId;
+                roleRequest.ReviewedAt = DateTime.UtcNow;
+            }
+        }
 
         await context.SaveChangesAsync();
         var msg = approve

@@ -18,6 +18,16 @@ namespace GigRadarMobile.ViewModels
         [ObservableProperty]
         public partial Artist? Artist { get; set; }
         [ObservableProperty]
+        public partial ObservableCollection<CommunityPost> CommunityPosts { get; set; } = new();
+        [ObservableProperty]
+        public partial ObservableCollection<MerchItem> Merchandises { get; set; } = new();
+        [ObservableProperty]
+        public partial string NewCommunityPost { get; set; } = "";
+        [ObservableProperty]
+        public partial bool HasCommunityPosts { get; set; }
+        [ObservableProperty]
+        public partial bool HasMerchandises { get; set; }
+        [ObservableProperty]
         public partial string PlaybackStatus { get; set; } = "Tap untuk preview lagu";
         [ObservableProperty]
         public partial ObservableCollection<ArtistGig> UpcomingGigs { get; set; } = new();
@@ -41,6 +51,17 @@ namespace GigRadarMobile.ViewModels
         public partial bool IsSendingComment { get; set; }
         private int _openPostId;
 
+        // ── Follow artist (§10) ───────────────────────────
+        [ObservableProperty]
+        public partial bool IsFollowing { get; set; }
+        [ObservableProperty]
+        public partial bool IsFollowBusy { get; set; }
+
+        public string FollowButtonText => IsFollowing ? "Mengikuti" : "Ikuti";
+
+        /// <summary>Jumlah follower versi VM — ikut berubah saat tombol follow dipakai tanpa reload halaman.</summary>
+        public int FollowersCount => Artist?.FollowersCount ?? 0;
+
         public string HeroImageUrl =>
             !string.IsNullOrWhiteSpace(Artist?.CoverUrl) ? Artist.CoverUrl : (Artist?.PhotoUrl ?? "");
 
@@ -58,13 +79,82 @@ namespace GigRadarMobile.ViewModels
             OnPropertyChanged(nameof(AlbumsLabel));
             OnPropertyChanged(nameof(LocationLabel));
 
+            OnPropertyChanged(nameof(FollowersCount));
+
             HasMembers = value?.Members is { Count: > 0 };
             HasPosts = value?.Posts is { Count: > 0 };
 
             if (value != null)
+            {
                 _ = LoadUpcomingGigsAsync(value.ArtistId);
+                _ = LoadFollowStateAsync(value.ArtistId);
+                _ = LoadCommunityAndShopAsync(value.ArtistId);
+            }
         }
 
+        partial void OnIsFollowingChanged(bool value)
+        {
+            OnPropertyChanged(nameof(FollowButtonText));
+        }
+
+        /// <summary>
+        /// Status follow diambil dari server (bukan disimpan lokal) supaya tombol
+        /// tidak pernah menampilkan "Ikuti" padahal user sudah mengikuti artist ini.
+        /// </summary>
+        private async Task LoadFollowStateAsync(int artistId)
+        {
+            try
+            {
+                _api.SetAuthToken(_auth.GetToken());
+                var follows = await _api.GetFollowsAsync();
+                IsFollowing = follows.Any(f => f.ArtistId == artistId);
+            }
+            catch { /* status follow bukan konten utama — biarkan default bila gagal */ }
+        }
+
+        private async Task LoadCommunityAndShopAsync(int artistId)
+        {
+            try
+            {
+                // Community & merch keduanya [Authorize] di API — set token dulu supaya
+                // aman saat halaman ini dibuka tepat setelah cold start (bukan via login).
+                _api.SetAuthToken(_auth.GetToken());
+
+                var posts = await _api.GetCommunityPostsAsync(artistId);
+                CommunityPosts = new ObservableCollection<CommunityPost>(posts);
+                HasCommunityPosts = CommunityPosts.Count > 0;
+
+                var merchs = await _api.GetArtistMerchandiseAsync(artistId);
+                Merchandises = new ObservableCollection<MerchItem>(merchs);
+                HasMerchandises = Merchandises.Count > 0;
+            }
+            catch { }
+        }
+
+        [RelayCommand]
+        private async Task CreateCommunityPostAsync()
+        {
+            if (Artist == null || string.IsNullOrWhiteSpace(NewCommunityPost)) return;
+
+            IsFollowBusy = true; // reusing loading state for brevity
+            try
+            {
+                var (success, msg) = await _api.CreateCommunityPostAsync(Artist.ArtistId, NewCommunityPost, "");
+                if (success)
+                {
+                    NewCommunityPost = "";
+                    await LoadCommunityAndShopAsync(Artist.ArtistId);
+                }
+                else
+                {
+                    await Alerts.ShowAsync("Gagal", msg);
+                }
+            }
+            finally
+            {
+                IsFollowBusy = false;
+            }
+        }
         public ArtistDetailViewModel(ApiService api, AuthService auth)
         {
             _api = api;
@@ -101,9 +191,60 @@ namespace GigRadarMobile.ViewModels
         }
 
         [RelayCommand]
+        private async Task OpenSpotifyAsync()
+        {
+            if (string.IsNullOrWhiteSpace(Artist?.SpotifyUrl))
+            {
+                await Alerts.ShowAsync("Spotify", "Artist ini belum menambahkan link Spotify.");
+                return;
+            }
+
+            await Launcher.OpenAsync(Artist.SpotifyUrl);
+        }
+
+        [RelayCommand]
         private async Task GoBackAsync()
         {
             await Shell.Current.GoToAsync("..");
+        }
+
+        /// <summary>Ikuti / berhenti mengikuti artist (§10). State akhir selalu dari server.</summary>
+        [RelayCommand]
+        private async Task ToggleFollowAsync()
+        {
+            if (Artist == null || IsFollowBusy) return;
+
+            try
+            {
+                IsFollowBusy = true;
+                _api.SetAuthToken(_auth.GetToken());
+
+                var (success, message) = IsFollowing
+                    ? await _api.UnfollowArtistAsync(Artist.ArtistId)
+                    : await _api.FollowArtistAsync(Artist.ArtistId);
+
+                if (!success)
+                {
+                    await Alerts.ShowAsync("Gagal", message);
+                    return;
+                }
+
+                IsFollowing = !IsFollowing;
+
+                // Angka di layar langsung ikut berubah (server tetap sumber kebenaran
+                // saat halaman dimuat ulang).
+                Artist.FollowersCount = Math.Max(0, Artist.FollowersCount + (IsFollowing ? 1 : -1));
+                OnPropertyChanged(nameof(FollowersCount));
+                OnPropertyChanged(nameof(FollowersLabel));
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+            finally
+            {
+                IsFollowBusy = false;
+            }
         }
 
         // ── Like & komentar post (Bab 32, 48) ────────────

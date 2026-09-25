@@ -56,6 +56,20 @@
                                     </Button>
                                 </Grid>
 
+                                <!-- Check-in & peserta (§14) — selalu terlihat, tidak perlu expand -->
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                    <Button Grid.Column="0" Text="Check-in QR" Style="{StaticResource Chip}"
+                                            HeightRequest="42"
+                                            SemanticProperties.Description="Pindai QR tiket peserta event ini"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=OpenCheckInCommand, x:DataType={x:Type vm:ManageTicketsViewModel}}"
+                                            CommandParameter="{Binding .}"/>
+                                    <Button Grid.Column="1" Text="Peserta" Style="{StaticResource Chip}"
+                                            HeightRequest="42"
+                                            SemanticProperties.Description="Lihat daftar peserta event ini"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ManageTicketsViewModel}}, Path=OpenAttendeesCommand, x:DataType={x:Type vm:ManageTicketsViewModel}}"
+                                            CommandParameter="{Binding .}"/>
+                                </Grid>
+
                                 <!-- Isi saat di-expand -->
                                 <VerticalStackLayout IsVisible="{Binding IsExpanded}" Spacing="8">
 

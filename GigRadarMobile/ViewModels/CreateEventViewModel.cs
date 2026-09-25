@@ -57,6 +57,8 @@ namespace GigRadarMobile.ViewModels
         public partial ObservableCollection<string> VenueNames { get; set; } = new();
         [ObservableProperty]
         public partial string? SelectedVenueName { get; set; }
+        [ObservableProperty]
+        public partial string SelectedVenueAddress { get; set; } = "";
 
         // Tambah venue baru
         [ObservableProperty]
@@ -69,6 +71,10 @@ namespace GigRadarMobile.ViewModels
         public partial string NewVenueAddress { get; set; } = "";
         [ObservableProperty]
         public partial string NewVenueCapacity { get; set; } = "";
+        [ObservableProperty]
+        public partial string NewVenueLatText { get; set; } = DefaultLatitude.ToString(CultureInfo.InvariantCulture);
+        [ObservableProperty]
+        public partial string NewVenueLngText { get; set; } = DefaultLongitude.ToString(CultureInfo.InvariantCulture);
 
         // Jadwal
         [ObservableProperty]
@@ -174,6 +180,10 @@ namespace GigRadarMobile.ViewModels
         partial void OnSelectedVenueNameChanged(string? value)
         {
             _selectedVenue = _venues.FirstOrDefault(v => v.Name == value);
+            SelectedVenueAddress = _selectedVenue == null
+                ? ""
+                : string.Join(", ", new[] { _selectedVenue.Address, _selectedVenue.City }
+                    .Where(part => !string.IsNullOrWhiteSpace(part)));
             ApplyVenueCoordinates(_selectedVenue);
         }
 
@@ -204,6 +214,8 @@ namespace GigRadarMobile.ViewModels
                 {
                     LatText = location.Latitude.ToString(CultureInfo.InvariantCulture);
                     LngText = location.Longitude.ToString(CultureInfo.InvariantCulture);
+                    NewVenueLatText = LatText;
+                    NewVenueLngText = LngText;
                     await Alerts.ShowAsync("Info", "Berhasil mengambil lokasi perangkat. Koordinat ini akan dipakai sebagai lokasi event.");
                 }
                 else
@@ -229,6 +241,12 @@ namespace GigRadarMobile.ViewModels
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(NewVenueAddress) || NewVenueAddress.Trim().Length < 8)
+            {
+                await Alerts.ShowAsync("Validasi", "Alamat lengkap venue wajib diisi (minimal 8 karakter).");
+                return;
+            }
+
             var name = NewVenueName.Trim();
 
             // Venue dengan nama sama sudah ada → langsung pakai itu.
@@ -251,11 +269,23 @@ namespace GigRadarMobile.ViewModels
                 }
             }
 
+            if (!TryParseCoordinate(NewVenueLatText, -90, 90, out var latitude))
+            {
+                await Alerts.ShowAsync("Validasi", "Latitude venue tidak valid.");
+                return;
+            }
+
+            if (!TryParseCoordinate(NewVenueLngText, -180, 180, out var longitude))
+            {
+                await Alerts.ShowAsync("Validasi", "Longitude venue tidak valid.");
+                return;
+            }
+
             try
             {
                 _api.SetAuthToken(_auth.GetToken());
                 var (success, message, venue) = await _api.CreateVenueAsync(
-                    name, NewVenueCity.Trim(), NewVenueAddress.Trim(), capacity);
+                    name, NewVenueCity.Trim(), NewVenueAddress.Trim(), capacity, latitude, longitude);
 
                 if (!success || venue == null)
                 {
@@ -271,6 +301,8 @@ namespace GigRadarMobile.ViewModels
                 NewVenueCity = "";
                 NewVenueAddress = "";
                 NewVenueCapacity = "";
+                NewVenueLatText = DefaultLatitude.ToString(CultureInfo.InvariantCulture);
+                NewVenueLngText = DefaultLongitude.ToString(CultureInfo.InvariantCulture);
 
                 await Alerts.ShowAsync("Berhasil", message);
             }
@@ -401,6 +433,13 @@ namespace GigRadarMobile.ViewModels
                 .Replace(",", "")
                 .Replace(" ", "")
                 .Trim();
+        }
+
+        private static bool TryParseCoordinate(string input, double min, double max, out double value)
+        {
+            return double.TryParse(input?.Replace(',', '.'), NumberStyles.Float,
+                CultureInfo.InvariantCulture, out value) &&
+                !double.IsNaN(value) && !double.IsInfinity(value) && value >= min && value <= max;
         }
     }
 }

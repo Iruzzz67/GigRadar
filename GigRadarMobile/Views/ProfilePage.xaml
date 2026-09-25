@@ -49,6 +49,10 @@
             <Button Text="Edit profil" Style="{StaticResource BtnOutline}" HeightRequest="48"
                     Command="{Binding ToggleEditCommand}"/>
 
+            <!-- Artist yang diikuti (§10) — push route, bukan tab, agar bottom nav tetap 6 tab -->
+            <Button Text="Artist yang diikuti" Style="{StaticResource BtnDark}" HeightRequest="48"
+                    Command="{Binding GoToFollowingCommand}"/>
+
             <!-- Event tersimpan -->
             <VerticalStackLayout Spacing="10" IsVisible="{Binding HasFavorites}">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">

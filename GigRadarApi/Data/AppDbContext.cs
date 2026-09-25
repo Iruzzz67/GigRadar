@@ -35,6 +35,8 @@ namespace GigRadarApi.Data
         public DbSet<Merchandise> Merchandises { get; set; }
         public DbSet<Report> Reports { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<CommunityPost> CommunityPosts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

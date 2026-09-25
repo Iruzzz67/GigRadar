@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
              x:Class="GigRadarMobile.Views.PlatformAnalyticsPage"
              x:DataType="vm:PlatformAnalyticsViewModel"
              BackgroundColor="{StaticResource BackgroundColor}"
@@ -34,24 +35,65 @@
                 <Label Text="KOMUNITAS" Style="{StaticResource Eyebrow}"/>
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                     <Frame Grid.Column="0" Style="{StaticResource Card}">
+                        <Frame.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectCommunityCommand}" CommandParameter="Users"/></Frame.GestureRecognizers>
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{Binding Stats.TotalUsers}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
                             <Label Text="Users" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                         </VerticalStackLayout>
                     </Frame>
                     <Frame Grid.Column="1" Style="{StaticResource Card}">
+                        <Frame.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectCommunityCommand}" CommandParameter="Artists"/></Frame.GestureRecognizers>
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{Binding Stats.TotalArtists}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
                             <Label Text="Artists" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                         </VerticalStackLayout>
                     </Frame>
                     <Frame Grid.Column="2" Style="{StaticResource Card}">
+                        <Frame.GestureRecognizers><TapGestureRecognizer Command="{Binding SelectCommunityCommand}" CommandParameter="EO"/></Frame.GestureRecognizers>
                         <VerticalStackLayout Spacing="4">
                             <Label Text="{Binding Stats.TotalEos}" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
                             <Label Text="EO" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                         </VerticalStackLayout>
                     </Frame>
                 </Grid>
+
+                <Frame Style="{StaticResource Card}" IsVisible="{Binding HasCommunities}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding SelectedCommunityLabel}" Style="{StaticResource Subheading}"/>
+                                <Label Text="Ketuk kartu komunitas untuk mengganti data yang ditampilkan." Style="{StaticResource Caption}"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Stats.TotalUsers}" IsVisible="{Binding IsUsersSelected}" Style="{StaticResource Subheading}" TextColor="{StaticResource PrimaryColor}"/>
+                            <Label Grid.Column="1" Text="{Binding Stats.TotalArtists}" IsVisible="{Binding IsArtistsSelected}" Style="{StaticResource Subheading}" TextColor="{StaticResource AccentColor}"/>
+                            <Label Grid.Column="1" Text="{Binding Stats.TotalEos}" IsVisible="{Binding IsEosSelected}" Style="{StaticResource Subheading}" TextColor="{StaticResource WarningColor}"/>
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsUsersSelected}" BindableLayout.ItemsSource="{Binding Communities.Users}" Spacing="0">
+                            <BindableLayout.ItemTemplate><DataTemplate x:DataType="models:CommunityUser">
+                                <Grid ColumnDefinitions="*,Auto" Padding="0,8" ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="2"><Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14"/><Label Text="{Binding Email}" Style="{StaticResource Caption}"/><Label Text="{Binding JoinedLabel}" Style="{StaticResource Meta}"/></VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding City}" Style="{StaticResource Meta}" VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate></BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout IsVisible="{Binding IsArtistsSelected}" BindableLayout.ItemsSource="{Binding Communities.Artists}" Spacing="0">
+                            <BindableLayout.ItemTemplate><DataTemplate x:DataType="models:CommunityArtist">
+                                <Grid ColumnDefinitions="*,Auto" Padding="0,8" ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="2"><Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14"/><Label Text="{Binding AccountEmail}" Style="{StaticResource Caption}"/><Label Text="{Binding Genre}" Style="{StaticResource Meta}"/></VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding VerificationLabel}" Style="{StaticResource Meta}" TextColor="{StaticResource AccentColor}" VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate></BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout IsVisible="{Binding IsEosSelected}" BindableLayout.ItemsSource="{Binding Communities.Eos}" Spacing="0">
+                            <BindableLayout.ItemTemplate><DataTemplate x:DataType="models:CommunityOrganizer">
+                                <Grid ColumnDefinitions="*,Auto" Padding="0,8" ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="2"><Label Text="{Binding Name}" Style="{StaticResource Subheading}" FontSize="14"/><Label Text="{Binding AccountEmail}" Style="{StaticResource Caption}"/><Label Text="{Binding Location}" Style="{StaticResource Meta}"/></VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding VerificationLabel}" Style="{StaticResource Meta}" TextColor="{StaticResource WarningColor}" VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate></BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Frame>
 
                 <!-- Event & tiket -->
                 <Label Text="EVENT &amp; TIKET" Style="{StaticResource Eyebrow}"/>

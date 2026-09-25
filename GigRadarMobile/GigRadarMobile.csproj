@@ -107,6 +107,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!--
+		  ZXing.Net.Maui: menghasilkan QR tiket (semua platform) + memindai QR saat
+		  check-in EO. PENTING: kamera scanner hanya didukung Android/iOS/MacCatalyst —
+		  di Windows view scanner menampilkan input kode manual (lihat QrScannerView).
+		-->
+		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.10.4" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
