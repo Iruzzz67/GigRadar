@@ -77,6 +77,16 @@
 		<AndroidSigningKeyPass Condition="'$(TargetFramework)' == 'net10.0-android' AND '$(Configuration)' == 'Release' AND '$(GIGRADAR_KEY_PASSWORD)' != ''">$(GIGRADAR_KEY_PASSWORD)</AndroidSigningKeyPass>
 
 		<!--
+		  Token Mapbox TIDAK boleh ditulis di source: repo ini publik dan secret
+		  scanning GitHub menolak push yang memuatnya. Set saat build/publish:
+		    GIGRADAR_MAPBOX_TOKEN=pk.xxx dotnet build ...   (atau -p:GigRadarMapboxToken=pk.xxx)
+		  Token disuntik sebagai AssemblyMetadata lalu dibaca MapboxConfiguration.
+		  Bila kosong, peta Radar otomatis memakai tile OpenStreetMap tanpa token.
+		-->
+		<GigRadarMapboxToken Condition="'$(GigRadarMapboxToken)' == ''">$(GIGRADAR_MAPBOX_TOKEN)</GigRadarMapboxToken>
+
+
+		<!--
 		  Cleartext HTTP: hanya diizinkan pada Debug (API lokal via adb reverse / localhost).
 		  Release wajib HTTPS — nilai placeholder disetel dari konfigurasi build.
 		-->
@@ -87,6 +97,14 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
 	</PropertyGroup>
+
+	<!-- Suntik token Mapbox (bila diset) sebagai AssemblyMetadata — lihat MapboxConfiguration. -->
+	<ItemGroup Condition="'$(GigRadarMapboxToken)' != ''">
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>GigRadarMapboxToken</_Parameter1>
+			<_Parameter2>$(GigRadarMapboxToken)</_Parameter2>
+		</AssemblyAttribute>
+	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->

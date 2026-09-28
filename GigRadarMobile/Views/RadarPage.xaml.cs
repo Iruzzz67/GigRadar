@@ -1,4 +1,5 @@
 using System.Text.Json;
+using GigRadarMobile.Services;
 using GigRadarMobile.ViewModels;
 using Microsoft.Maui.ApplicationModel;
 
@@ -6,7 +7,9 @@ namespace GigRadarMobile.Views;
 
 public partial class RadarPage : ContentPage
 {
-    private const string MapboxAccessToken = "REDACTED_MAPBOX_TOKEN";
+    // Token Mapbox tidak lagi ditulis di source (repo publik + secret scanning).
+    // Isi lewat -p:GigRadarMapboxToken=... atau env GIGRADAR_MAPBOX_TOKEN.
+    // Tanpa token, Radar memakai tile OpenStreetMap.
     private readonly RadarViewModel _viewModel;
 
     public RadarPage(RadarViewModel viewModel)
@@ -51,8 +54,32 @@ public partial class RadarPage : ContentPage
                 };
         }
 
+        /// <summary>
+        /// Baris tile layer peta: Mapbox (gaya gelap) bila token dikonfigurasi, jika
+        /// tidak OpenStreetMap tanpa token agar peta tetap tampil — beserta atribusi
+        /// yang sesuai dengan penyedia tile yang benar-benar dipakai.
+        /// </summary>
+        private static string ResolveTileLayerScript()
+        {
+            const string mapboxAttribution =
+                "attribution: '&copy; <a href=\"https://www.mapbox.com/about/maps/\">Mapbox</a> &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>'";
+            const string openStreetMapAttribution =
+                "attribution: '&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>'";
+
+            if (MapboxConfiguration.HasToken)
+            {
+                var url = "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/512/{z}/{x}/{y}@2x?access_token="
+                    + MapboxConfiguration.AccessToken;
+                return $"L.tileLayer('{url}', {{ maxZoom: 19, tileSize: 512, zoomOffset: -1, {mapboxAttribution} }}).addTo(map);";
+            }
+
+            return "L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, "
+                + openStreetMapAttribution + " }).addTo(map);";
+        }
+
         private string BuildMapHtml(string markerJson)
         {
+            var tileLayer = ResolveTileLayerScript();
             var html = """
                         <!doctype html>
                         <html>
@@ -74,7 +101,7 @@ public partial class RadarPage : ContentPage
                                 const radiusKm = __RADIUS__;
                                 const events = __EVENTS__;
                                 const map = L.map('map', { zoomControl: true, attributionControl: true }).setView(center, radiusKm <= 10 ? 12 : radiusKm <= 25 ? 11 : 10);
-                                L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/512/{z}/{x}/{y}@2x?access_token=__MAPBOX_TOKEN__', { maxZoom: 19, tileSize: 512, zoomOffset: -1, attribution: '&copy; <a href=\"https://www.mapbox.com/about/maps/\">Mapbox</a> &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>' }).addTo(map);
+                                __TILE_LAYER__
                                 L.marker(center, { icon: L.divIcon({ className: 'user-marker', iconSize: [14, 14], iconAnchor: [7, 7] }) }).addTo(map).bindTooltip('Lokasi kamu');
                                 L.circle(center, { radius: radiusKm * 1000, color: '#a3ff12', weight: 1, fillColor: '#a3ff12', fillOpacity: .06 }).addTo(map);
                                 events.forEach(eventItem => {
@@ -92,7 +119,7 @@ public partial class RadarPage : ContentPage
                         .Replace("__LAT__", _viewModel.CenterLat.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         .Replace("__LNG__", _viewModel.CenterLng.ToString(System.Globalization.CultureInfo.InvariantCulture))
                         .Replace("__RADIUS__", _viewModel.RadiusKm.ToString(System.Globalization.CultureInfo.InvariantCulture))
-                        .Replace("__MAPBOX_TOKEN__", MapboxAccessToken)
+                        .Replace("__TILE_LAYER__", tileLayer)
                         .Replace("__EVENTS__", markerJson);
         }
 

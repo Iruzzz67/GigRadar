@@ -43,6 +43,34 @@ Cari `keytool` (ikut JDK): `C:\Program Files\Android\jdk\...\bin\keytool.exe`, l
 
 ---
 
+## 2b. Token Mapbox (JANGAN di-commit)
+
+Peta Radar memakai tile Mapbox. Token **tidak disimpan di source control**:
+repo ini publik dan aturan *secret scanning* GitHub menolak push yang memuatnya
+(pernah memblokir push branch `feat/postgresql-migration`).
+
+Token dibaca berurutan oleh `GigRadarMobile/Services/MapboxConfiguration.cs`:
+
+1. Build property / env var saat build:
+   `GIGRADAR_MAPBOX_TOKEN` (atau `-p:GigRadarMapboxToken=pk.xxx`)
+2. `GIGRADAR_MAPBOX_TOKEN` di environment saat aplikasi berjalan (dev desktop)
+
+Bila keduanya kosong, Radar otomatis memakai tile **OpenStreetMap tanpa token** —
+aplikasi tetap berjalan, hanya gaya peta gelap Mapbox yang tidak dipakai.
+
+```powershell
+$env:GIGRADAR_MAPBOX_TOKEN = "pk.********"   # dari dashboard Mapbox
+
+dotnet publish GigRadarMobile/GigRadarMobile.csproj -f net10.0-android -c Release
+```
+
+Aturan:
+- Batasi token di dashboard Mapbox (URL restriction) — token `pk.` ikut terkirim di APK.
+- Jika token pernah ter-commit, **rotate segera** lalu hapus dari history.
+- Jangan pernah menulis token sebagai literal di file `.cs`.
+
+---
+
 ## 3. Build Release APK
 
 ### Cara gampang — script otomatis (recommended)
@@ -62,6 +90,8 @@ $env:GIGRADAR_KEYSTORE_PATH     = "C:\keystore\gigradar-release.keystore"
 $env:GIGRADAR_KEYSTORE_PASSWORD = "********"
 $env:GIGRADAR_KEY_ALIAS         = "gigradar"
 $env:GIGRADAR_KEY_PASSWORD      = "********"
+# Token tile peta Radar (opsional; tanpa ini Radar memakai OpenStreetMap)
+$env:GIGRADAR_MAPBOX_TOKEN      = "pk.********"
 
 # 2. Build
 dotnet publish GigRadarMobile/GigRadarMobile.csproj -f net10.0-android -c Release
@@ -121,6 +151,8 @@ Copy APK ke HP (kabel/Drive/WA)
 [ ] API connection tested on mobile data/Wi-Fi
 [ ] Signing verified
 [ ] No secrets committed
+[ ] Token Mapbox di-set lewat env var (bukan literal di source)
+[ ] Mapbox token restricted/rotated bila pernah ter-commit
 ```
 
 ---

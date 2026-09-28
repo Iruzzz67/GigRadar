@@ -48,6 +48,7 @@ GigRadarLauncher (console, self-contained) — satu exe: PostgreSQL + API + apli
 - **Otentikasi:** JWT Bearer dengan password di-hash **BCrypt**.
 - **Role-based Authorization:** `[Authorize(Roles = "EO,Admin")]` + cek kepemilikan event (`CreatedBy`).
 - **CORS:** Dibuka penuh (`AllowAll`) untuk development.
+- **Rahasia build:** token Mapbox peta Radar **tidak ada di source** — di-set via env var `GIGRADAR_MAPBOX_TOKEN` / `-p:GigRadarMapboxToken=pk.xxx` (fallback otomatis ke tile OpenStreetMap). Lihat [docs/ANDROID_PRODUCTION.md §2b](./docs/ANDROID_PRODUCTION.md).
 
 ---
 
