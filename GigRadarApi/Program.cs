@@ -61,6 +61,8 @@ builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, ApiAuthoriz
 // Services
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EventService>();
+builder.Services.AddScoped<GigService>();
+builder.Services.AddScoped<GigApplicationService>();
 builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<TicketService>();
 builder.Services.AddScoped<NotificationService>();

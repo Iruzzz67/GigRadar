@@ -16,7 +16,8 @@ public class NotificationService(AppDbContext context)
     [
         "NEW_GIG_NEARBY", "FOLLOWED_ARTIST_NEW_GIG", "ARTIST_NEW_RELEASE", "ARTIST_NEW_POST",
         "EVENT_REMINDER", "TICKET_PURCHASE", "TICKET_UPDATE", "EVENT_CANCELLED",
-        "ARTIST_INVITATION", "ARTIST_VERIFICATION", "EO_VERIFICATION", "ADMIN_NOTICE"
+        "ARTIST_INVITATION", "GIG_APPLICATION", "GIG_APPLICATION_UPDATE",
+        "ARTIST_VERIFICATION", "EO_VERIFICATION", "ADMIN_NOTICE"
     ];
 
     /// <summary>Buat satu notifikasi. Type di luar daftar diganti ADMIN_NOTICE.</summary>

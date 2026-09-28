@@ -44,6 +44,9 @@ namespace GigRadarApi.Models
 
         [JsonIgnore]
         public List<Favorite> Favorites { get; set; } = new();
+
+        [JsonIgnore]
+        public List<Gig> Gigs { get; set; } = new();
     }
 
     public class EventArtist

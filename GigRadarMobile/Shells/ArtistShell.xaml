@@ -8,9 +8,10 @@
 
     <!-- GIGRADAR_APP_SPEC.md Bab 55 — ArtistShell
          Dashboard memakai data nyata (GET /api/artist/me/dashboard).
-         Tab Music / Posts / Gigs (manajemen konten) menyusul di Phase 3. -->
+         Tab Gigs = marketplace gig lintas-EO (research §3/§5/§6). -->
     <TabBar>
         <ShellContent Title="Dashboard" ContentTemplate="{DataTemplate views:ArtistDashboardPage}" Route="artist-dashboard"/>
+        <ShellContent Title="Gigs" ContentTemplate="{DataTemplate views:ArtistGigsPage}" Route="artist-gigs"/>
         <ShellContent Title="Undangan" ContentTemplate="{DataTemplate views:InvitationsPage}" Route="artist-invitations"/>
         <ShellContent Title="Merch" ContentTemplate="{DataTemplate views:MerchPage}" Route="artist-merch"/>
                 <ShellContent Title="Notifikasi" ContentTemplate="{DataTemplate views:NotificationsPage}" Route="artistshell-notifications"/>

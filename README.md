@@ -31,6 +31,7 @@ GigRadarApi (ASP.NET Core Web API)
         |
         +-- Auth (register/login, BCrypt, JWT)
         +-- Events (CRUD, nearby, tonight, weekend, recommended, status, managed/summary)
+        +-- Gigs (slot artist per event, discover gig, lamaran/shortlist/tolak)
         +-- Venues (daftar + tambah venue)
         +-- Artists (list, detail + audio tracks)
         +-- Tickets (tipe tiket, beli dengan verifikasi data diri, riwayat, validasi QR)
@@ -103,7 +104,9 @@ GigRadar/
 ├── GIGRADAR_APP_SPEC.md             # SPEC TUNGGAL: konsep produk + design system + GPS + build (bab 1–84 + lampiran A–K)
 └── docs/
     ├── ANDROID_PRODUCTION.md        # Checklist produksi Android
-    └── DISTRIBUTION.md              # Build & distribusi exe all-in-one
+    ├── DISTRIBUTION.md              # Build & distribusi exe all-in-one
+    ├── GIGRADAR_V2_AUDIT.md         # Audit V2 + analisis gap
+    └── GIG_MARKETPLACE.md           # Loop gig ↔ lamaran artist (riset Reclub, P0)
 ```
 
 ---
@@ -388,6 +391,8 @@ Detail lengkap: [GIGRADAR_APP_SPEC.md — Lampiran A (Design System)](./GIGRADAR
 | [GEMINI.md](./GEMINI.md) | Workspace rules untuk AI agents |
 | [docs/ANDROID_PRODUCTION.md](./docs/ANDROID_PRODUCTION.md) | Checklist produksi Android (spec: Lampiran E) |
 | [docs/DISTRIBUTION.md](./docs/DISTRIBUTION.md) | Build & distribusi exe all-in-one (`GigRadar.exe`) untuk Windows |
+| [docs/GIGRADAR_V2_AUDIT.md](./docs/GIGRADAR_V2_AUDIT.md) | Audit spec V2 + analisis gap (KEEP/MODIFY/ADD/REMOVE) |
+| [docs/GIG_MARKETPLACE.md](./docs/GIG_MARKETPLACE.md) | Loop **Gig ↔ lamaran artist** (P0 riset Reclub): model, state machine, API, UI, verifikasi |
 
 ---
 
@@ -401,6 +406,7 @@ Detail lengkap: [GIGRADAR_APP_SPEC.md — Lampiran A (Design System)](./GIGRADAR
 - **Tipe tiket per event** dengan stok & harga
 - **CRUD event lengkap** — buat, update, hapus (tersimpan ke DB)
 - **Status event:** Published / Draft / SoldOut / Completed
+- **Marketplace gig** — EO membuka slot artist, artist melamar, EO shortlist/tolak (lihat [docs/GIG_MARKETPLACE.md](./docs/GIG_MARKETPLACE.md))
 - **Dashboard EO/Admin** — statistik, kelola tiket, buat event
 - **Role-based authorization + cek kepemilikan**
 - PostgreSQL + EF Migrations (menggantikan SQLite)
@@ -423,6 +429,7 @@ Detail lengkap: [GIGRADAR_APP_SPEC.md — Lampiran A (Design System)](./GIGRADAR
 - Audio streaming sungguhan
 - Search & filter lanjutan
 - Multi-city expansion
+- Booking & kontrak setelah lamaran di-shortlist, ketersediaan artist, chat kontekstual
 
 ---
 

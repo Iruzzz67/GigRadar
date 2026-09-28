@@ -360,14 +360,16 @@ namespace GigRadarApi.Services
                 return (false, "Kamu tidak memiliki akses untuk mengelola event ini", true);
 
             // Hapus data terkait secara eksplisit agar tidak ada FK yang menggantung
-            // (line-up, favorit, dan tiket milik event ini).
+            // (line-up, favorit, tiket, dan gigs milik event ini).
             var eventArtists = await _context.EventArtists.Where(ea => ea.EventId == id).ToListAsync();
             var favorites = await _context.Favorites.Where(f => f.EventId == id).ToListAsync();
             var tickets = await _context.Tickets.Where(t => t.EventId == id).ToListAsync();
+            var gigs = await _context.Gigs.Where(g => g.EventId == id).ToListAsync();
 
             _context.EventArtists.RemoveRange(eventArtists);
             _context.Favorites.RemoveRange(favorites);
             _context.Tickets.RemoveRange(tickets);
+            _context.Gigs.RemoveRange(gigs);
             _context.Events.Remove(entity);
 
             await _context.SaveChangesAsync();

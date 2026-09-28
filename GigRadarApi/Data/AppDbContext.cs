@@ -16,6 +16,8 @@ namespace GigRadarApi.Data
         public DbSet<ArtistJourneyItem> ArtistJourneyItems { get; set; }
         public DbSet<Venue> Venues { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<Gig> Gigs { get; set; }
+        public DbSet<GigApplication> GigApplications { get; set; }
         public DbSet<EventArtist> EventArtists { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<EventTicketType> EventTicketTypes { get; set; }
@@ -69,6 +71,11 @@ namespace GigRadarApi.Data
             // Satu undangan aktif per pasangan event-artist (Bab 26)
             modelBuilder.Entity<EventInvitation>()
                 .HasIndex(i => new { i.EventId, i.ArtistId, i.Status });
+
+            // Satu artist maksimal satu lamaran per gig (§6 research — jangan duplikat apply).
+            modelBuilder.Entity<GigApplication>()
+                .HasIndex(a => new { a.GigId, a.ArtistId })
+                .IsUnique();
 
             // EventArtist composite key
             modelBuilder.Entity<EventArtist>()

@@ -180,6 +180,115 @@ namespace GigRadarMobile.Services
             return await GetAsync<GigEvent>($"/api/events/{id}");
         }
 
+        public async Task<List<GigItem>> GetEventGigsAsync(int eventId)
+        {
+            return await GetAsync<List<GigItem>>($"/api/events/{eventId}/gigs") ?? new();
+        }
+
+        public async Task<(bool Success, string Message, GigItem? Gig)> CreateGigAsync(int eventId, CreateGigData data)
+        {
+            var response = await _http.PostAsJsonAsync($"/api/events/{eventId}/gigs", data, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<GigCreateEnvelope>(json, _jsonOptions);
+
+            if (response.IsSuccessStatusCode)
+                return (true, envelope?.Message ?? "Gig berhasil dibuat", envelope?.Gig);
+
+            return (false, envelope?.Message ?? "Gagal membuat gig", null);
+        }
+
+        /// <summary>Ubah status gig lewat lifecycle DRAFT ⇄ OPEN → CLOSED (EO/Admin).</summary>
+        public async Task<(bool Success, string Message)> UpdateGigStatusAsync(int eventId, int gigId, string status)
+        {
+            var response = await _http.PostAsJsonAsync(
+                $"/api/events/{eventId}/gigs/{gigId}/status", new { status }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Status gig diperbarui")
+                : (false, envelope?.Message ?? "Gagal mengubah status gig");
+        }
+
+        /// <summary>Hapus gig beserta lamarannya (EO/Admin).</summary>
+        public async Task<(bool Success, string Message)> DeleteGigAsync(int eventId, int gigId)
+        {
+            var response = await _http.DeleteAsync($"/api/events/{eventId}/gigs/{gigId}");
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Gig dihapus")
+                : (false, envelope?.Message ?? "Gagal menghapus gig");
+        }
+
+        // ── Gig marketplace: Discover artist & lamaran (research §5/§6) ──
+
+        /// <summary>Daftar gig OPEN untuk Discover artist (filter kata kunci + genre).</summary>
+        public async Task<List<GigItem>> GetOpenGigsAsync(string? q = null, int? genreId = null)
+        {
+            var filters = new List<string>();
+            if (!string.IsNullOrWhiteSpace(q)) filters.Add($"q={Uri.EscapeDataString(q.Trim())}");
+            if (genreId is > 0) filters.Add($"genreId={genreId}");
+            var suffix = filters.Count > 0 ? "?" + string.Join("&", filters) : string.Empty;
+            return await GetAsync<List<GigItem>>($"/api/gigs{suffix}") ?? new();
+        }
+
+        /// <summary>Artist melamar sebuah gig.</summary>
+        public async Task<(bool Success, string Message)> ApplyToGigAsync(int gigId, string message)
+        {
+            var response = await _http.PostAsJsonAsync(
+                $"/api/gigs/{gigId}/applications", new GigApplicationData { Message = message }, _jsonOptions);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Lamaran terkirim")
+                : (false, envelope?.Message ?? "Gagal mengirim lamaran");
+        }
+
+        /// <summary>Lamaran milik artist yang login.</summary>
+        public async Task<List<GigApplicationItem>> GetMyGigApplicationsAsync()
+        {
+            return await GetAsync<List<GigApplicationItem>>("/api/applications/me") ?? new();
+        }
+
+        /// <summary>Lamaran yang masuk untuk satu gig (EO/Admin pemilik event).</summary>
+        public async Task<List<GigApplicationItem>> GetGigApplicationsAsync(int gigId)
+        {
+            return await GetAsync<List<GigApplicationItem>>($"/api/gigs/{gigId}/applications") ?? new();
+        }
+
+        /// <summary>Artist menarik lamarannya.</summary>
+        public async Task<(bool Success, string Message)> WithdrawGigApplicationAsync(int applicationId)
+        {
+            var response = await _http.PostAsync($"/api/applications/{applicationId}/withdraw", content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Lamaran ditarik")
+                : (false, envelope?.Message ?? "Gagal menarik lamaran");
+        }
+
+        /// <summary>EO memilih lamaran masuk daftar kandidat.</summary>
+        public async Task<(bool Success, string Message)> ShortlistGigApplicationAsync(int applicationId)
+        {
+            var response = await _http.PostAsync($"/api/applications/{applicationId}/shortlist", content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Lamaran di-shortlist")
+                : (false, envelope?.Message ?? "Gagal memproses lamaran");
+        }
+
+        /// <summary>EO menolak lamaran.</summary>
+        public async Task<(bool Success, string Message)> RejectGigApplicationAsync(int applicationId)
+        {
+            var response = await _http.PostAsync($"/api/applications/{applicationId}/reject", content: null);
+            var json = await response.Content.ReadAsStringAsync();
+            var envelope = JsonSerializer.Deserialize<ApiErrorMessage>(json, _jsonOptions);
+            return response.IsSuccessStatusCode
+                ? (true, envelope?.Message ?? "Lamaran ditolak")
+                : (false, envelope?.Message ?? "Gagal memproses lamaran");
+        }
+
         public async Task<List<GigEvent>> GetNearbyEventsAsync(double lat, double lng, double radius = 50)
         {
             return await GetAsync<List<GigEvent>>($"/api/events/nearby?lat={lat}&lng={lng}&radius={radius}") ?? new();
@@ -1092,6 +1201,12 @@ namespace GigRadarMobile.Services
         {
             public string Message { get; set; } = "";
             public int Id { get; set; }
+        }
+
+        private class GigCreateEnvelope
+        {
+            public string? Message { get; set; }
+            public GigItem? Gig { get; set; }
         }
 
         private class ResultEnvelope

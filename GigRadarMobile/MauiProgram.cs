@@ -59,6 +59,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EoProfileViewModel>();
         builder.Services.AddTransient<CreateEventViewModel>();
         builder.Services.AddTransient<EoEventsViewModel>();
+        builder.Services.AddTransient<EoGigsViewModel>();
+        builder.Services.AddTransient<ArtistGigsViewModel>();
         builder.Services.AddTransient<EoAnalyticsViewModel>();
         builder.Services.AddTransient<UsersViewModel>();
         builder.Services.AddTransient<ArtistDashboardViewModel>();
@@ -93,6 +95,8 @@ public static class MauiProgram
         builder.Services.AddTransient<EoProfilePage>();
         builder.Services.AddTransient<CreateEventPage>();
         builder.Services.AddTransient<EoEventsPage>();
+        builder.Services.AddTransient<EoGigsPage>();
+        builder.Services.AddTransient<ArtistGigsPage>();
         builder.Services.AddTransient<EoAnalyticsPage>();
         builder.Services.AddTransient<UsersPage>();
         builder.Services.AddTransient<ArtistDashboardPage>();

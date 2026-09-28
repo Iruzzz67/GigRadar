@@ -70,6 +70,23 @@ namespace GigRadarMobile.ViewModels
         }
 
         [RelayCommand]
+        private async Task GoToGigsAsync(EoEventStat? item)
+        {
+            if (item == null) return;
+
+            try
+            {
+                if (!await OrganizerGate.CanManageEventsAsync(_api, _auth)) return;
+                await Shell.Current.GoToAsync(
+                    $"{nameof(EoGigsPage)}?eventId={item.EventId}&eventName={Uri.EscapeDataString(item.Name)}");
+            }
+            catch (Exception ex)
+            {
+                await Alerts.ShowAsync("Error", ex.Message);
+            }
+        }
+
+        [RelayCommand]
         private async Task TogglePrimaryActionAsync(EoEventStat? item)
         {
             if (item == null) return;

@@ -245,6 +245,13 @@ public class EventServiceTests : IDisposable
         var seeded = await SeedEventAsync();
         _context.Tickets.Add(TestData.MakeTicket(seeded.EventId));
         _context.Favorites.Add(new Favorite { UserId = 10, EventId = seeded.EventId });
+        _context.Gigs.Add(new Gig
+        {
+            EventId = seeded.EventId,
+            Name = "Opening set",
+            StartAt = seeded.StartDate.AddHours(1),
+            EndAt = seeded.StartDate.AddHours(2)
+        });
         await _context.SaveChangesAsync();
         _context.ChangeTracker.Clear();
 
@@ -256,6 +263,7 @@ public class EventServiceTests : IDisposable
         Assert.Null(await _service.GetEventByIdAsync(seeded.EventId));
         Assert.Empty(await _context.Tickets.Where(t => t.EventId == seeded.EventId).ToListAsync());
         Assert.Empty(await _context.Favorites.Where(f => f.EventId == seeded.EventId).ToListAsync());
+        Assert.Empty(await _context.Gigs.Where(g => g.EventId == seeded.EventId).ToListAsync());
     }
 
     [Fact]

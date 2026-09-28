@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.EoGigsPage"
+             x:DataType="vm:EoGigsViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Gig Artist">
+    <ScrollView>
+        <VerticalStackLayout Padding="20,18,20,28" Spacing="16">
+            <Border Style="{StaticResource PageHero}" Padding="18">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="ARTIST BOOKING" Style="{StaticResource Overline}" TextColor="{StaticResource StageCyan}"/>
+                    <Label Text="{Binding EventName}" Style="{StaticResource HeroTitle}" FontSize="24"/>
+                    <Label Text="{Binding VenueAndGenreLabel}" Style="{StaticResource Body}" FontSize="13"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
+            <Label Text="{Binding StatusMessage}" IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" TextColor="{StaticResource DangerColor}" FontSize="13"/>
+            <Button Text="Coba muat ulang" Command="{Binding LoadCommand}" IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}"/>
+
+            <Border Style="{StaticResource Card}" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Buat gig" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                    <Label Text="Jadwal, venue, dan genre mengikuti event ini." FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    <Entry Placeholder="Nama gig / slot" Text="{Binding GigName}" MaxLength="120" SemanticProperties.Description="Nama kesempatan tampil"/>
+                    <Editor Placeholder="Persyaratan untuk artist (opsional)" Text="{Binding Requirements}" MaxLength="2000" AutoSize="TextChanges" HeightRequest="80" SemanticProperties.Description="Persyaratan gig"/>
+                    <Label Text="Tanggal" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    <DatePicker Date="{Binding GigDate}" MinimumDate="{Binding EventStartDate}" MaximumDate="{Binding EventEndDate}" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Mulai" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <TimePicker Time="{Binding StartTime}"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4">
+                            <Label Text="Selesai" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <TimePicker Time="{Binding EndTime}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Entry Placeholder="Budget min (Rp)" Text="{Binding BudgetMinText}" Keyboard="Numeric" SemanticProperties.Description="Budget minimum rupiah"/>
+                        <Entry Grid.Column="1" Placeholder="Budget max (Rp)" Text="{Binding BudgetMaxText}" Keyboard="Numeric" SemanticProperties.Description="Budget maksimum rupiah"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Entry Placeholder="Jumlah artist" Text="{Binding RequiredArtistCountText}" Keyboard="Numeric" SemanticProperties.Description="Jumlah artist yang dibutuhkan"/>
+                        <Picker Grid.Column="1" Title="Status gig" ItemsSource="{Binding StatusOptions}" SelectedItem="{Binding SelectedStatus}" SemanticProperties.Description="Status gig"/>
+                    </Grid>
+                    <Button Text="Buat gig" Command="{Binding CreateCommand}" IsEnabled="{Binding IsSaving, Converter={StaticResource InvertedBoolConverter}}" HeightRequest="48" CornerRadius="14" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold"/>
+                    <ActivityIndicator IsRunning="{Binding IsSaving}" IsVisible="{Binding IsSaving}" Color="{StaticResource PrimaryColor}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Gig dalam event" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+            <Label Text="Belum ada gig untuk event ini. Buat gig agar artist bisa melamar slot ini." IsVisible="{Binding ShowEmptyState}" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
+            <CollectionView ItemsSource="{Binding Gigs}" IsVisible="{Binding HasGigs}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:GigItem">
+                        <Border Style="{StaticResource Card}" Padding="15" Margin="0,3">
+                            <VerticalStackLayout Spacing="7">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <Label Text="{Binding Name}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                                    <Border Grid.Column="1" Padding="8,4" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{Binding StatusColor}" StrokeThickness="1" StrokeShape="RoundRectangle 10">
+                                        <Label Text="{Binding StatusLabel}" FontSize="10" TextColor="{Binding StatusColor}"/>
+                                    </Border>
+                                </Grid>
+                                <Label Text="{Binding ScheduleLabel}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                                <Label Text="{Binding BudgetLabel}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/>
+                                <Label Text="{Binding Requirements}" FontSize="12" TextColor="{StaticResource TextSecondary}" IsVisible="{Binding Requirements, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                <Label Text="{Binding ApplicantLabel}" FontSize="11" TextColor="{StaticResource TextMuted}"/>
+                                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
+                                    <Button Grid.Column="0" Text="Pelamar" HeightRequest="42" CornerRadius="11" FontSize="12" FontAttributes="Bold" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoGigsViewModel}}, Path=ShowApplicationsCommand, x:DataType={x:Type vm:EoGigsViewModel}}" CommandParameter="{Binding .}"/>
+                                    <Button Grid.Column="1" Text="{Binding StatusActionLabel}" HeightRequest="42" CornerRadius="11" FontSize="11" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoGigsViewModel}}, Path=ToggleGigStatusCommand, x:DataType={x:Type vm:EoGigsViewModel}}" CommandParameter="{Binding .}"/>
+                                    <Button Grid.Column="2" Text="Hapus" HeightRequest="42" CornerRadius="11" FontSize="11" Padding="10,0" FontAttributes="Bold" BackgroundColor="{StaticResource DangerSoft}" TextColor="{StaticResource DangerColor}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoGigsViewModel}}, Path=DeleteGigCommand, x:DataType={x:Type vm:EoGigsViewModel}}" CommandParameter="{Binding .}"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Panel lamaran untuk gig terpilih -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSelectedGig}">
+                <Label Text="{Binding SelectedGigLabel, StringFormat='Lamaran masuk — {0}'}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                <ActivityIndicator IsRunning="{Binding IsLoadingApplications}" IsVisible="{Binding IsLoadingApplications}" Color="{StaticResource PrimaryColor}"/>
+                <Label Text="{Binding ApplicationsStatusMessage}" IsVisible="{Binding ApplicationsStatusMessage, Converter={StaticResource StringNotEmptyConverter}}" TextColor="{StaticResource DangerColor}" FontSize="13"/>
+                <Label Text="Belum ada lamaran untuk gig ini." IsVisible="{Binding ShowApplicationsEmpty}" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
+                <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Applications}" IsVisible="{Binding HasApplications}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:GigApplicationItem">
+                            <Border Style="{StaticResource Card}" Padding="15">
+                                <VerticalStackLayout Spacing="8">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding ArtistName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                                            <Label Text="{Binding ArtistLabel}" FontSize="11" TextColor="{StaticResource TextMuted}" IsVisible="{Binding ArtistLabel, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                        </VerticalStackLayout>
+                                        <Border Grid.Column="1" Padding="8,4" BackgroundColor="{StaticResource SurfaceColor}" Stroke="{Binding StatusColor}" StrokeThickness="1" StrokeShape="RoundRectangle 10">
+                                            <Label Text="{Binding StatusLabel}" FontSize="10" TextColor="{Binding StatusColor}"/>
+                                        </Border>
+                                    </Grid>
+                                    <Label Text="{Binding Message}" FontSize="12" TextColor="{StaticResource TextSecondary}" IsVisible="{Binding Message, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                    <Label Text="{Binding AppliedLabel}" FontSize="11" TextColor="{StaticResource TextMuted}"/>
+                                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                                        <Button Grid.Column="0" Text="Shortlist" HeightRequest="42" CornerRadius="11" FontSize="12" FontAttributes="Bold" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" IsVisible="{Binding CanShortlist}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoGigsViewModel}}, Path=ShortlistApplicationCommand, x:DataType={x:Type vm:EoGigsViewModel}}" CommandParameter="{Binding .}"/>
+                                        <Button Grid.Column="1" Text="Tolak" HeightRequest="42" CornerRadius="11" FontSize="12" FontAttributes="Bold" BackgroundColor="{StaticResource DangerSoft}" TextColor="{StaticResource DangerColor}" IsVisible="{Binding CanReject}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoGigsViewModel}}, Path=RejectApplicationCommand, x:DataType={x:Type vm:EoGigsViewModel}}" CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
